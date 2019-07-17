@@ -14,11 +14,7 @@ class ExcelCell {
         } else if (containsImage(data)) {
             return ExcelImageCell.create(column, data);
         } else {
-            let text = data.text || data.name;
-            if (!text) {
-                text = '[invalid data]';
-            }
-            return ExcelPlainTextCell.create(column, text);
+            return ExcelPlainTextCell.create(column, '[invalid data]');
         }
     }
 
@@ -35,6 +31,7 @@ class ExcelPlainTextCell extends ExcelCell {
     static create(column, data) {
         const cell = new ExcelPlainTextCell(column);
         cell.text = data + '';
+        return cell;
     }
 
     plainText(options) {
@@ -48,8 +45,9 @@ class ExcelPlainTextCell extends ExcelCell {
 
 class ExcelRichTextCell extends ExcelCell {
     static create(column, data) {
-        const cell = new ExcelPlainTextCell(column);
-        this.tokens = data.richText;
+        const cell = new ExcelRichTextCell(column);
+        cell.tokens = data.richText;
+        return cell;
     }
 
     plainText(options) {
@@ -62,7 +60,7 @@ class ExcelRichTextCell extends ExcelCell {
 
     richText(options) {
         const children = [];
-        for (let token of this.tokens) {
+        for (let [ index, token ] of this.tokens.entries()) {
             const { font, text } = token;
             const style = {};
             if (font) {
@@ -76,7 +74,7 @@ class ExcelRichTextCell extends ExcelCell {
                     style.textDecoration = 'underline';
                 }
             }
-            children.push(React.createElement('span', { style }, text));
+            children.push(React.createElement('span', { key: index, style }, text));
         }
         if (children.length === 1) {
             return children[0];
@@ -88,20 +86,21 @@ class ExcelRichTextCell extends ExcelCell {
 
 class ExcelImageCell extends ExcelCell {
     static create(column, data) {
-        const cell = new ExcelPlainTextCell(column);
+        const cell = new ExcelImageCell(column);
         cell.url = data.url;
         cell.width = data.width;
         cell.height = data.height;
         cell.format = data.format;
+        return cell;
     }
 
     plainText(options) {
-        const props = this.getProps(options);
+        const props = this.getProps(options || {});
         return props.src;
     }
 
     richText(options) {
-        const props = this.getProps(options);
+        const props = this.getProps(options || {});
         return React.createElement('img', props);
     }
 

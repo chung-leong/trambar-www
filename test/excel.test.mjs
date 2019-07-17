@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { expect } from 'chai';
 import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
@@ -73,23 +73,40 @@ describe('Excel', function() {
         describe('#filter()', function() {
             it ('should remove sheets with non-matching language code', async function() {
                 const file = await loadTestFile();
-                const filtered = await file.filter('pl');
+                const filtered = file.filter('pl');
                 expect(filtered.sheets).to.have.lengthOf(3);
                 const sheet3 = filtered.sheets[2];
                 expect(sheet3).to.have.property('flags').that.eql([ 'pl' ]);
             })
             it ('should yield sheets with non-matching columns removed', async function() {
                 const file = await loadTestFile();
-                const filtered = await file.filter('pl');
+                const filtered = file.filter('pl');
                 const sheet2 = filtered.sheets[1];
                 expect(sheet2.columns).to.have.lengthOf(2);
             })
         })
         describe('#plainText()', function() {
-
+            it ('should return an objects with array properties', async function() {
+                const file = await loadTestFile();
+                const object = file.plainText();
+                expect(object).to.have.property('Sheet1').that.is.instanceOf(Array);
+                expect(object).to.have.property('Sheet2').that.is.instanceOf(Array);
+                expect(object).to.have.property('Names').that.is.instanceOf(Array)
+                expect(object.Sheet1[0]).to.have.property('rich text', 'This is another test');
+                expect(object.Sheet1[0]).to.have.property('image').that.matches(/\bmedia\b/);
+                expect(object.Names[0]).to.eql({ Name: 'Alice' });
+            })
         })
         describe('#richText()', function() {
-
+            it ('should return an objects with array properties', async function() {
+                const file = await loadTestFile();
+                const object = file.richText();
+                expect(object).to.have.property('Sheet1').that.is.instanceOf(Array);
+                expect(object).to.have.property('Sheet2').that.is.instanceOf(Array);
+                expect(object).to.have.property('Names').that.is.instanceOf(Array)
+                expect(object.Sheet1[0]).to.have.property('plain text').that.is.a('string');
+                expect(object.Sheet1[0]).to.have.property('rich text').that.is.an('object');
+            })
         })
     })
     describe('ExcelColumn', function() {

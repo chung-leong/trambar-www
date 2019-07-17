@@ -62,11 +62,11 @@ class ExcelFile {
     }
 
     plainText(options) {
-        return this.map((sheet) => sheet.getPlainText(options));
+        return this.map((sheet) => sheet.plainText(options));
     }
 
     richText(options) {
-        return this.map((sheet) => sheet.getRichText(options));
+        return this.map((sheet) => sheet.richText(options));
     }
 
     map(f) {

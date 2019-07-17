@@ -73,7 +73,8 @@ async function handleExcelRequest(req, res, next) {
             const hash = Crypto.createHash('md5').update(src).digest('hex');
             const type = src.split('.').pop();
             mediaImport.url = `http://localhost/srv/media/image/${hash}`;
-            mediaImport.type = (type === 'jpg') ? 'jpeg' : type;
+            mediaImport.type = 'image';
+            mediaImport.format = (type === 'jpg') ? 'jpeg' : type;
             mediaImport.width = 300;
             mediaImport.height = 200;
             delete mediaImport.src;

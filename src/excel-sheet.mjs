@@ -51,11 +51,11 @@ class ExcelSheet {
     }
 
     plainText(options) {
-        return this.map((cell) => cell.getPlainText(options));
+        return this.map((cell) => cell.plainText(options));
     }
 
     richText(options) {
-        return this.map((cell) => cell.getRichText(options));
+        return this.map((cell) => cell.richText(options));
     }
 
     map(f) {
