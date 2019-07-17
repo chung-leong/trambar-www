@@ -160,6 +160,49 @@ describe('Excel', function() {
                 expect(column2).to.have.property('flags').that.eql([ 'en', 'import' ]);
             })
         })
+        describe('#filter()', function() {
+            it ('should remove columns with non-matching language code', async function() {
+                const file = await loadTestFile('test-1');
+                const sheet2 = file.sheets[1];
+                const filtered = sheet2.filter('pl-pl');
+                expect(filtered.columns).to.have.lengthOf(2);
+                const column1 = filtered.columns[0];
+                const phrases = column1.plainText();
+                expect(phrases).to.eql([
+                    'Cześć',
+                    'Przepraszam',
+                    'Do widzenia',
+                    'Witamy',
+                    'Proszę',
+                ]);
+            })
+            it ('should choose based on country code', async function() {
+                const file = await loadTestFile('test-2');
+                const sheet1 = file.sheets[0];
+                const [ us ] = sheet1.filter('en-us').plainText();
+                const [ uk ] = sheet1.filter('en-uk').plainText();
+                const [ ie ] = sheet1.filter('en-ie').plainText();
+                const [ ca ] = sheet1.filter('en-ca').plainText();
+                expect(us).to.have.property('capital', 'Washington');
+                expect(uk).to.have.property('capital', 'London');
+                expect(ie).to.have.property('capital', 'Dublin');
+                expect(ca).to.have.property('capital', 'Washington');
+            })
+        })
+        describe('#plainText()', function() {
+            it ('should return an array of objects', async function() {
+                const file = await loadTestFile('test-1');
+                const sheet2 = file.sheet('Sheet2');
+                const objects = sheet2.plainText();
+                expect(objects).to.be.an.instanceOf(Array);
+                expect(objects[2]).to.have.property('phrase', 'Goodbye');
+
+                const filteredPL = sheet2.filter('pl-pl');
+                const objectsPL = filteredPL.plainText();
+                expect(objectsPL).to.be.an.instanceOf(Array);
+                expect(objectsPL[2]).to.have.property('phrase', 'Do widzenia');
+            })
+        })
     })
     describe('ExcelColumn', function() {
         it ('should have the right number of cells', async function() {

@@ -66,7 +66,9 @@ class ExcelSheet {
                 if (!object) {
                     object = objects[index] = {};
                 }
-                object[column.name] = f(cell);
+                if (object[column.name] === undefined) {
+                    object[column.name] = f(cell);
+                }
             }
         }
         return objects;
