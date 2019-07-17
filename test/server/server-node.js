@@ -136,7 +136,7 @@ async function parseSpreadsheet(buffer) {
                             const column = columnNameFlags;
                             sheet.columns.push(column);
                             using[c] = true;
-                            importing[c] = (column.flags && column.flags.indexOf('importing'));
+                            importing[c] = (column.flags && column.flags.indexOf('import') !== -1);
                         }
                     }
                 } else {
@@ -144,7 +144,7 @@ async function parseSpreadsheet(buffer) {
                     for (let c = 1; c <= columnCount; c++) {
                         if (using[c]) {
                             const cell = row.getCell(c);
-                            const value = extractCellValue(cell, !!importing[c]);
+                            const value = extractCellValue(cell, importing[c]);
                             currentRow.push(value);
                         }
                     }

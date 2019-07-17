@@ -1,5 +1,3 @@
-import { ExcelCell } from './excel-cell.mjs';
-
 class ExcelColumn {
     constructor(sheet, data) {
         this.sheet = sheet;
@@ -16,7 +14,6 @@ class ExcelColumn {
         }
         column.name = data.name;
         column.flags = data.flags || [];
-        column.header = ExcelCell.create(column, data);
         return column;
     }
 
@@ -52,7 +49,7 @@ class ExcelColumn {
     }
 
     includes(cell) {
-        if (this === cell.column) {
+        if (cell && this === cell.column) {
             return true;
         }
         return false;

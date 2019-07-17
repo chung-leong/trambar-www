@@ -39,6 +39,24 @@ class ExcelFile {
         }
     }
 
+    plainText(options) {
+        return this.map((sheet) => sheet.plainText(options));
+    }
+
+    richText(options) {
+        return this.map((sheet) => sheet.richText(options));
+    }
+
+    map(f) {
+        const object = {};
+        for (let sheet of this.sheets) {
+            if (object[sheet.name] === undefined) {
+                object[sheet.name] = f(sheet);
+            }
+        }
+        return object;
+    }
+
     filter(language) {
         const file = new ExcelFile;
         file.title = this.title;
@@ -59,24 +77,6 @@ class ExcelFile {
             }
         }
         return false;
-    }
-
-    plainText(options) {
-        return this.map((sheet) => sheet.plainText(options));
-    }
-
-    richText(options) {
-        return this.map((sheet) => sheet.richText(options));
-    }
-
-    map(f) {
-        const object = {};
-        for (let sheet of this.sheets) {
-            if (object[sheet.name] === undefined) {
-                object[sheet.name] = f(sheet);
-            }
-        }
-        return object;
     }
 }
 

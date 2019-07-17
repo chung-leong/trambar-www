@@ -66,7 +66,7 @@ class ExcelRow {
     }
 
     includes(cell) {
-        return this.cell.indexOf(cell) !== -1;
+        return this.cells.indexOf(cell) !== -1;
     }
 }
 

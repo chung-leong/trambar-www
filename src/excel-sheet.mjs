@@ -95,7 +95,7 @@ class ExcelSheet {
 
     includes(cell) {
         for (let column of this.columns) {
-            if (column === cell.column) {
+            if (cell && column === cell.column) {
                 return true;
             }
         }
