@@ -238,10 +238,71 @@ describe('Excel', function() {
         })
     })
     describe('ExcelPlainTextCell', function() {
-
+        describe('#richText', function() {
+            it ('should return plain text', async function() {
+                const file = await loadTestFile('test-1');
+                const cell = file.get([ 'Sheet1', 'plain text', 0 ]);
+                expect(cell).to.be.an.instanceOf(ExcelPlainTextCell);
+                const text1 = cell.plainText();
+                const text2 = cell.richText();
+                expect(text1).to.eql(text2);
+            })
+        })
     })
     describe('ExcelRichTextCell', function() {
-
+        describe('#plainText', function() {
+            it ('should return plain text', async function() {
+                const file = await loadTestFile('test-1');
+                const cell = file.get([ 'Sheet1', 'rich text', 0 ]);
+                expect(cell).to.be.an.instanceOf(ExcelRichTextCell);
+                const text = cell.plainText();
+                expect(text).to.eql('This is another test');
+            })
+        })
+        describe('#richText', function() {
+            it ('should return element with bold text', async function() {
+                const file = await loadTestFile('test-1');
+                const cell = file.get([ 'Sheet1', 'rich text', 0 ]);
+                expect(cell).to.be.an.instanceOf(ExcelRichTextCell);
+                const container = cell.richText();
+                const children = container.props.children;
+                expect(children).to.be.an.instanceOf(Array);
+                const bold = children.find((element) => {
+                    if (element.props.style.fontWeight === 'bold') {
+                        return true;
+                    }
+                });
+                expect(bold).to.not.be.null;
+            })
+            it ('should return element with italic text', async function() {
+                const file = await loadTestFile('test-1');
+                const cell = file.get([ 'Sheet1', 'rich text', 0 ]);
+                expect(cell).to.be.an.instanceOf(ExcelRichTextCell);
+                const container = cell.richText();
+                const children = container.props.children;
+                expect(children).to.be.an.instanceOf(Array);
+                const italic = children.find((element) => {
+                    if (element.props.style.fontStyle === 'italic') {
+                        return true;
+                    }
+                });
+                expect(italic).to.not.be.null;
+            })
+            it ('should return element with underlined text', async function() {
+                const file = await loadTestFile('test-1');
+                const cell = file.get([ 'Sheet1', 'rich text', 0 ]);
+                expect(cell).to.be.an.instanceOf(ExcelRichTextCell);
+                const container = cell.richText();
+                const children = container.props.children;
+                expect(children).to.be.an.instanceOf(Array);
+                const underlined = children.find((element) => {
+                    if (element.props.style.textDecoration === 'underline') {
+                        return true;
+                    }
+                });
+                expect(underlined).to.not.be.null;
+            })
+        })
     })
     describe('ExcelImageCell', function() {
 
