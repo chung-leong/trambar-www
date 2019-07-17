@@ -4,6 +4,7 @@ const CORS = require('cors');
 const ExcelJS = require('exceljs');
 const Util = require('util');
 const FS = require('fs');
+const Crypto = require('crypto')
 
 const readFile = Util.promisify(FS.readFile);
 
@@ -66,6 +67,17 @@ async function handleExcelRequest(req, res, next) {
         const path = `${__dirname}/../assets/${name}.xlsx`;
         const buffer = await readFile(path);
         const data = await parseSpreadsheet(buffer);
+        const mediaImports = findMediaImports(data.sheets);
+        for (let mediaImport of mediaImports) {
+            const src = mediaImport.src;
+            const hash = Crypto.createHash('md5').update(src).digest('hex');
+            const type = src.split('.').pop();
+            mediaImport.url = `http://localhost/srv/media/image/${hash}`;
+            mediaImport.type = (type === 'jpg') ? 'jpeg' : type;
+            mediaImport.width = 300;
+            mediaImport.height = 200;
+            delete mediaImport.src;
+        }
         res.json({ name, ...data });
     } catch (err) {
         next(err);
@@ -102,34 +114,38 @@ async function parseSpreadsheet(buffer) {
     const subject = workbook.subject;
     const sheets = [];
     for (let worksheet of workbook.worksheets) {
-        const sheetName = _.trim(worksheet.name);
         const { state, rowCount, columnCount } = worksheet;
-        if (state === 'visible' && sheetName) {
-            const { rowCount, columnCount } = worksheet;
+        const sheetNameFlags = extractNameFlags(worksheet.name);
+        if (state === 'visible' && sheetNameFlags) {
             const sheet = {
-                name: sheetName,
+                ...sheetNameFlags,
                 columns: [],
                 rows: [],
             };
+            const using = {};
             const importing = {};
+            const { rowCount, columnCount } = worksheet;
             for (let r = 1; r <= rowCount; r++) {
                 const row = worksheet.getRow(r);
                 if (r === 1) {
                     for (let c = 1; c <= columnCount; c++) {
                         const cell = row.getCell(c);
-                        let name = _.trim(cell.text);
-                        if (/\[import\]/i.test(name)) {
-                            name = name.replace(/\s*\[import\]\s*/, ''),
-                            importing[c] = true;
+                        const columnNameFlags = extractNameFlags(cell.text);
+                        if (columnNameFlags) {
+                            const column = columnNameFlags;
+                            sheet.columns.push(column);
+                            using[c] = true;
+                            importing[c] = (column.flags && column.flags.indexOf('importing'));
                         }
-                        sheet.columns.push(name);
                     }
                 } else {
                     const currentRow = [];
                     for (let c = 1; c <= columnCount; c++) {
-                        const cell = row.getCell(c);
-                        const value = extractCellValue(cell, !!importing[c]);
-                        currentRow.push(value);
+                        if (using[c]) {
+                            const cell = row.getCell(c);
+                            const value = extractCellValue(cell, !!importing[c]);
+                            currentRow.push(value);
+                        }
                     }
                     sheet.rows.push(currentRow);
                 }
@@ -138,6 +154,21 @@ async function parseSpreadsheet(buffer) {
         }
     }
     return { title, subject, description, keywords, sheets };
+}
+
+function extractNameFlags(text) {
+    const trimmed = _.trim(text);
+    if (trimmed) {
+        const m = /\s*\(([^\)]+)\)$/.exec(trimmed);
+        const results = {};
+        if (m) {
+            const name = trimmed.substr(0, trimmed.length - m[0].length);
+            const flags = m[1].split(/\s*,\s*/).map(_.toLower);
+            return { name, flags };
+        } else {
+            return { name: trimmed };
+        }
+    }
 }
 
 function extractCellValue(cell, importing) {
@@ -169,4 +200,22 @@ function extractCellValue(cell, importing) {
             return cell.text;
         }
     }
+}
+
+const defaultAlignment = { vertical: 'top', horizontal: 'left' };
+const defaultFill = { type: 'pattern', pattern: 'none' };
+const defaultBorder = {};
+
+function findMediaImports(sheets) {
+    const list = [];
+    for (let sheet of sheets) {
+        for (let row of sheet.rows) {
+            for (let cell of row) {
+                if (cell.src) {
+                    list.push(cell);
+                }
+            }
+        }
+    }
+    return list;
 }

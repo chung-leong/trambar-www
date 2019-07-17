@@ -28,6 +28,7 @@ class ExcelSheet {
             }
             sheet.rows.push(row);
         }
+        return sheet;
     }
 
     get(path) {
