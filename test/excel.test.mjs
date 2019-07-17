@@ -305,7 +305,116 @@ describe('Excel', function() {
         })
     })
     describe('ExcelImageCell', function() {
-
+        describe('#richText()', function() {
+            it ('should return an image element', async function() {
+                const file = await loadTestFile('test-1');
+                const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
+                expect(cell).to.be.an.instanceOf(ExcelImageCell);
+                const img = cell.richText();
+                expect(img).to.have.property('type', 'img');
+            })
+            it ('should apply width limit', async function() {
+                const file = await loadTestFile('test-1');
+                const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
+                const options = {
+                    imageWidth: 100,
+                };
+                const img = cell.richText(options);
+                const src = img.props.src;
+                expect(src).to.contain('re100-50');
+            })
+            it ('should apply height limit', async function() {
+                const file = await loadTestFile('test-1');
+                const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
+                const options = {
+                    imageHeight: 100,
+                };
+                const img = cell.richText(options);
+                const src = img.props.src;
+                expect(src).to.contain('re200-100');
+            })
+            it ('should crop image when both width and height are given', async function() {
+                const file = await loadTestFile('test-1');
+                const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
+                const options = {
+                    imageHeight: 100,
+                    imageWidth: 100,
+                };
+                const img = cell.richText(options);
+                const src = img.props.src;
+                // crop half of the image horizontally, 1000x500 -> 500x500,
+                // centering, then resize to 100x100
+                expect(src).to.contain('cr250-0-500-500+re100-100');
+            })
+            it ('should crop image when both width and height are given', async function() {
+                const file = await loadTestFile('test-1');
+                const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
+                const options = {
+                    imageHeight: 50,
+                    imageWidth: 500,
+                };
+                const img = cell.richText(options);
+                const src = img.props.src;
+                // crop image vertically, 1000x500 -> 1000x100,
+                // centering, then resize to 500x50
+                expect(src).to.contain('cr0-200-1000-100+re500-50');
+            })
+            it ('should request a larger image when pixel ratio is > 1', async function() {
+                const file = await loadTestFile('test-1');
+                const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
+                const options = {
+                    imageHeight: 50,
+                    imageWidth: 500,
+                    devicePixelRatio: 1.5,
+                };
+                const img = cell.richText(options);
+                const src = img.props.src;
+                // crop image vertically, 1000x500 -> 1000x100,
+                // centering, then resize to 750x75
+                expect(src).to.contain('cr0-200-1000-100+re750-75');
+            })
+            it ('should set to set image dimension to pixel count', async function() {
+                const file = await loadTestFile('test-1');
+                const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
+                const options = {
+                    imageHeight: 50,
+                    imageWidth: 500,
+                    devicePixelRatio: 1.5,
+                };
+                const img = cell.richText(options);
+                expect(img.props.width).to.eql(750);
+                expect(img.props.height).to.eql(75);
+                expect(img.props.style.width).to.eql(500);
+                expect(img.props.style.height).to.eql(50);
+            })
+            it ('should apply rounding in calculation with pixel ratio', async function() {
+                const file = await loadTestFile('test-1');
+                const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
+                const options = {
+                    imageHeight: 50,
+                    imageWidth: 500,
+                    devicePixelRatio: 4 / 3,
+                };
+                const img = cell.richText(options);
+                const src = img.props.src;
+                // crop image vertically, 1000x500 -> 1000x100,
+                // centering, then resize to 667x67
+                expect(src).to.contain('cr0-200-1000-100+re667-67');
+            })
+            it ('should allow adjustment of quality', async function() {
+                const file = await loadTestFile('test-1');
+                const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
+                const options = {
+                    imageHeight: 100,
+                    imageFilters: {
+                        quality: 50,
+                    }
+                };
+                const img = cell.richText(options);
+                const src = img.props.src;
+                expect(src).to.contain('q50');
+            })
+        })
     })
     after(() => {
         return Server.stop();

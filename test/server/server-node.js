@@ -75,8 +75,8 @@ async function handleExcelRequest(req, res, next) {
             mediaImport.url = `http://localhost/srv/media/image/${hash}`;
             mediaImport.type = 'image';
             mediaImport.format = (type === 'jpg') ? 'jpeg' : type;
-            mediaImport.width = 300;
-            mediaImport.height = 200;
+            mediaImport.width = 1000;
+            mediaImport.height = 500;
             delete mediaImport.src;
         }
         res.json({ name, ...data });
