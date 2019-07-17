@@ -1,14 +1,16 @@
-function chooseLanguageVersion(objects, options) {
-    const lang =  options.language;
+function chooseLanguageVersion(objects, lang) {
     const [ reqLC, reqCC ] = (lang) ? lang.toLowerCase().split('-') : [];
     const list = [];
-    const scores = {};
+    const existing = {};
     for (let object of objects) {
         const score = getLanguageMatch(object, reqLC, reqCC);
-        const previousScore = scores[object.name];
-        if (!(previousScore >= score)) {
+        const previous = existing[object.name];
+        if (!previous) {
+            existing[object.name] = { index: list.length, score };
             list.push(object);
-            scores[object.name] = score;
+        } else if (previous.score < score) {
+            list[previous.index] = object;
+            previous.score = score;
         }
     }
     return list;
@@ -18,10 +20,10 @@ const localeRegExp = /^\w{2}(\-\w{2})?$/;
 
 function getLanguageMatch(object, reqLC, reqCC) {
     let highest = 0;
-    if (reqLC) {
+    if (reqLC && object.flags instanceof Array) {
         for (let flag of object.flags) {
             if (localeRegExp.test(flag)) {
-                const [ lc, cc ] = lang.toLowerCase().split('-');
+                const [ lc, cc ] = flag.toLowerCase().split('-');
                 if (lc === reqLC) {
                     let score = 50;
                     if (cc === reqCC) {

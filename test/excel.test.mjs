@@ -39,6 +39,14 @@ describe('Excel', function() {
         })
     })
     describe('ExcelSheet', function() {
+        it ('should have the right number of rows and columns', async function() {
+            const file = await loadTestFile();
+            const [ sheet1, sheet2 ] = file.sheets;
+            expect(sheet1.columns).to.have.lengthOf(3);
+            expect(sheet1.rows).to.have.lengthOf(1);
+            expect(sheet2.columns).to.have.lengthOf(6);
+            expect(sheet2.rows).to.have.lengthOf(5);
+        })
         it ('should have flags extracted from name', async function() {
             const file = await loadTestFile();
             const [ ,, sheet3, sheet4, sheet5 ] = file.sheets;
@@ -48,6 +56,40 @@ describe('Excel', function() {
             expect(sheet3.name).to.eql('Names');
             expect(sheet4.name).to.eql('Names');
             expect(sheet5.name).to.eql('Names');
+        })
+        describe('#sheet', function() {
+            it ('should return sheet with matching name', async function() {
+                const file = await loadTestFile();
+                const sheet1 = file.sheet('Sheet1');
+                expect(sheet1).to.have.property('name', 'Sheet1');
+            })
+            it ('should return the first sheet when there are multiple sheet with the same name', async function() {
+                const file = await loadTestFile();
+                const sheet3 = file.sheet('Names');
+                expect(sheet3).to.have.property('name', 'Names');
+                expect(sheet3).to.have.property('flags').that.eql([ 'en' ]);
+            })
+        })
+        describe('#filter()', function() {
+            it ('should remove sheets with non-matching language code', async function() {
+                const file = await loadTestFile();
+                const filtered = await file.filter('pl');
+                expect(filtered.sheets).to.have.lengthOf(3);
+                const sheet3 = filtered.sheets[2];
+                expect(sheet3).to.have.property('flags').that.eql([ 'pl' ]);
+            })
+            it ('should yield sheets with non-matching columns removed', async function() {
+                const file = await loadTestFile();
+                const filtered = await file.filter('pl');
+                const sheet2 = filtered.sheets[1];
+                expect(sheet2.columns).to.have.lengthOf(2);
+            })
+        })
+        describe('#plainText()', function() {
+
+        })
+        describe('#richText()', function() {
+
         })
     })
     describe('ExcelColumn', function() {
@@ -74,6 +116,18 @@ describe('Excel', function() {
             expect(column5.name).to.eql('picture');
             expect(column6.name).to.eql('picture');
         })
+    })
+    describe('ExcelRow', function() {
+
+    })
+    describe('ExcelPlainTextCell', function() {
+
+    })
+    describe('ExcelRichTextCell', function() {
+
+    })
+    describe('ExcelImageCell', function() {
+
     })
     after(() => {
         return Server.stop();

@@ -73,9 +73,9 @@ class ExcelSheet {
     }
 
     filter(language) {
-        const newSheet = new ExcelSheet(this.file);
-        newSheet.name = this.name;
-        newSheet.flags = this.flags;
+        const sheet = new ExcelSheet(this.file);
+        sheet.name = this.name;
+        sheet.flags = this.flags;
 
         const chosen = chooseLanguageVersion(this.columns, language);
         const excluded = [];
@@ -84,13 +84,13 @@ class ExcelSheet {
                 excluded.push(true);
             } else {
                 excluded.push(false);
-                newSheet.columns.push(column);
+                sheet.columns.push(column);
             }
         }
         for (let row of this.rows) {
-            newSheet.rows.push(row.exclude(excluded));
+            sheet.rows.push(row.exclude(excluded));
         }
-        return newSheet;
+        return sheet;
     }
 
     includes(cell) {
