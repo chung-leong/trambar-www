@@ -26,6 +26,9 @@ class ExcelCell {
             return this;
         }
     }
+
+    image(url) {
+    }
 }
 
 class ExcelPlainTextCell extends ExcelCell {
@@ -177,6 +180,11 @@ class ExcelImageCell extends ExcelCell {
         };
     }
 
+    image(url) {
+        if (url && url.indexOf(this.url)) {
+            return this;
+        }
+    }
 }
 
 function containsPlainText(data) {

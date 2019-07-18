@@ -71,6 +71,15 @@ class ExcelRow {
     includes(cell) {
         return this.cells.indexOf(cell) !== -1;
     }
+
+    image(url) {
+        for (let cell of this.cells) {
+            const image = cell.image(url);
+            if (image) {
+                return image;
+            }
+        }
+    }
 }
 
 export {

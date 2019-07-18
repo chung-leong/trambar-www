@@ -104,6 +104,15 @@ class ExcelSheet {
         }
         return false;
     }
+
+    image(url) {
+        for (let column of this.columns) {
+            const image = column.image(url);
+            if (image) {
+                return image;
+            }
+        }
+    }
 }
 
 export {

@@ -130,6 +130,21 @@ describe('Excel', function() {
                 expect(object.Sheet1[0]).to.have.property('image').that.is.an('object');
             })
         })
+        describe('#image()', function() {
+            it ('should return an image element based on a derived URL', async function() {
+                const file = await loadTestFile('test-1');
+                const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
+                const options = {
+                    imageHeight: 50,
+                    imageWidth: 500,
+                    imageServer: 'http://localhost',
+                };
+                const img = cell.richText(options);
+                const src = img.props.src;
+                const found = file.image(src);
+                expect(found).to.equal(cell);
+            })
+        })
     })
     describe('ExcelSheet', function() {
         it ('should have the right number of rows and columns', async function() {
@@ -427,6 +442,18 @@ describe('Excel', function() {
                 const img = cell.richText(options);
                 const src = img.props.src;
                 expect(src).to.contain('q50');
+            })
+            it ('should prepend URL with server address', async function() {
+                const file = await loadTestFile('test-1');
+                const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
+                const options = {
+                    imageHeight: 50,
+                    imageWidth: 500,
+                    imageServer: 'http://localhost',
+                };
+                const img = cell.richText(options);
+                const src = img.props.src;
+                expect(src).to.contain('http://localhost');
             })
         })
     })

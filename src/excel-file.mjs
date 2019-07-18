@@ -79,6 +79,15 @@ class ExcelFile {
         }
         return false;
     }
+
+    image(url) {
+        for (let sheet of this.sheets) {
+            const image = sheet.image(url);
+            if (image) {
+                return image;
+            }
+        }
+    }
 }
 
 export {

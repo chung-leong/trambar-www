@@ -57,6 +57,15 @@ class ExcelColumn {
         }
         return false;
     }
+
+    image(url) {
+        for (let cell of this.cells) {
+            const image = cell.image(url);
+            if (image) {
+                return image;
+            }
+        }
+    }
 }
 
 export {
