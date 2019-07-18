@@ -1,3 +1,13 @@
+function parsePath(path, max) {
+    if (!(path instanceof Array)) {
+        path = (path + '').split('.');
+    }
+    if (path.length > max) {
+        throw new Error(`Path ${path.join('.')} contains too many names`);
+    }
+    return path;
+}
+
 function chooseLanguageVersion(objects, lang) {
     const [ reqLC, reqCC ] = (lang) ? lang.toLowerCase().split('-') : [];
     const list = [];
@@ -40,5 +50,6 @@ function getLanguageMatch(object, reqLC, reqCC) {
 }
 
 export {
+    parsePath,
     chooseLanguageVersion,
 };

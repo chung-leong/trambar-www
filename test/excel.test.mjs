@@ -80,6 +80,11 @@ describe('Excel', function() {
                 const column = file.get([ 'Sheet1', 'plain text' ]);
                 expect(column).to.be.instanceOf(ExcelColumn);
             })
+            it ('should accept a string', async function() {
+                const file = await loadTestFile('test-1');
+                const column = file.get('Sheet1.plain text');
+                expect(column).to.be.instanceOf(ExcelColumn);
+            })
             it ('should be able to find a cell', async function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.get([ 'Sheet1', 'plain text', 0 ]);
@@ -235,6 +240,15 @@ describe('Excel', function() {
             const sheet1 = file.sheets[0];
             const [ row1 ] = sheet1.rows;
             expect(row1.cells).to.have.lengthOf(3);
+        })
+        describe('#get()', function() {
+            it ('should be able to find a cell', async function() {
+                const file = await loadTestFile('test-1');
+                const sheet1 = file.sheets[0];
+                const [ row1 ] = sheet1.rows;
+                const cell = row1.get('rich text');
+                expect(cell).to.be.instanceOf(ExcelRichTextCell);
+            })
         })
     })
     describe('ExcelPlainTextCell', function() {

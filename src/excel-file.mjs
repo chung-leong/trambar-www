@@ -1,5 +1,5 @@
 import { ExcelSheet } from './excel-sheet.mjs';
-import { chooseLanguageVersion } from './excel-utils.mjs';
+import { parsePath, chooseLanguageVersion } from './excel-utils.mjs';
 
 class ExcelFile {
     constructor() {
@@ -21,12 +21,13 @@ class ExcelFile {
     }
 
     get(path) {
-        const sheet = this.sheet(path[0]);
+        const names = parsePath(path, 3);
+        const sheet = this.sheet(names[0]);
         if (sheet) {
-            if (path.length === 1) {
+            if (names.length === 1) {
                 return sheet;
             } else {
-                return sheet.get(path.slice(1));
+                return sheet.get(names.slice(1));
             }
         }
     }

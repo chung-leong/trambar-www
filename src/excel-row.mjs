@@ -1,4 +1,4 @@
-import { chooseLanguageVersion } from './excel-utils.mjs';
+import { parsePath, chooseLanguageVersion } from './excel-utils.mjs';
 
 class ExcelRow {
     constructor(sheet) {
@@ -10,13 +10,16 @@ class ExcelRow {
         return new ExcelRow(sheet);
     }
 
+    get(path) {
+        const names = parsePath(path, 1);
+        return this.column(names[0]);
+    }
+
     column(name) {
         const columns = this.sheet.columns;
         for (let [ index, column ] of columns.entries()) {
             if (column.name === name) {
-                if (chosen.indexOf(column) !== -1) {
-                    return this.cells[index];
-                }
+                return this.cells[index];
             }
         }
     }

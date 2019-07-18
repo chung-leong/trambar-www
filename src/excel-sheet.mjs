@@ -1,7 +1,7 @@
 import { ExcelColumn } from './excel-column.mjs';
 import { ExcelRow } from './excel-row.mjs';
 import { ExcelCell } from './excel-cell.mjs';
-import { chooseLanguageVersion } from './excel-utils.mjs';
+import { parsePath, chooseLanguageVersion } from './excel-utils.mjs';
 
 class ExcelSheet {
     constructor(file) {
@@ -32,9 +32,10 @@ class ExcelSheet {
     }
 
     get(path) {
-        const column = this.column(path[0]);
+        const names = parsePath(path, 2);
+        const column = this.column(names[0]);
         if (column) {
-            if (path.length === 1) {
+            if (names.length === 1) {
                 return column;
             } else {
                 return column.get(path.slice(1));

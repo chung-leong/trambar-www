@@ -1,3 +1,5 @@
+import { parsePath } from './excel-utils.mjs';
+
 class ExcelColumn {
     constructor(sheet, data) {
         this.sheet = sheet;
@@ -18,7 +20,8 @@ class ExcelColumn {
     }
 
     get(path) {
-        return this.row(path[0]);
+        const names = parsePath(path, 1);
+        return this.row(names[0]);
     }
 
     row(index) {

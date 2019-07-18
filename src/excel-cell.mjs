@@ -1,5 +1,6 @@
 import React from 'react';
 import { chooseLanguageVersion } from './excel-utils.mjs';
+import { transformImage } from './image-utils.mjs';
 
 class ExcelCell {
     constructor(column) {
@@ -95,16 +96,16 @@ class ExcelImageCell extends ExcelCell {
     }
 
     plainText(options) {
-        const props = this.getProps(options || {});
+        const props = this.props(options || {});
         return props.src;
     }
 
     richText(options) {
-        const props = this.getProps(options || {});
+        const props = this.props(options || {});
         return React.createElement('img', props);
     }
 
-    getProps(options) {
+    props(options) {
         // calcuate size of image based on specified dimensions
         const reqWidth = options.imageWidth;
         const reqHeight = options.imageHeight;
@@ -162,9 +163,9 @@ class ExcelImageCell extends ExcelCell {
             dimFilters.resize = { width: realWidth, height: realHeight };
         }
         const filters = { ...dimFilters, ...options.imageFilters };
-        const format = options.imageFormat || this.format;
-        const server = options.imageServer;
-        const url = this.getURL(filters, format, server);
+        const format = options.imageFormat;
+        const server = options.imageServer || '';
+        const url = server + transformImage(this.url, filters, this.format, format);
         return {
             src: url,
             width: realWidth,
@@ -176,103 +177,6 @@ class ExcelImageCell extends ExcelCell {
         };
     }
 
-    getURL(filters, format, server) {
-        const modifiers = [];
-        for (let [ n, v ] of Object.entries(filters)) {
-            let m = '';
-            switch (n) {
-                case 'background':
-                    m = `ba${v.r}-${v.g}-${v.b}-${v.a}`;
-                    break;
-                case 'blur':
-                    if (v) {
-                        if (typeof(v) === 'number') {
-                            m = `bl${v}`;
-                        } else {
-                            m = `bl`;
-                        }
-                    }
-                    break;
-                case 'crop':
-                    m = `cr${v.left}-${v.top}-${v.width}-${v.height}`;
-                    break;
-                case 'extract':
-                    m = `ex${v}`;
-                    break;
-                case 'flatten':
-                    if (v) {
-                        m = `fla`;
-                    }
-                    break;
-                case 'flip':
-                    if (v) {
-                        m = `fli`;
-                    }
-                    break;
-                case 'flop':
-                    if (v) {
-                        m = `flo`;
-                    }
-                    break;
-                case 'gamma':
-                    m = `ga${v}`;
-                    break;
-                case 'grayscale':
-                    if (v) {
-                        m = `gr`;
-                    }
-                    break;
-                case 'negate':
-                    if (v) {
-                        m = `ne`;
-                    }
-                    break;
-                case 'normalize':
-                    if (v) {
-                        m = `no`;
-                    }
-                    break;
-                case 'lossless':
-                    if (v) {
-                        m = `lo`;
-                    }
-                    break;
-                case 'quality':
-                    m = `q${v}`;
-                    break;
-                case 'rotate':
-                    m = `ro${v}`;
-                    break;
-                case 'resize':
-                    m = `re${v.width}-${v.height}`;
-                    break;
-                case 'sharpen':
-                    if (v) {
-                        m = `sh`;
-                    }
-                    break;
-                case 'trim':
-                    if (v) {
-                        m = `tr`;
-                    }
-                    break;
-            }
-            if (m) {
-                modifiers.push(m);
-            }
-        }
-        let url = this.url;
-        if (modifiers.length > 0 || format) {
-            url += `/${modifiers.join('+')}`;
-            if (format) {
-                url += `.${format}`;
-            }
-        }
-        if (server) {
-            url = server + url;
-        }
-        return url;
-    }
 }
 
 function containsPlainText(data) {
