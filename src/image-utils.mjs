@@ -1,4 +1,38 @@
-function transformImage(url, filters, srcFormat, dstFormat) {
+function deriveImageProps(original, options) {
+    const { imageWidth, imageHeight } = options;
+    const { imageFormat, imageFilters, imageServer } = options;
+    const { devicePixelRatio } = options;
+    const resized = adjustImageDimensions(original, { width: imageWidth, height: imageHeight });
+    const source = adjustImageDensity(resized, devicePixelRatio || 1, original);
+
+    const dimFilters = {};
+    let origWidth = original.width;
+    let origHeight = original.height;
+    if (resized.crop) {
+        dimFilters.crop = resized.crop;
+        origWidth = resized.crop.width;
+        origHeight = resized.crop.height;
+    }
+    if (origWidth !== source.width || origHeight !== source.height) {
+        dimFilters.resize = { width: source.width, height: source.height };
+    }
+    const filters = { ...dimFilters, ...options.imageFilters };
+    let url = applyImageFilters(original.url, filters, original.format, imageFormat);
+    if (imageServer) {
+        url = imageServer + url;
+    }
+    return {
+        src: url,
+        width: source.width,
+        height: source.height,
+        style: {
+            width: resized.width,
+            height: resized.height,
+        }
+    };
+}
+
+function applyImageFilters(url, filters, srcFormat, dstFormat) {
     const modifiers = [];
     for (let [ n, v ] of Object.entries(filters)) {
         let m = '';
@@ -90,6 +124,53 @@ function transformImage(url, filters, srcFormat, dstFormat) {
     }
 }
 
+function adjustImageDimensions(original, desired) {
+    const aspectRatio = original.width / original.height;
+    let width, height, crop;
+    if (desired.width && desired.height) {
+        const desiredAspectRatio = desired.width / desired.height;
+        if (desiredAspectRatio !== aspectRatio) {
+            // need to crop image
+            crop = {};
+            if (desiredAspectRatio > aspectRatio) {
+                // wider than actual image--crop top and bottom
+                crop.width = original.width;
+                crop.height = Math.round(original.width / desiredAspectRatio);
+                crop.left = 0;
+                crop.top = Math.round((original.height - crop.height) / 2);
+            } else {
+                crop.width = Math.round(original.height * desiredAspectRatio);
+                crop.height = original.height;
+                crop.left = Math.round((original.width - crop.width) / 2);
+                crop.top = 0;
+            }
+        }
+        width = desired.width;
+        height = desired.height;
+    } else if (desired.width) {
+        width = desired.width;
+        height = Math.round(desired.width / aspectRatio);
+    } else if (desired.height) {
+        width = Math.round(desired.height * aspectRatio);
+        height = desired.height;
+    } else {
+        width = original.width;
+        height = original.height;
+    }
+    return { width, height, crop };
+}
+
+function adjustImageDensity(visual, devicePixelRatio, limit) {
+    const pixelRatioLimit = Math.min(limit.width / visual.width, limit.height / visual.height);
+    const pixelRatio = Math.min(devicePixelRatio, pixelRatioLimit);
+    const width = Math.round(visual.width * pixelRatio);
+    const height = Math.round(visual.height * pixelRatio);
+    return { width, height };
+}
+
 export {
-    transformImage,
+    deriveImageProps,
+    applyImageFilters,
+    adjustImageDimensions,
+    adjustImageDensity,
 };
