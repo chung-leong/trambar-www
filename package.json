@@ -3,7 +3,7 @@
   "description": "Client library for Trambar websites",
   "author": "Chung Leong",
   "version": "1.0.0",
-  "main": "./index.js",
+  "main": "./index",
   "preferGlobal": false,
   "sideEffects": false,
   "repository": "git://github.com/trambarhq/trambar-www.git",

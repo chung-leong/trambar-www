@@ -5,9 +5,9 @@ const Webpack = require('webpack');
 
 module.exports = {
     mode: 'production',
-    entry: Path.resolve('./src/index.mjs'),
+    entry: Path.resolve('./index.mjs'),
     output: {
-        path: Path.resolve('./dist'),
+        path: Path.resolve('./'),
         filename: 'index.js',
     },
     resolve: {
