@@ -5,6 +5,7 @@ const TextContext = React.createContext();
 
 function useListener(f) {
 	var ref = useRef({});
+	ref.current.f = f;
 	useDebugValue(f);
 	return useCallback(function () {
 		return ref.current.f.apply(null, arguments);
@@ -15,7 +16,7 @@ function usePlainText(hookOpts) {
     const context = useContext(TextContext);
     const options = { ...context, ...hookOpts };
     return useListener((object) => {
-        return object.getPlainText(options);
+        return object.plainText(options);
     });
 }
 
@@ -23,7 +24,7 @@ function useRichText(hookOpts) {
     const context = useContext(TextContext);
     const options = { ...context, ...hookOpts };
     return useListener((object) => {
-        return object.getRichText(options);
+        return object.richText(options);
     });
 }
 
