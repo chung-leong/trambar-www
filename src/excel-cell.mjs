@@ -1,6 +1,5 @@
 import React from 'react';
-import { chooseLanguageVersion } from './excel-utils.mjs';
-import { deriveImageProps } from './image-utils.mjs';
+import { chooseLanguageVersion, deriveImageProps } from './utils.mjs';
 
 class ExcelCell {
     constructor(column) {

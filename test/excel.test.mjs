@@ -13,7 +13,7 @@ import {
     ExcelPlainTextCell,
     ExcelRichTextCell,
     ExcelImageCell,
-} from '../src/index.mjs';
+} from '../index.mjs';
 
 configure({ adapter: new Adapter });
 
@@ -24,19 +24,19 @@ describe('Excel', function() {
     before(() => {
         return Server.start(serverPort);
     })
+    it ('should be able to retrieve test data', async function() {
+        const data = await loadTestData('test-1');
+        expect(data.name).to.eql('test-1');
+        expect(data.title).to.eql('Test file title');
+        expect(data.description).to.eql('This is a test');
+        expect(data.keywords).to.eql([ 'keyword1', 'keyword2', 'keyword3' ]);
+        expect(data.subject).to.eql('Test subject');
+    })
     describe('ExcelFile', function() {
-        it ('should be able to retrieve test data', async function() {
-            const data = await loadTestData('test-1');
-            expect(data.name).to.eql('test-1');
-            expect(data.title).to.eql('Test file title');
-            expect(data.description).to.eql('This is a test');
-            expect(data.keywords).to.eql([ 'keyword1', 'keyword2', 'keyword3' ]);
-            expect(data.subject).to.eql('Test subject');
-        })
         it ('should include metadata from file', async function() {
             const data = await loadTestData('test-1');
             const file = await loadTestFile('test-1');
-            expect(data.name).to.eql(data.name);
+            expect(file.name).to.eql(data.name);
             expect(file.title).to.eql(data.title);
             expect(file.description).to.eql(data.description);
             expect(file.keywords).to.eql(data.keywords);

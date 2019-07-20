@@ -85,7 +85,7 @@ async function handleExcelRequest(req, res, next) {
     }
 }
 
-async function handleWikiRequest(res, res) {
+async function handleWikiRequest(req, res, next) {
     try {
         const slug = req.params.slug;
         const path = `${__dirname}/../assets/${slug}.md`;
@@ -95,6 +95,18 @@ async function handleWikiRequest(res, res) {
             title: slug.replace(/-/g, ' '),
             markdown: text
         };
+        try {
+            const jsonPath = `${__dirname}/../assets/${slug}.json`;
+            const jsonText = await readFile(jsonPath, 'utf8');
+            const props = JSON.parse(jsonText);
+            for (let [ key, value ] of Object.entries(props)) {
+                data[key] = value;
+            }
+        } catch (err) {
+            if (err instanceof SyntaxError) {
+                throw err;
+            }
+        }
         res.json(data);
     } catch (err) {
         next(err);

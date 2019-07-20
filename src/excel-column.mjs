@@ -1,4 +1,4 @@
-import { parsePath } from './excel-utils.mjs';
+import { parsePath } from './utils.mjs';
 
 class ExcelColumn {
     constructor(sheet, data) {

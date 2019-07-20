@@ -1,4 +1,4 @@
-import { parsePath, chooseLanguageVersion } from './excel-utils.mjs';
+import { parsePath, chooseLanguageVersion } from './utils.mjs';
 
 class ExcelRow {
     constructor(sheet) {

@@ -1,0 +1,10 @@
+{
+    "resources": [
+        {
+            "url": "/srv/media/1234567890",
+            "width": 1000,
+            "height": 500,
+            "type": "image"
+        }
+    ]
+}
