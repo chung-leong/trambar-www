@@ -1,5 +1,4 @@
-import React from 'react';
-import { chooseLanguageVersion, deriveImageProps } from './utils.mjs';
+import { chooseLanguageVersion, deriveImageProps, generateRichText } from './utils.mjs';
 
 class ExcelCell {
     constructor(column) {
@@ -42,7 +41,7 @@ class ExcelPlainTextCell extends ExcelCell {
     }
 
     richText(options) {
-        return this.text;
+        return generateRichText(undefined, { key: 0 }, this.text, options || {});
     }
 }
 
@@ -77,12 +76,13 @@ class ExcelRichTextCell extends ExcelCell {
                     style.textDecoration = 'underline';
                 }
             }
-            children.push(React.createElement('span', { key: index, style }, text));
+            const props = { key: index, style };
+            children.push(generateRichText('span', props, text, options || {}));
         }
         if (children.length === 1) {
             return children[0];
         } else {
-            return React.createElement('span', {}, children);
+            return generateRichText('span', {}, children, options || {});
         }
     }
 }
@@ -98,21 +98,21 @@ class ExcelImageCell extends ExcelCell {
     }
 
     plainText(options) {
-        const props = this.props(options || {});
+        const props = this.props(options);
         return props.src;
     }
 
     richText(options) {
-        const props = this.props(options || {});
-        return React.createElement('img', props);
+        const props = this.props(options);
+        return generateRichText('img', props, undefined, options || {});
     }
 
     props(options) {
-        return deriveImageProps(this, options);
+        return deriveImageProps(this, options || {});
     }
 
     image(url) {
-        if (url && url.indexOf(this.url)) {
+        if (url && url.indexOf(this.url) !== -1) {
             return this;
         }
     }

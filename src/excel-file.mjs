@@ -71,9 +71,9 @@ class ExcelFile {
         return file;
     }
 
-    includes(cell) {
+    includes(object) {
         for (let sheet of this.sheets) {
-            if (sheet.includes(cell)) {
+            if (sheet.includes(object)) {
                 return true;
             }
         }

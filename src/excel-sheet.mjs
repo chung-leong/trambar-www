@@ -12,21 +12,25 @@ class ExcelSheet {
 
     static create(file, data) {
         const sheet = new ExcelSheet(file);
-        sheet.name = data.name;
-        sheet.flags = data.flags;
-        for (let columnData of data.columns) {
-            sheet.columns.push(ExcelColumn.create(sheet, columnData));
-        }
-        for (let rowData of data.rows) {
-            const row = ExcelRow.create(sheet);
-            const cells = [];
-            for (let [ index, data ] of rowData.entries()) {
-                const column = sheet.columns[index];
-                const cell = ExcelCell.create(column, data);
-                row.cells.push(cell);
-                column.cells.push(cell);
+        sheet.name = data.name || '';
+        sheet.flags = data.flags || [];
+        if (data.columns instanceof Array) {
+            for (let columnData of data.columns) {
+                sheet.columns.push(ExcelColumn.create(sheet, columnData));
             }
-            sheet.rows.push(row);
+        }
+        if (data.rows instanceof Array) {
+            for (let rowData of data.rows) {
+                const row = ExcelRow.create(sheet);
+                const cells = [];
+                for (let [ index, data ] of rowData.entries()) {
+                    const column = sheet.columns[index];
+                    const cell = ExcelCell.create(column, data);
+                    row.cells.push(cell);
+                    column.cells.push(cell);
+                }
+                sheet.rows.push(row);
+            }
         }
         return sheet;
     }
@@ -99,6 +103,8 @@ class ExcelSheet {
     includes(cell) {
         for (let column of this.columns) {
             if (cell && column === cell.column) {
+                return true;
+            } else if (cell === column) {
                 return true;
             }
         }

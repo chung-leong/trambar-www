@@ -1,3 +1,23 @@
+import React from 'react';
+
+function generateRichText(type, props, children, options) {
+    const { richTextAdjust } = options;
+    if (richTextAdjust instanceof Function) {
+        const result = richTextAdjust(type, props, children);
+        if (!(result instanceof Object)) {
+            throw new Error('Function should return an object');
+        }
+        type = result.type;
+        props = result.props;
+        children = result.children;
+    }
+    if (type === undefined) {
+        return children;
+    } else {
+        return React.createElement(type, props, children);
+    }
+}
+
 function deriveImageProps(original, options) {
     const { imageWidth, imageHeight } = options;
     const { imageFormat, imageFilters, imageServer } = options;
@@ -222,6 +242,7 @@ function getLanguageMatch(object, reqLC, reqCC) {
 export {
     parsePath,
     chooseLanguageVersion,
+    generateRichText,
 
     deriveImageProps,
     applyImageFilters,

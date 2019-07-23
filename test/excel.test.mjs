@@ -276,6 +276,38 @@ describe('Excel', function() {
                 const text2 = cell.richText();
                 expect(text1).to.eql(text2);
             })
+            it ('should call richTextAdjust with type set to undefined', async function() {
+                let args;
+                const richTextAdjust = (type, props, children) => {
+                    args = { type, props, children };
+                    return { type, props, children };
+                };
+
+                const file = await loadTestFile('test-1');
+                const cell = file.get([ 'Sheet1', 'plain text', 0 ]);
+                expect(cell).to.be.an.instanceOf(ExcelPlainTextCell);
+                const text2 = cell.richText({ richTextAdjust });
+                expect(args.type).to.be.undefined;
+                expect(args.props).to.have.property('key', 0);
+                expect(args.children).to.be.a('string');
+            })
+            it ('should yield an element when richTextAdjust provides a type', async function() {
+                const richTextAdjust = (type, props, children) => {
+                    return {
+                        type: 'span',
+                        props: { ...props, className: 'chicken' },
+                        children
+                    };
+                };
+
+                const file = await loadTestFile('test-1');
+                const cell = file.get([ 'Sheet1', 'plain text', 0 ]);
+                expect(cell).to.be.an.instanceOf(ExcelPlainTextCell);
+                const element = cell.richText({ richTextAdjust });
+                expect(element.type).to.eql('span');
+                expect(element.props).to.have.property('className', 'chicken');
+                expect(element.props.children).to.be.a('string');
+            })
         })
     })
     describe('ExcelRichTextCell', function() {
