@@ -13,7 +13,7 @@ class ExcelCell {
         } else if (containsImage(data)) {
             return ExcelImageCell.create(column, data);
         } else {
-            return ExcelPlainTextCell.create(column, '[invalid data]');
+            return ExcelErrorCell.create(column, data);
         }
     }
 
@@ -90,6 +90,7 @@ class ExcelRichTextCell extends ExcelCell {
 class ExcelImageCell extends ExcelCell {
     static create(column, data) {
         const cell = new ExcelImageCell(column);
+        cell.source = data.src;
         cell.url = data.url;
         cell.width = data.width;
         cell.height = data.height;
@@ -115,6 +116,31 @@ class ExcelImageCell extends ExcelCell {
         if (url && url.indexOf(this.url) !== -1) {
             return this;
         }
+    }
+}
+
+class ExcelErrorCell extends ExcelCell {
+    static create(column, data) {
+        const cell = new ExcelErrorCell(column);
+        if (typeof(data.error) === 'string') {
+            cell.text = '[error]';
+            cell.title = data.error;
+        } else {
+            cell.text = '[invalid data]';
+        }
+        return cell;
+    }
+
+    plainText(options) {
+        return this.text;
+    }
+
+    richText(options) {
+        const props = {
+            key: 0,
+            title: this.title,
+        };
+        return generateRichText('span', props, this.text, options || {});
     }
 }
 

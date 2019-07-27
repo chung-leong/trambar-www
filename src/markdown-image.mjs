@@ -7,6 +7,7 @@ class MarkdownImage {
 
     static create(page, data) {
         const img = new MarkdownImage(page);
+        img.source = data.src;
         img.url = data.url;
         img.width = data.width;
         img.height = data.height;
@@ -29,8 +30,12 @@ class MarkdownImage {
     }
 
     image(url) {
-        if (url && url.indexOf(this.url) !== -1) {
-            return this;
+        if (url) {
+            if (url === this.source) {
+                return this;
+            } else if (url.indexOf(this.url) !== -1) {
+                return this;
+            }
         }
     }
 }

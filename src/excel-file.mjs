@@ -8,14 +8,16 @@ class ExcelFile {
 
     static create(data) {
         const file = new ExcelFile;
-        file.title = data.title;
-        file.type = data.type;
-        file.name = data.name;
-        file.keywords = data.keywords;
-        file.subject = data.subject;
-        file.description = data.description;
-        for (let sheetData of data.sheets) {
-            file.sheets.push(ExcelSheet.create(file, sheetData));
+        file.title = data.title || '';
+        file.type = data.type || '';
+        file.name = data.name || '';
+        file.keywords = data.keywords || [];
+        file.subject = data.subject || '';
+        file.description = data.description || '';
+        if (data.sheets instanceof Array) {
+            for (let sheetData of data.sheets) {
+                file.sheets.push(ExcelSheet.create(file, sheetData));
+            }
         }
         return file;
     }

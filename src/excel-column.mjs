@@ -8,13 +8,7 @@ class ExcelColumn {
 
     static create(sheet, data) {
         const column = new ExcelColumn(sheet);
-        if (typeof(data) === 'string') {
-            data = {
-                name: data,
-                flags: [],
-            }
-        }
-        column.name = data.name;
+        column.name = data.name || '';
         column.flags = data.flags || [];
         return column;
     }

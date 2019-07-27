@@ -138,7 +138,11 @@ function applyImageFilters(url, filters, srcFormat, dstFormat) {
         }
     }
     if (modifiers.length > 0 || (dstFormat && srcFormat !== dstFormat)) {
-        return `${url}/${modifiers.join('+')}.${dstFormat || srcFormat}`;
+        let format = srcFormat;
+        if (dstFormat && srcFormat !== 'svg') {
+            format = dstFormat;
+        }
+        return `${url}/${modifiers.join('+')}.${format}`;
     } else {
         return url;
     }
