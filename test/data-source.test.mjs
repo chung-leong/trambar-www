@@ -32,7 +32,7 @@ describe('DataSource', function() {
             const options = {
                 baseURL: serverAddress
             };
-            const dataSource = new DataSource([ Excel, Gitlab ], options);
+            const dataSource = new DataSource([ Excel ], options);
             dataSource.activate();
             const file = await dataSource.fetchExcelFile('test-1');
             expect(file).to.be.an.instanceOf(ExcelFile);

@@ -7,6 +7,7 @@ const FS = require('fs');
 const Crypto = require('crypto')
 
 const readFile = Util.promisify(FS.readFile);
+const readdir = Util.promisify(FS.readdir);
 
 module.exports = {
     start,
@@ -22,7 +23,9 @@ async function start(port) {
     app.use(CORS());
     app.set('json spaces', 2);
     app.get('/excel/:name', handleExcelRequest);
+    app.get('/excel/', handleExcelListRequest);
     app.get('/wiki/:slug', handleWikiRequest);
+    app.get('/wiki/', handleWikiListRequest);
     app.use(handleError);
 
     // start up server
@@ -64,22 +67,22 @@ async function stop() {
 async function handleExcelRequest(req, res, next) {
     try {
         const name = req.params.name;
-        const path = `${__dirname}/../assets/${name}.xlsx`;
-        const buffer = await readFile(path);
-        const data = await parseSpreadsheet(buffer);
-        const mediaImports = findMediaImports(data.sheets);
-        for (let mediaImport of mediaImports) {
-            const src = mediaImport.src;
-            const hash = Crypto.createHash('md5').update(src).digest('hex');
-            const type = src.split('.').pop();
-            mediaImport.url = `http://localhost/srv/media/image/${hash}`;
-            mediaImport.type = 'image';
-            mediaImport.format = (type === 'jpg') ? 'jpeg' : type;
-            mediaImport.width = 1000;
-            mediaImport.height = 500;
-            delete mediaImport.src;
+        const data = await loadExcel(name);
+        res.json(data);
+    } catch (err) {
+        next(err);
+    }
+}
+
+async function handleExcelListRequest(req, res, next) {
+    try {
+        const names = await findExcel();
+        const list = [];
+        for (let name of names) {
+            const file = await loadExcel(name);
+            list.push(file);
         }
-        res.json({ name, ...data });
+        res.json(list);
     } catch (err) {
         next(err);
     }
@@ -88,26 +91,90 @@ async function handleExcelRequest(req, res, next) {
 async function handleWikiRequest(req, res, next) {
     try {
         const slug = req.params.slug;
-        const path = `${__dirname}/../assets/${slug}.md`;
-        const text = await readFile(path, 'utf8');
-        const data = {
-            slug: slug,
-            title: slug.replace(/-/g, ' '),
-            markdown: text
-        };
-        try {
-            const jsonPath = `${__dirname}/../assets/${slug}.json`;
-            const jsonText = await readFile(jsonPath, 'utf8');
-            const props = JSON.parse(jsonText);
-            for (let [ key, value ] of Object.entries(props)) {
-                data[key] = value;
-            }
-        } catch (err) {
-            if (err instanceof SyntaxError) {
-                throw err;
-            }
-        }
+        const data = await loadWiki(slug);
         res.json(data);
+    } catch (err) {
+        next(err);
+    }
+}
+
+async function loadExcel(name) {
+    const path = `${__dirname}/../assets/${name}.xlsx`;
+    const buffer = await readFile(path);
+    const workbook = await parseSpreadsheet(buffer);
+    const mediaImports = findMediaImports(workbook.sheets);
+    for (let mediaImport of mediaImports) {
+        const src = mediaImport.src;
+        const hash = Crypto.createHash('md5').update(src).digest('hex');
+        const type = src.split('.').pop();
+        mediaImport.url = `http://localhost/srv/media/image/${hash}`;
+        mediaImport.type = 'image';
+        mediaImport.format = (type === 'jpg') ? 'jpeg' : type;
+        mediaImport.width = 1000;
+        mediaImport.height = 500;
+        delete mediaImport.src;
+    }
+    return { name, ...workbook };
+}
+
+async function findExcel() {
+    const path = `${__dirname}/../assets`;
+    const filenames = await readfile(path);
+    const names = [];
+    for (let filename of filenames) {
+        const m = /(.*)\.xlsx$/.exec(filename);
+        if (m) {
+            names.push(m[1]);
+        }
+    }
+    return names;
+}
+
+async function loadWiki(slug) {
+    const path = `${__dirname}/../assets/${slug}.md`;
+    const text = await readFile(path, 'utf8');
+    const data = {
+        slug: slug,
+        title: slug.replace(/-/g, ' '),
+        markdown: text
+    };
+    try {
+        const jsonPath = `${__dirname}/../assets/${slug}.json`;
+        const jsonText = await readFile(jsonPath, 'utf8');
+        const props = JSON.parse(jsonText);
+        for (let [ key, value ] of Object.entries(props)) {
+            data[key] = value;
+        }
+    } catch (err) {
+        if (err instanceof SyntaxError) {
+            throw err;
+        }
+    }
+    return data;
+}
+
+async function findWiki() {
+    const path = `${__dirname}/../assets`;
+    const filenames = await readfile(path);
+    const names = [];
+    for (let filename of filenames) {
+        const m = /(.*)\.md$/.exec(filename);
+        if (m) {
+            names.push(m[1]);
+        }
+    }
+    return names;
+}
+
+async function handleWikiListRequest(req, res, next) {
+    try {
+        const names = await findWiki();
+        const list = [];
+        for (let name of names) {
+            const wiki = await loadWiki(name);
+            list.push(wiki);
+        }
+        res.json(list);
     } catch (err) {
         next(err);
     }
