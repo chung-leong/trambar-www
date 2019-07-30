@@ -82,12 +82,11 @@ async function handleExcelListRequest(req, res, next) {
     try {
         const prefix = req.query.prefix || '';
         const names = await findExcel(prefix);
-        const list = [];
+        const urls = [];
         for (let name of names) {
-            const file = await loadExcel(name);
-            list.push(file);
+            urls.push(`excel/${name}`);
         }
-        res.json(list);
+        res.json(urls);
     } catch (err) {
         next(err);
     }
@@ -108,15 +107,14 @@ async function handleWikiListRequest(req, res, next) {
     try {
         const prefix = req.query.prefix || '';
         const repoNames = findRepos(req.params.repoName);
-        const list = [];
+        const urls = [];
         for (let repoName of repoNames) {
             const names = await findWiki(repoName, prefix);
             for (let name of names) {
-                const wiki = await loadWiki(repoName, name);
-                list.push(wiki);
+                urls.push(`wiki/${repoName}/${name}`);
             }
         }
-        res.json(list);
+        res.json(urls);
     } catch (err) {
         next(err);
     }
@@ -129,7 +127,7 @@ function handleError(err, req, res) {
 
 async function loadExcel(name) {
     const path = `${__dirname}/../assets/${name}.xlsx`;
-    const url = `/excel/${name}`;
+    const url = `excel/${name}`;
     const buffer = await readFile(path);
     const workbook = await parseSpreadsheet(buffer);
     const mediaImports = findMediaImports(workbook.sheets);
@@ -165,7 +163,7 @@ async function findExcel(prefix) {
 
 async function loadWiki(repoName, slug) {
     const path = `${__dirname}/../assets/${repoName}/${slug}.md`;
-    const url = `/wiki/${repoName}/${slug}`;
+    const url = `wiki/${repoName}/${slug}`;
     const text = await readFile(path, 'utf8');
     const data = {
         url,

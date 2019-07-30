@@ -66,6 +66,18 @@ describe('DataSource', function() {
             expect(files[0]).to.be.instanceOf(ExcelFile);
             expect(files[1]).to.be.instanceOf(ExcelFile);
         })
+        it ('should fetch multiple files', async function() {
+            const options = {
+                baseURL: serverAddress
+            };
+            const dataSource = new DataSource([ Excel ], options);
+            dataSource.activate();
+            const files = await dataSource.fetchExcelFiles();
+            expect(files).to.have.lengthOf(2);
+            expect(files[0]).to.be.instanceOf(ExcelFile);
+            expect(files[1]).to.be.instanceOf(ExcelFile);
+        })
+
     })
     after(() => {
         return Server.stop();

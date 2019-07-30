@@ -74,63 +74,77 @@ class DataSource extends EventEmitter {
         return url;
     }
 
-    async fetchObject(url, options) {
-        const query = this.createQuery({
-            type: 'object',
-            derive: this.deriveObjectQuery,
-            transform: this.transformObject,
-            url,
-            options,
-        });
-        return query.promise;
+    async fetchObject(url, transform) {
+        const props = { url, transform };
+        let query = this.findQuery(props);
+        if (query) {
+            if (query.dirty) {
+                this.checkObject(query);
+            }
+        } else {
+            query = this.addQuery(props);
+            query.promise = this.updateObject(query);
+        }
+        await query.promise;
+        return query.result;
     }
 
-    async fetchObjects(url, options) {
-        const query = this.createQuery({
-            type: 'objects',
-            transform: this.transformObjects,
-            url,
-            options,
-        });
-        return query.promise;
+    async fetchObjects(url, itemTransform) {
+        const props = { url, itemTransform };
+        let query = this.findQuery(props);
+        if (query) {
+            if (query.dirty) {
+                this.checkListing(query);
+            }
+        } else {
+            query = this.addQuery(props);
+            query.promise = this.updateListing(query);
+        }
+        await query.promise;
+        const relativeURLs = query.result;
+        const promises = [];
+        for (let relativeURL of relativeURLs) {
+            let objectURL = this.options.baseURL || '';
+            if (!objectURL.endsWith('/')) {
+                objectURL += '/';
+            }
+            objectURL += relativeURL;
+            const promise = this.fetchObject(objectURL, itemTransform);
+            promises.push(promise);
+        }
+        const results = await Promise.all(promises);
+        if (!compareArrays(results, query.results)) {
+            query.results = results;
+        }
+        return query.results;
     }
 
     findQuery(props) {
-        const { type, url, options } = props;
         for (let query of this.queries) {
-            if (query.type === type) {
-                if (query.url === url) {
-                    if (compareOptions(query.options, options)) {
-                        return query;
-                    }
+            let different = false;
+            for (let [ key, value ] of Object.entries(props)) {
+                if (query[key] !== value) {
+                    different = true;
                 }
+            }
+            if (!different) {
+                return query;
             }
         }
     }
 
-    createQuery(props) {
-        const existingQuery = this.findQuery(props);
-        if (existingQuery) {
-            return existingQuery;
-        }
-        if (props.derive) {
-            const derivedQuery = props.derive.call(this, props);
-            if (derivedQuery) {
-                this.queries.push(derivedQuery);
-                return derivedQuery;
-            }
-        }
-        const newQuery = {
+    addQuery(props) {
+        const query = {
             ...props,
             promise: null,
             result: null,
+            dirty: false,
         };
-        newQuery.promise = this.runQuery(newQuery);
-        this.queries.push(newQuery);
-        return newQuery;
+        this.queries.push(query);
+        return query;
     }
 
-    async runQuery(query) {
+    async updateObject(query) {
         try {
             const response = await this.fetch(query.url, { method: 'GET' });
             const etag = response.headers.get('etag');
@@ -142,38 +156,48 @@ class DataSource extends EventEmitter {
                 changed = false;
             }
             if (changed) {
+                const t = query.transform;
                 const data = await response.json();
-                query.result = await query.transform.call(this, query, data);
+                const result = (t) ? t(data) : data;
+                query.result = result;
                 query.etag = etag;
                 query.mtime = mtime;
             }
-            return query.result;
+            query.dirty = false;
+            return changed;
         } catch (err) {
             query.error = err;
             throw err;
         }
     }
 
-    deriveObjectQuery(props) {
+    async updateListing(query) {
+        return this.updateObject(query);
     }
 
-    async transformObject(query, data) {
-        const transform = query.options.transform;
-        const object = (transform) ? transform(data) : data;
-        return object;
+    async checkObject(query) {
+        const changed = await updateObject(query);
+        if (changed) {
+            this.triggerEvent(new DataSourceEvent('change', this));
+        }
     }
 
-    async transformObjects(query, array) {
-        if (!(array instanceof Array)) {
-            throw new DataSourceError(400, 'Response is not an array');
+    async checkListing(query) {
+        const changed = await updateListing(query);
+        if (changed) {
+            const objectURLs = query.result;
+            for (let objectURL of objectURLs) {
+                const props = {
+                    url: objectURL,
+                    transform: query.itemTransform
+                };
+                const objectQuery = this.findQuery(props);
+                if (objectQuery && objectQuery.dirty) {
+                    await updateObject(objectQuery);
+                }
+            }
+            this.triggerEvent(new DataSourceEvent('change', this));
         }
-        const transform = query.options.transform;
-        const objects = [];
-        for (let data of array) {
-            const object = (transform) ? transform(data) : data;
-            objects.push(object);
-        }
-        return objects;
     }
 
     /**
@@ -225,14 +249,18 @@ class DataSourceError extends Error {
     }
 }
 
-function compareOptions(options1, options2) {
-    for (let key in options1) {
-        if (options1[key] !== options2[key]) {
-            return false;
-        }
+class DataSourceEvent extends GenericEvent {
+}
+
+function compareArrays(array1, array2) {
+    if (!array1 || !array2) {
+        return false;
     }
-    for (let key in options2) {
-        if (!(key in options1)) {
+    if (array1.length !== array2.length) {
+        return false;
+    }
+    for (let i = 0; i < array1.length; i++) {
+        if (array1[i] !== array2[i]) {
             return false;
         }
     }
