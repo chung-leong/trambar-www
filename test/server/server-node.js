@@ -20,11 +20,15 @@ let serverPort;
 async function start(port) {
     // set up handlers
     const app = Express();
-    app.use(CORS());
+    const corsOptions = {
+        exposedHeaders: [ 'etag' ],
+    };
+    app.use(CORS(corsOptions));
     app.set('json spaces', 2);
     app.get('/excel/:name', handleExcelRequest);
     app.get('/excel/', handleExcelListRequest);
-    app.get('/wiki/:slug', handleWikiRequest);
+    app.get('/wiki/:repoName/:slug', handleWikiRequest);
+    app.get('/wiki/:repoName/', handleWikiListRequest);
     app.get('/wiki/', handleWikiListRequest);
     app.use(handleError);
 
@@ -76,7 +80,8 @@ async function handleExcelRequest(req, res, next) {
 
 async function handleExcelListRequest(req, res, next) {
     try {
-        const names = await findExcel();
+        const prefix = req.query.prefix || '';
+        const names = await findExcel(prefix);
         const list = [];
         for (let name of names) {
             const file = await loadExcel(name);
@@ -90,16 +95,41 @@ async function handleExcelListRequest(req, res, next) {
 
 async function handleWikiRequest(req, res, next) {
     try {
+        const repoName = req.params.repoName;
         const slug = req.params.slug;
-        const data = await loadWiki(slug);
+        const data = await loadWiki(repoName, slug);
         res.json(data);
     } catch (err) {
         next(err);
     }
 }
 
+async function handleWikiListRequest(req, res, next) {
+    try {
+        const prefix = req.query.prefix || '';
+        const repoNames = findRepos(req.params.repoName);
+        const list = [];
+        for (let repoName of repoNames) {
+            const names = await findWiki(repoName, prefix);
+            for (let name of names) {
+                const wiki = await loadWiki(repoName, name);
+                list.push(wiki);
+            }
+        }
+        res.json(list);
+    } catch (err) {
+        next(err);
+    }
+}
+
+function handleError(err, req, res) {
+    console.err(err);
+    res.sendStatus(400);
+}
+
 async function loadExcel(name) {
     const path = `${__dirname}/../assets/${name}.xlsx`;
+    const url = `/excel/${name}`;
     const buffer = await readFile(path);
     const workbook = await parseSpreadsheet(buffer);
     const mediaImports = findMediaImports(workbook.sheets);
@@ -114,32 +144,37 @@ async function loadExcel(name) {
         mediaImport.height = 500;
         delete mediaImport.src;
     }
-    return { name, ...workbook };
+    return { url, name, ...workbook };
 }
 
-async function findExcel() {
+async function findExcel(prefix) {
     const path = `${__dirname}/../assets`;
-    const filenames = await readfile(path);
+    const filenames = await readdir(path);
     const names = [];
     for (let filename of filenames) {
         const m = /(.*)\.xlsx$/.exec(filename);
         if (m) {
-            names.push(m[1]);
+            const name = m[1];
+            if (name.startsWith(prefix)) {
+                names.push(name);
+            }
         }
     }
-    return names;
+    return _.sortBy(names);
 }
 
-async function loadWiki(slug) {
-    const path = `${__dirname}/../assets/${slug}.md`;
+async function loadWiki(repoName, slug) {
+    const path = `${__dirname}/../assets/${repoName}/${slug}.md`;
+    const url = `/wiki/${repoName}/${slug}`;
     const text = await readFile(path, 'utf8');
     const data = {
+        url,
         slug: slug,
         title: slug.replace(/-/g, ' '),
         markdown: text
     };
     try {
-        const jsonPath = `${__dirname}/../assets/${slug}.json`;
+        const jsonPath = `${__dirname}/../assets/${repoName}/${slug}.json`;
         const jsonText = await readFile(jsonPath, 'utf8');
         const props = JSON.parse(jsonText);
         for (let [ key, value ] of Object.entries(props)) {
@@ -153,36 +188,32 @@ async function loadWiki(slug) {
     return data;
 }
 
-async function findWiki() {
+async function findRepos(name) {
     const path = `${__dirname}/../assets`;
-    const filenames = await readfile(path);
+    const folders = await readdir(path);
+    const names = [];
+    for (let folder of folders) {
+        if (!name || folder === name) {
+            names.push(folder);
+        }
+    }
+    return _.sortBy(names);
+}
+
+async function findWiki(repoName, prefix) {
+    const path = `${__dirname}/../assets/${repoName}`;
+    const filenames = await readdir(path);
     const names = [];
     for (let filename of filenames) {
         const m = /(.*)\.md$/.exec(filename);
         if (m) {
-            names.push(m[1]);
+            const name = m[1];
+            if (repoName === 'repo' && name.startsWith(prefix)) {
+                names.push(name);
+            }
         }
     }
-    return names;
-}
-
-async function handleWikiListRequest(req, res, next) {
-    try {
-        const names = await findWiki();
-        const list = [];
-        for (let name of names) {
-            const wiki = await loadWiki(name);
-            list.push(wiki);
-        }
-        res.json(list);
-    } catch (err) {
-        next(err);
-    }
-}
-
-function handleError(err, req, res) {
-    console.err(err);
-    res.sendStatus(400);
+    return _.sortBy(names);
 }
 
 async function parseSpreadsheet(buffer) {

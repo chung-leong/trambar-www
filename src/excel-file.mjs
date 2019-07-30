@@ -8,6 +8,7 @@ class ExcelFile {
 
     static create(data) {
         const file = new ExcelFile;
+        file.url = data.url || '';
         file.title = data.title || '';
         file.type = data.type || '';
         file.name = data.name || '';

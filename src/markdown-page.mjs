@@ -7,6 +7,7 @@ import { chooseLanguageVersion, generateRichText } from './utils.mjs';
 class MarkdownPage {
     static create(data) {
         const page = new MarkdownPage;
+        page.url = data.url || '';
         page.slug = data.slug;
         page.title = data.title;
         page.images = [];

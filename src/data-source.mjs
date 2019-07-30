@@ -2,7 +2,6 @@ import EventEmitter, { GenericEvent } from 'relaks-event-emitter';
 
 const defaultOptions = {
     baseURL: '',
-    refreshInterval: 0,
     fetchFunc: null,
 };
 
@@ -52,7 +51,8 @@ class DataSource extends EventEmitter {
 
     getURL(names, query) {
         let url = this.options.baseURL || '';
-        if (names && names.length > 0) {
+        names = names.filter(Boolean);
+        if (names.length > 0) {
             if (!url.endsWith('/')) {
                 url += '/';
             }
@@ -61,9 +61,11 @@ class DataSource extends EventEmitter {
         if (query instanceof Object) {
             const pairs = [];
             for (let [ key, value ] of Object.entries(query)) {
-                const keyEnc = encodeURIComponent(key);
-                const valueEnc = encodeURIComponent(value);
-                pairs.push(`${keyEnc}=${valueEnc}`);
+                if (value !== undefined) {
+                    const keyEnc = encodeURIComponent(key);
+                    const valueEnc = encodeURIComponent(value);
+                    pairs.push(`${keyEnc}=${valueEnc}`);
+                }
             }
             if (pairs.length > 0) {
                 url += '?' + pairs.join('&');
@@ -128,10 +130,6 @@ class DataSource extends EventEmitter {
         return newQuery;
     }
 
-    deriveObjectQuery(props) {
-
-    }
-
     async runQuery(query) {
         try {
             const response = await this.fetch(query.url, { method: 'GET' });
@@ -154,6 +152,9 @@ class DataSource extends EventEmitter {
             query.error = err;
             throw err;
         }
+    }
+
+    deriveObjectQuery(props) {
     }
 
     async transformObject(query, data) {
