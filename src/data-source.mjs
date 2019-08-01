@@ -102,6 +102,9 @@ class DataSource extends EventEmitter {
         }
         await query.promise;
         const relativeURLs = query.result;
+        if (!(relativeURLs instanceof Array)) {
+            throw new Error('Server did not return a list of URLs');
+        }
         const promises = [];
         for (let relativeURL of relativeURLs) {
             let objectURL = this.options.baseURL || '';

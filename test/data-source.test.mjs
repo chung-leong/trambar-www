@@ -10,6 +10,7 @@ import {
     Gitlab,
 
     ExcelFile,
+    MarkdownPage,
 } from '../index.mjs';
 
 configure({ adapter: new Adapter });
@@ -28,7 +29,7 @@ describe('DataSource', function() {
     })
     describe('#fetchExcelFile', function() {
         it ('should retrieve an Excel file', async function() {
-            const data = await loadTestData('test-1');
+            const data = await loadExcelData('test-1');
             const options = {
                 baseURL: serverAddress
             };
@@ -39,7 +40,6 @@ describe('DataSource', function() {
             expect(file.name).to.eql(data.name);
             expect(file.title).to.eql(data.title);
             expect(file.description).to.eql(data.description);
-            expect(file.keywords).to.eql(data.keywords);
             expect(file.keywords).to.eql(data.keywords);
             expect(file.sheets).to.have.lengthOf(data.sheets.length);
         })
@@ -66,19 +66,96 @@ describe('DataSource', function() {
             expect(files[0]).to.be.instanceOf(ExcelFile);
             expect(files[1]).to.be.instanceOf(ExcelFile);
         })
-        it ('should fetch multiple files', async function() {
+        it ('should return the same object as fetchExcelFile()', async function() {
             const options = {
                 baseURL: serverAddress
             };
             const dataSource = new DataSource([ Excel ], options);
             dataSource.activate();
+            const file = await dataSource.fetchExcelFile('test-1');
             const files = await dataSource.fetchExcelFiles();
-            expect(files).to.have.lengthOf(2);
-            expect(files[0]).to.be.instanceOf(ExcelFile);
-            expect(files[1]).to.be.instanceOf(ExcelFile);
+            expect(files[0]).to.equal(file);
         })
-
+        it ('should return only objects with matching prefix', async function() {
+            const options = {
+                baseURL: serverAddress
+            };
+            const dataSource = new DataSource([ Excel ], options);
+            dataSource.activate();
+            const files = await dataSource.fetchExcelFiles('test-1');
+            expect(files).to.have.lengthOf(1);
+            expect(files[0]).to.have.property('name', 'test-1');
+        })
     })
+    describe('#fetchWikiPage', function() {
+        it ('should retrieve a wiki page', async function() {
+            const data = await loadWikiData('repo1', 'test-1');
+            const options = {
+                baseURL: serverAddress
+            };
+            const dataSource = new DataSource([ Gitlab ], options);
+            dataSource.activate();
+            const page = await dataSource.fetchWikiPage('repo1', 'test-1');
+            expect(page).to.be.an.instanceOf(MarkdownPage);
+            expect(page.slug).to.eql(data.slug);
+            expect(page.title).to.eql(data.title);
+        })
+        it ('should return the same object when queries are the same', async function() {
+            const options = {
+                baseURL: serverAddress
+            };
+            const dataSource = new DataSource([ Gitlab ], options);
+            dataSource.activate();
+            const page1 = await dataSource.fetchWikiPage('repo1', 'test-3');
+            const page2 = await dataSource.fetchWikiPage('repo1', 'test-3');
+            expect(page1).to.equal(page2);
+        })
+    })
+    describe('#fetchWikiPages', function() {
+        it ('should fetch multiple pages', async function() {
+            const options = {
+                baseURL: serverAddress
+            };
+            const dataSource = new DataSource([ Gitlab ], options);
+            dataSource.activate();
+            const pages = await dataSource.fetchWikiPages();
+            expect(pages).to.have.lengthOf(3);
+            expect(pages[0]).to.be.instanceOf(MarkdownPage);
+            expect(pages[1]).to.be.instanceOf(MarkdownPage);
+            expect(pages[2]).to.be.instanceOf(MarkdownPage);
+        })
+        it ('should fetch pages from specified repo', async function() {
+            const options = {
+                baseURL: serverAddress
+            };
+            const dataSource = new DataSource([ Gitlab ], options);
+            dataSource.activate();
+            const pages = await dataSource.fetchWikiPages('repo2');
+            expect(pages).to.have.lengthOf(1);
+            expect(pages[0]).to.be.have.property('slug', 'test-2');
+        })
+        it ('should return the same object as fetchWikiPage()', async function() {
+            const options = {
+                baseURL: serverAddress
+            };
+            const dataSource = new DataSource([ Gitlab ], options);
+            dataSource.activate();
+            const page = await dataSource.fetchWikiPage('repo1', 'test-1');
+            const pages = await dataSource.fetchWikiPages('repo1');
+            expect(pages[0]).to.equal(page);
+        })
+        it ('should return only objects with matching prefix', async function() {
+            const options = {
+                baseURL: serverAddress
+            };
+            const dataSource = new DataSource([ Gitlab ], options);
+            dataSource.activate();
+            const pages = await dataSource.fetchWikiPages(undefined, 'test-3');
+            expect(pages).to.have.lengthOf(1);
+            expect(pages[0]).to.have.property('slug', 'test-3');
+        })
+    })
+
     after(() => {
         return Server.stop();
     })
@@ -86,7 +163,7 @@ describe('DataSource', function() {
 
 const testData = {};
 
-async function loadTestData(name) {
+async function loadExcelData(name) {
     let data = testData[name];
     if (!data) {
         const res = await fetch(`${serverAddress}/excel/${name}`);
@@ -94,6 +171,18 @@ async function loadTestData(name) {
             throw new Error(res.statusText);
         }
         data = testData[name] = await res.json();
+    }
+    return data;
+}
+
+async function loadWikiData(repo, name) {
+    let data = testData[`${repo}/${name}`];
+    if (!data) {
+        const res = await fetch(`${serverAddress}/wiki/${repo}/${name}`);
+        if (res.status !== 200) {
+            throw new Error(res.statusText);
+        }
+        data = testData[`${repo}/${name}`] = await res.json();
     }
     return data;
 }

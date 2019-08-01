@@ -8,6 +8,7 @@ const Crypto = require('crypto')
 
 const readFile = Util.promisify(FS.readFile);
 const readdir = Util.promisify(FS.readdir);
+const stat = Util.promisify(FS.stat);
 
 module.exports = {
     start,
@@ -106,7 +107,7 @@ async function handleWikiRequest(req, res, next) {
 async function handleWikiListRequest(req, res, next) {
     try {
         const prefix = req.query.prefix || '';
-        const repoNames = findRepos(req.params.repoName);
+        const repoNames = await findRepos(req.params.repoName);
         const urls = [];
         for (let repoName of repoNames) {
             const names = await findWiki(repoName, prefix);
@@ -127,7 +128,6 @@ function handleError(err, req, res) {
 
 async function loadExcel(name) {
     const path = `${__dirname}/../assets/${name}.xlsx`;
-    const url = `excel/${name}`;
     const buffer = await readFile(path);
     const workbook = await parseSpreadsheet(buffer);
     const mediaImports = findMediaImports(workbook.sheets);
@@ -142,7 +142,7 @@ async function loadExcel(name) {
         mediaImport.height = 500;
         delete mediaImport.src;
     }
-    return { url, name, ...workbook };
+    return { name, ...workbook };
 }
 
 async function findExcel(prefix) {
@@ -163,10 +163,8 @@ async function findExcel(prefix) {
 
 async function loadWiki(repoName, slug) {
     const path = `${__dirname}/../assets/${repoName}/${slug}.md`;
-    const url = `wiki/${repoName}/${slug}`;
     const text = await readFile(path, 'utf8');
     const data = {
-        url,
         slug: slug,
         title: slug.replace(/-/g, ' '),
         markdown: text
@@ -191,8 +189,11 @@ async function findRepos(name) {
     const folders = await readdir(path);
     const names = [];
     for (let folder of folders) {
-        if (!name || folder === name) {
-            names.push(folder);
+        const info = await stat(`${path}/${folder}`);
+        if (info.isDirectory()) {
+            if (!name || folder === name) {
+                names.push(folder);
+            }
         }
     }
     return _.sortBy(names);
@@ -206,7 +207,7 @@ async function findWiki(repoName, prefix) {
         const m = /(.*)\.md$/.exec(filename);
         if (m) {
             const name = m[1];
-            if (repoName === 'repo' && name.startsWith(prefix)) {
+            if (name.startsWith(prefix)) {
                 names.push(name);
             }
         }
