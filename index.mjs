@@ -11,3 +11,9 @@ export * from './src/hooks.mjs';
 export * from './src/data-source.mjs';
 export * from './src/excel.mjs';
 export * from './src/gitlab.mjs';
+
+export {
+    RelaksRouteManager as RouteManager,
+    RelaksRouteManagerEvent as RouteManagerEvent,
+    RelaksRouteManagerError as RouteManagerError,
+} from 'relaks-route-manager';

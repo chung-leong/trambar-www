@@ -20,7 +20,7 @@ function generateRichText(type, props, children, options) {
 
 function deriveImageProps(original, options) {
     const { imageWidth, imageHeight } = options;
-    const { imageFormat, imageFilters, imageServer } = options;
+    const { imageFormat, imageFilters, imageBaseURL } = options;
     const { devicePixelRatio } = options;
     const resized = adjustImageDimensions(original, { width: imageWidth, height: imageHeight });
     const source = adjustImageDensity(resized, devicePixelRatio || 1, original);
@@ -38,8 +38,8 @@ function deriveImageProps(original, options) {
     }
     const filters = { ...dimFilters, ...options.imageFilters };
     let url = applyImageFilters(original.url, filters, original.format, imageFormat);
-    if (imageServer) {
-        url = imageServer + url;
+    if (imageBaseURL) {
+        url = imageBaseURL + url;
     }
     return {
         src: url,
