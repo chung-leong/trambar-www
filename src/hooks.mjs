@@ -28,11 +28,11 @@ function useRichText(hookOpts) {
     });
 }
 
-function useLanguageFilter(target) {
+function useLanguageFilter() {
     const context = useContext(TextContext);
     return useListener((object) => {
         if (context && context.language) {
-            return object.filter(options, context.language);
+            return object.filter(context.language);
         } else {
             return object;
         }
