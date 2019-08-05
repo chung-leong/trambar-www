@@ -8,6 +8,7 @@ class MarkdownPage {
     static create(data) {
         const page = new MarkdownPage;
         page.url = data.url || '';
+        page.repo = data.repo;
         page.slug = data.slug;
         page.title = data.title;
         page.images = [];

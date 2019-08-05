@@ -39,7 +39,8 @@ function deriveImageProps(original, options) {
     const filters = { ...dimFilters, ...options.imageFilters };
     let url = applyImageFilters(original.url, filters, original.format, imageFormat);
     if (imageBaseURL) {
-        url = imageBaseURL + url;
+        const sep = imageBaseURL.endsWith('/') ? '' : '/';
+        url = imageBaseURL + sep + url;
     }
     return {
         src: url,
