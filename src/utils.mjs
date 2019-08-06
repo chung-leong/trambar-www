@@ -11,6 +11,9 @@ function generateRichText(type, props, children, options) {
         props = result.props;
         children = result.children;
     }
+    if (process.env.NODE_ENV !== 'production') {
+        children = React.Children.toArray(children);
+    }
     if (type === undefined) {
         return children;
     } else {

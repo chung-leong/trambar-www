@@ -43,7 +43,7 @@ class MarkdownPage {
         for (let block of this.blocks) {
             children.push(block.richText(options));
         }
-        return generateRichText('div', {}, children, options);
+        return generateRichText(React.Fragment, {}, children, options);
     }
 
     image(url) {
