@@ -12,7 +12,9 @@ function generateRichText(type, props, children, options) {
         children = result.children;
     }
     if (process.env.NODE_ENV !== 'production') {
-        children = React.Children.toArray(children);
+        if (children) {
+            children = React.Children.toArray(children);
+        }
     }
     if (type === undefined) {
         return children;
