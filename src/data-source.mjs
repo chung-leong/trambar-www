@@ -1,4 +1,5 @@
 import EventEmitter, { GenericEvent } from 'relaks-event-emitter';
+import { ProjectMetadata } from './project-metadata.mjs';
 
 const defaultOptions = {
     baseURL: '',
@@ -47,6 +48,12 @@ class DataSource extends EventEmitter {
 
     deactivate() {
         this.active = false;
+    }
+
+    async fetchProjectMeta(name) {
+        const url = this.getURL([ 'meta' ]);
+        const metadata = await this.fetchObject(url, ProjectMetadata.create);
+        return metadata;
     }
 
     getURL(names, query) {

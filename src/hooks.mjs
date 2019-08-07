@@ -28,14 +28,16 @@ function useRichText(hookOpts) {
     });
 }
 
-function useLanguageFilter() {
+function useLanguageFilter(def) {
     const context = useContext(TextContext);
     return useListener((object) => {
-        if (context && context.language) {
-            return object.filter(context.language);
-        } else {
-            return object;
-        }
+		let language;
+		if (context && context.language) {
+			language = context.language;
+		} else {
+			language = def || 'en';
+		}
+        return object.filter(language);
     });
 }
 

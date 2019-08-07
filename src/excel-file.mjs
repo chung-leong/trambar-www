@@ -62,10 +62,18 @@ class ExcelFile {
     }
 
     filter(language) {
+        if (this.language) {
+            return this;
+        }
         const file = new ExcelFile;
+        file.url = this.url;
         file.title = this.title;
         file.type = this.type;
         file.name = this.name;
+        file.keywords = this.keywords;
+        file.subject = this.subject;
+        file.description = this.description;
+        file.language = language;
 
         const sheets = chooseLanguageVersion(this.sheets, language);
         for (let sheet of sheets) {

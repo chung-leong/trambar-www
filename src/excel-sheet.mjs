@@ -80,9 +80,13 @@ class ExcelSheet {
     }
 
     filter(language) {
+        if (this.language) {
+            return this;
+        }
         const sheet = new ExcelSheet(this.file);
         sheet.name = this.name;
         sheet.flags = this.flags;
+        sheet.language = language;
 
         const chosen = chooseLanguageVersion(this.columns, language);
         const excluded = [];

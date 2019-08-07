@@ -7,6 +7,8 @@ export * from './src/excel-cell.mjs';
 export * from './src/markdown-page.mjs';
 export * from './src/markdown-image.mjs';
 
+export * from './src/project-metadata.mjs';
+
 export * from './src/hooks.mjs';
 export * from './src/data-source.mjs';
 export * from './src/excel.mjs';

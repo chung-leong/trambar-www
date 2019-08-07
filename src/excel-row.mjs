@@ -45,6 +45,9 @@ class ExcelRow {
     }
 
     filter(language) {
+        if (this.language) {
+            return this;
+        }
         const columns = this.sheet.columns;
         const chosen = chooseLanguageVersion(columns, language);
         const excluded = [];
@@ -55,7 +58,9 @@ class ExcelRow {
                 excluded.push(false);
             }
         }
-        return this.exclude(excluded);
+        const row = this.exclude(excluded);
+        row.language = language;
+        return row;
     }
 
     exclude(excluded) {

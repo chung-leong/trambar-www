@@ -77,7 +77,10 @@ class MarkdownPage {
     }
 
     filter(language) {
-        const sections = [];
+        if (this.language) {
+            return this;
+        }
+        const choices = [];
         let currentLanguage;
         let currentTopic = 0;
         let currentSection;
@@ -105,16 +108,17 @@ class MarkdownPage {
                     blocks: [],
                     name: `T${currentTopic}`,
                 };
-                sections.push(currentSection);
+                choices.push(currentSection);
             }
             currentSection.blocks.push(block);
         }
-        const chosen = chooseLanguageVersion(sections, language);
+        const chosen = chooseLanguageVersion(choices, language);
 
         const page = new MarkdownPage;
         page.slug = this.slug;
         page.title = this.title;
         page.images = this.images;
+        page.language = language;
         page.blocks = [];
         for (let section of chosen) {
             for (let token of section.blocks) {
