@@ -9,7 +9,11 @@ class Gitlab extends DataSource {
     }
 
     async fetchWikiPages(repo, prefix) {
-        const url = this.getURL([ 'wiki', repo ], { prefix });
+        const names = [ 'wiki' ];
+        if (repo) {
+            names.push(repo);
+        }
+        const url = this.getURL(names, { prefix });
         const files = await this.fetchObjects(url, MarkdownPage.create);
         return files;
     }

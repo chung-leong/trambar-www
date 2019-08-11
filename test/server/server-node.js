@@ -83,11 +83,7 @@ async function handleExcelListRequest(req, res, next) {
     try {
         const prefix = req.query.prefix || '';
         const names = await findExcel(prefix);
-        const urls = [];
-        for (let name of names) {
-            urls.push(`excel/${name}`);
-        }
-        res.json(urls);
+        res.json(names);
     } catch (err) {
         next(err);
     }
@@ -107,27 +103,33 @@ async function handleWikiRequest(req, res, next) {
 async function handleWikiListRequest(req, res, next) {
     try {
         const prefix = req.query.prefix || '';
-        const repoNames = await findRepos(req.params.repoName);
-        const urls = [];
-        for (let repoName of repoNames) {
+        const repoName = req.params.repoName;
+        if (repoName !== undefined) {
             const names = await findWiki(repoName, prefix);
-            for (let name of names) {
-                urls.push(`wiki/${repoName}/${name}`);
+            res.json(names);
+        } else {
+            const urls = [];
+            const repoNames = await findRepos();
+            for (let repoName of repoNames) {
+                const names = await findWiki(repoName, prefix);
+                for (let name of names) {
+                    urls.push(`${repoName}/${name}`);
+                }
             }
+            res.json(urls);
         }
-        res.json(urls);
     } catch (err) {
         next(err);
     }
 }
 
-function handleError(err, req, res) {
-    console.err(err);
+function handleError(err, req, res, next) {
+    console.log(err.stack);
     res.sendStatus(400);
 }
 
 async function loadExcel(name) {
-    const path = `${__dirname}/../assets/${name}.xlsx`;
+    const path = `${__dirname}/../assets/excel/${name}.xlsx`;
     const buffer = await readFile(path);
     const workbook = await parseSpreadsheet(buffer);
     const mediaImports = findMediaImports(workbook.sheets);
@@ -146,7 +148,7 @@ async function loadExcel(name) {
 }
 
 async function findExcel(prefix) {
-    const path = `${__dirname}/../assets`;
+    const path = `${__dirname}/../assets/excel`;
     const filenames = await readdir(path);
     const names = [];
     for (let filename of filenames) {
@@ -162,7 +164,7 @@ async function findExcel(prefix) {
 }
 
 async function loadWiki(repoName, slug) {
-    const path = `${__dirname}/../assets/${repoName}/${slug}.md`;
+    const path = `${__dirname}/../assets/gitlab/${repoName}/${slug}.md`;
     const text = await readFile(path, 'utf8');
     const data = {
         slug: slug,
@@ -170,7 +172,7 @@ async function loadWiki(repoName, slug) {
         markdown: text
     };
     try {
-        const jsonPath = `${__dirname}/../assets/${repoName}/${slug}.json`;
+        const jsonPath = `${__dirname}/../assets/gitlab/${repoName}/${slug}.json`;
         const jsonText = await readFile(jsonPath, 'utf8');
         const props = JSON.parse(jsonText);
         for (let [ key, value ] of Object.entries(props)) {
@@ -184,23 +186,21 @@ async function loadWiki(repoName, slug) {
     return data;
 }
 
-async function findRepos(name) {
-    const path = `${__dirname}/../assets`;
+async function findRepos() {
+    const path = `${__dirname}/../assets/gitlab`;
     const folders = await readdir(path);
     const names = [];
     for (let folder of folders) {
         const info = await stat(`${path}/${folder}`);
         if (info.isDirectory()) {
-            if (!name || folder === name) {
-                names.push(folder);
-            }
+            names.push(folder);
         }
     }
     return _.sortBy(names);
 }
 
 async function findWiki(repoName, prefix) {
-    const path = `${__dirname}/../assets/${repoName}`;
+    const path = `${__dirname}/../assets/gitlab/${repoName}`;
     const filenames = await readdir(path);
     const names = [];
     for (let filename of filenames) {

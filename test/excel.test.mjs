@@ -124,7 +124,7 @@ describe('Excel', function() {
                 const object = file.richText();
                 expect(object).to.have.property('Sheet1').that.is.instanceOf(Array);
                 expect(object).to.have.property('Sheet2').that.is.instanceOf(Array);
-                expect(object).to.have.property('Names').that.is.instanceOf(Array)
+                expect(object).to.have.property('Names').that.is.instanceOf(Array);
                 expect(object.Sheet1[0]).to.have.property('plain text').that.is.a('string');
                 expect(object.Sheet1[0]).to.have.property('rich text').that.is.an('object');
                 expect(object.Sheet1[0]).to.have.property('image').that.is.an('object');

@@ -58,7 +58,6 @@ class DataSource extends EventEmitter {
 
     getURL(names, query) {
         let url = this.options.baseURL || '';
-        names = names.filter(Boolean);
         if (names.length > 0) {
             if (!url.endsWith('/')) {
                 url += '/';
@@ -114,7 +113,8 @@ class DataSource extends EventEmitter {
         }
         const promises = [];
         for (let relativeURL of relativeURLs) {
-            let objectURL = url;
+            const qIndex = url.indexOf('?');
+            let objectURL = (qIndex !== -1) ? url.substr(0, qIndex) : url;
             if (!objectURL.endsWith('/')) {
                 objectURL += '/';
             }

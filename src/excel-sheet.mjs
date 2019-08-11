@@ -55,6 +55,30 @@ class ExcelSheet {
         }
     }
 
+    plainText(options) {
+        return this.map((cell) => cell.plainText(options));
+    }
+
+    richText(options) {
+        return this.map((cell) => cell.richText(options));
+    }
+
+    map(f) {
+        const objects = [];
+        for (let column of this.columns) {
+            for (let [ index, cell ] of column.cells.entries()) {
+                const object = objects[index];
+                if (!object) {
+                    object = objects[index] = {};
+                }
+                if (object[column.name] === undefined) {
+                    object[column.name] = f(cell);
+                }
+            }
+        }
+        return objects;
+    }
+
     filter(language) {
         if (this.language) {
             return this;
