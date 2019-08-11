@@ -1,0 +1,123 @@
+{
+  "id": 296427,
+  "date_gmt": "2019-08-09T15:28:42",
+  "modified_gmt": "2019-08-09T15:28:42",
+  "slug": "sale_20158_primary_image_wide",
+  "status": "inherit",
+  "type": "attachment",
+  "link": "https://www.extremetech.com/deals/296424-meet-the-most-comprehensive-ethical-hacking-course-ever-created/attachment/sale_20158_primary_image_wide",
+  "title": {
+    "rendered": "sale_20158_primary_image_wide"
+  },
+  "author": 862,
+  "meta": [],
+  "description": {
+    "rendered": "<p class=\"attachment\"><a href='https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide.jpg'><img width=\"300\" height=\"169\" src=\"https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide-300x169.jpg\" class=\"attachment-medium size-medium\" alt=\"\" srcset=\"https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide-300x169.jpg 300w, https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide-768x432.jpg 768w, https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide-640x360.jpg 640w, https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide-223x126.jpg 223w, https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide-106x59.jpg 106w, https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide-348x196.jpg 348w, https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide.jpg 992w\" sizes=\"(max-width: 300px) 100vw, 300px\" /></a></p>"
+  },
+  "caption": {
+    "rendered": ""
+  },
+  "alt_text": "",
+  "media_type": "image",
+  "mime_type": "image/jpeg",
+  "media_details": {
+    "width": 992,
+    "height": 558,
+    "file": "2019/08/sale_20158_primary_image_wide.jpg",
+    "sizes": {
+      "thumbnail": {
+        "file": "sale_20158_primary_image_wide-150x150.jpg",
+        "width": 150,
+        "height": 150,
+        "mime_type": "image/jpeg",
+        "source_url": "https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide-150x150.jpg"
+      },
+      "medium": {
+        "file": "sale_20158_primary_image_wide-300x169.jpg",
+        "width": 300,
+        "height": 169,
+        "mime_type": "image/jpeg",
+        "source_url": "https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide-300x169.jpg"
+      },
+      "medium_large": {
+        "file": "sale_20158_primary_image_wide-768x432.jpg",
+        "width": 768,
+        "height": 432,
+        "mime_type": "image/jpeg",
+        "source_url": "https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide-768x432.jpg"
+      },
+      "large": {
+        "file": "sale_20158_primary_image_wide-640x360.jpg",
+        "width": 640,
+        "height": 360,
+        "mime_type": "image/jpeg",
+        "source_url": "https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide-640x360.jpg"
+      },
+      "small": {
+        "file": "sale_20158_primary_image_wide-223x126.jpg",
+        "width": 223,
+        "height": 126,
+        "mime_type": "image/jpeg",
+        "source_url": "https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide-223x126.jpg"
+      },
+      "news-small": {
+        "file": "sale_20158_primary_image_wide-106x59.jpg",
+        "width": 106,
+        "height": 59,
+        "mime_type": "image/jpeg",
+        "source_url": "https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide-106x59.jpg"
+      },
+      "news-normal": {
+        "file": "sale_20158_primary_image_wide-672x371.jpg",
+        "width": 672,
+        "height": 371,
+        "mime_type": "image/jpeg",
+        "source_url": "https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide-672x371.jpg"
+      },
+      "single": {
+        "file": "sale_20158_primary_image_wide-348x196.jpg",
+        "width": 348,
+        "height": 196,
+        "mime_type": "image/jpeg",
+        "source_url": "https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide-348x196.jpg"
+      },
+      "full": {
+        "file": "sale_20158_primary_image_wide-640x360.jpg",
+        "width": 640,
+        "height": 360,
+        "mime_type": "image/jpeg",
+        "source_url": "https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide-640x360.jpg"
+      },
+      "deal": {
+        "file": "sale_20158_primary_image_wide-150x200.jpg",
+        "width": 150,
+        "height": 200,
+        "mime_type": "image/jpeg",
+        "source_url": "https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide-150x200.jpg"
+      },
+      "gallery": {
+        "file": "sale_20158_primary_image_wide-652x382.jpg",
+        "width": 652,
+        "height": 382,
+        "mime_type": "image/jpeg",
+        "source_url": "https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide-652x382.jpg"
+      }
+    },
+    "image_meta": {
+      "aperture": "0",
+      "credit": "",
+      "camera": "",
+      "caption": "",
+      "created_timestamp": "0",
+      "copyright": "",
+      "focal_length": "0",
+      "iso": "0",
+      "shutter_speed": "0",
+      "title": "",
+      "orientation": "0",
+      "keywords": []
+    }
+  },
+  "post": 296424,
+  "source_url": "https://www.extremetech.com/wp-content/uploads/2019/08/sale_20158_primary_image_wide.jpg"
+}

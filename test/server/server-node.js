@@ -31,6 +31,8 @@ async function start(port) {
     app.get('/wiki/:repoName/:slug', handleWikiRequest);
     app.get('/wiki/:repoName/', handleWikiListRequest);
     app.get('/wiki/', handleWikiListRequest);
+    app.get('/rest/:name/*', handleRestRequest);
+    app.get('/rest/', handleRestListRequest);
     app.use(handleError);
 
     // start up server
@@ -118,6 +120,26 @@ async function handleWikiListRequest(req, res, next) {
             }
             res.json(urls);
         }
+    } catch (err) {
+        next(err);
+    }
+}
+
+async function handleRestRequest(req, res, next) {
+    try {
+        const { name } = req.params;
+        const path = req.params[0];
+        const data = await findRestObjects(name, path);
+        res.json(data);
+    } catch (err) {
+        next(err);
+    }
+}
+
+async function handleRestListRequest(req, res, next) {
+    try {
+        const data = await findRestSources();
+        res.json(data);
     } catch (err) {
         next(err);
     }
@@ -213,6 +235,27 @@ async function findWiki(repoName, prefix) {
         }
     }
     return _.sortBy(names);
+}
+
+async function findRestObjects(name, path) {
+    try {
+        const jsonPath = `${__dirname}/../assets/rest/${name}/${path}.json`;
+        const jsonText = await readFile(jsonPath, 'utf8');
+        const data = JSON.parse(jsonText);
+        return data;
+    } catch (err) {
+        const folderPath = `${__dirname}/../assets/rest/${name}/${path}`;
+        const names = await readdir(folderPath);
+        return _.map(names, (name) => {
+            return parseInt(name);
+        });
+    }
+}
+
+async function findRestSources() {
+    const path = `${__dirname}/../assets/rest`;
+    const folders = await readdir(path);
+    return folders;
 }
 
 async function parseSpreadsheet(buffer) {

@@ -1,4 +1,4 @@
-import { Parser } from 'htmlparser2';
+import { Parser, DomHandler } from 'htmlparser2';
 import { generateRichText } from './utils.mjs';
 
 class WordpressText {
@@ -10,11 +10,49 @@ class WordpressText {
     }
 
     plainText(options) {
-        return this.html;
+        const dom = parseHTML(this.html);
+        return getNodeText(dom);
     }
 
     richText(options) {
         return this.html;
+    }
+}
+
+function parseHTML(html) {
+    let result, error;
+    const handler = new DomHandler((err, dom) => {
+        if (error) {
+            error = err;
+        } else {
+            result = dom;
+        }
+    });
+    const parser = new Parser(handler, {
+        decodeEntities: true
+    });
+    parser.write(html);
+    parser.end();
+    if (error) {
+        throw error;
+    }
+    return result;
+}
+
+function getNodeText(node) {
+    if (node instanceof Array) {
+        const list = []
+        for (let child of node) {
+            list.push(getNodeText(child));
+        }
+        return list.join('');
+    } else {
+        if (node.type === 'tag') {
+            const innerText = getNodeText(node.children);
+            return innerText;
+        } else if (node.type === 'text') {
+            return node.data;
+        }
     }
 }
 

@@ -1,0 +1,14 @@
+{
+  "id": 762,
+  "name": "Sal Cangeloso",
+  "url": "http://www.extremetech.com",
+  "description": "<img src=\"http://www.extremetech.com/wp-content/uploads/2013/02/sal_can_me.jpg\" align=\"right\">Sal Cangeloso is the Managing Editor at ExtremeTech.com and Geek.com, and the author of <a href=\"http://ledprimer.com/\">LED Lighting: A Primer to Lighting the Future</a>. He lives on Earth, a small but biologically diverse terrestrial planet.<br/><br/>\r\n\r\nLinks...<br/>\r\n<a href=\"http://twitter.com/#!/salcan\">Twitter</a><br/>\r\n<a href=\"https://plus.google.com/102529585440470264569/?rel=author\" rel=\"me\">Google +</a>",
+  "link": "https://www.extremetech.com/author/scangeloso",
+  "slug": "scangeloso",
+  "avatar_urls": {
+    "24": "https://secure.gravatar.com/avatar/6b450f3475e831b7b2bc9bc901d593ea?s=24&d=mm&r=g",
+    "48": "https://secure.gravatar.com/avatar/6b450f3475e831b7b2bc9bc901d593ea?s=48&d=mm&r=g",
+    "96": "https://secure.gravatar.com/avatar/6b450f3475e831b7b2bc9bc901d593ea?s=96&d=mm&r=g"
+  },
+  "meta": []
+}

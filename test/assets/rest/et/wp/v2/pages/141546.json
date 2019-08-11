@@ -1,0 +1,25 @@
+{
+  "id": 141546,
+  "date_gmt": "2012-11-28T21:09:15",
+  "modified_gmt": "2014-06-27T16:38:17",
+  "slug": "this-is-my-rig",
+  "status": "publish",
+  "type": "page",
+  "link": "https://www.extremetech.com/this-is-my-rig",
+  "title": {
+    "rendered": "This is my rig: Writing guide"
+  },
+  "content": {
+    "rendered": "<p><img class=\"wp-image-120021 alignnone\" title=\"CPU Cooler \" src=\"http://www.extremetech.com/wp-content/uploads/2012/02/CoolerImage-640x353.jpg\" alt=\"CPU Cooler\" width=\"640\" height=\"353\" srcset=\"https://www.extremetech.com/wp-content/uploads/2012/02/CoolerImage-640x353.jpg 640w, https://www.extremetech.com/wp-content/uploads/2012/02/CoolerImage-300x165.jpg 300w, https://www.extremetech.com/wp-content/uploads/2012/02/CoolerImage-106x59.jpg 106w, https://www.extremetech.com/wp-content/uploads/2012/02/CoolerImage.jpg 672w\" sizes=\"(max-width: 640px) 100vw, 640px\" /></p><p>Let&#8217;s face it: computer building is not what it used to be. Not too long ago, if you wanted a great computer it needed to be a desktop and you had to build it yourself. That&#8217;s not the case any more, but there are still some very compelling reasons to piece together a custom PC.</p><p>Desktop computing has been commoditized but doesn&#8217;t mean we all need to use commodity computers. This is my rig (TiMR) is a celebration of the DIY spirit, problem solving, and the not-quite-lost art of cable routing.</p><p>The goal of <a href=\"http://www.extremetech.com/tag/timr\">TiMR</a> is to be a series of articles on ExtremeTech.com where people talk about their latest computer build. Each article will walk readers through a particular build, while offering a brief explanation as to why particular choices were made. These choices don&#8217;t have to be justified or fought for, they simply reflect the research, restrictions, and goals of the PC builder.</p><h3>Examples</h3><ul><li><a href=\"http://www.extremetech.com/computing/178929-this-is-my-rig-bill-howards-10000-digital-photography-workstation\">This is my rig: Bill Howard’s million-photo $10,000 digital photography workstation</a></li><li><a href=\"http://www.extremetech.com/computing/175997-this-is-my-rig-3d-designer-rich-ackermann\">This is my rig: 3D designer Rich Ackermann</a></li><li><a href=\"http://www.extremetech.com/computing/163320-this-is-my-rig-sebastian-anthony\">This is my rig: ExtremeTech&#8217;s Sebastian Anthony</a></li><li><a href=\"http://www.extremetech.com/computing/140826-this-is-my-rig-extremetechs-sal-cangeloso\">This is my rig: ExtremeTech&#8217;s Sal Cangeloso</a></li><li><a href=\"http://www.extremetech.com/computing/109099-this-is-my-rig-extremetech-reporter-ray-walters\">This is my rig: ExtremeTech reporter Ray Walters</a></li></ul><h3>Rough outline</h3><ul><li>Introduction</li><li>CPU (and CPU cooling)</li><li>Motherboard</li><li>Graphics</li><li>Storage</li><li>Memory</li><li>Power Supply</li><li>Case</li><li>Misc (optical drives, fan controllers, etc., optional)</li><li>Operating system (optional)</li><li>Conclusion</li><li>Byline (optional)</li></ul><h3>Length</h3><p>There is no minimum or maximum length, but please take enough time to explain the parts (don&#8217;t suppose every reader knows the specs of every case and power supply) and why you chose it. If your reasoning was based on price or something similarly simple, don&#8217;t feel like you need to say too much.</p><h3>Images</h3><p>Please provide as many images as possible. We&#8217;ll accept images from the manufacturer or shots you took yourself. JPG format is best.</p><h3>Formatting</h3><p>You can include the document in-line in an email, attached as plain text, or in an easily accessible method (like Google Docs). You can use basic HTML or things like hyperlinks if you&#8217;d like, but we&#8217;ll handle the page formatting.</p><h3>Byline</h3><p>If you&#8217;d like to to link to your website, Twitter handle, or day job, this is the chance. A one to two line bio can be included as well.</p><h3>Process</h3><p>Interested in writing about your new rig? Email <a href=\"mailto:sal@extremetech.com\">sal@extremetech.com</a> with the proposal.</p><p>&#8212; &#8212; &#8212; &#8212; &#8212; &#8212; &#8212; &#8212; &#8212; &#8212; &#8212; &#8212; &#8212; &#8212; &#8212; &#8212;<br /><em>Last update: 6/27/14 12:35, Sebastian Anthony</em><br /><em> Previous updates: &#8212;<br />Modified: 9/28/12 Sal Cangeloso<br />Created: 9/27/12, Sal Cangeloso</em></p>",
+    "protected": false
+  },
+  "excerpt": {
+    "rendered": "<p>Let&#8217;s face it: computer building is not what it used to be. Not too long ago, if you wanted a great computer it needed to be a desktop and you had to build it yourself. That&#8217;s not the case any more, but there are still some very compelling reasons to piece together a custom PC.Desktop&hellip;</p>",
+    "protected": false
+  },
+  "author": 762,
+  "featured_media": 120021,
+  "parent": 0,
+  "menu_order": 0,
+  "meta": []
+}
