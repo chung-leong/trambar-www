@@ -11,7 +11,7 @@ class WordpressPost {
         post.type = data.type;
         post.link = data.link;
         post.title = WordpressText.create(data.title);
-        post.contents = WordpressText.create(data.contents);
+        post.content = WordpressText.create(data.content);
         post.excerpt = WordpressText.create(data.excerpt);
         post.author = data.author;
         post.featuredMedia = data.featured_media;

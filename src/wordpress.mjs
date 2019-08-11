@@ -38,7 +38,7 @@ class Wordpress extends DataSource {
         }
 
         // retrieve id from server
-        const idURL = this.getURL([ 'rest', name, 'wp', 'v2', folder ], query);
+        const idURL = this.getURL([ 'rest', name, 'wp', 'v2', folder ], { slug });
         const ids = await this.fetchObject(idURL);
         return ids[0];
     }

@@ -137,7 +137,7 @@ class DataSource extends EventEmitter {
                     return query;
                 }
             }
-        } if (predicate instanceof Object) {
+        } else if (predicate instanceof Object) {
             const props = predicate;
             for (let query of this.queries) {
                 let different = false;
