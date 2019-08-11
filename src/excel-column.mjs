@@ -22,22 +22,6 @@ class ExcelColumn {
         return this.cells[index];
     }
 
-    plainText(options) {
-        return this.map((cell) => cell.plainText(options));
-    }
-
-    richText(options) {
-        return this.map((cell) => cell.richText(options));
-    }
-
-    map(f) {
-        const objects = [];
-        for (let cell of this.cells) {
-            objects.push(f(cell));
-        }
-        return objects;
-    }
-
     filter(language) {
         const chosen = chooseLanguageVersion(this.sheet.columns, language);
         if (chosen.indexOf(column) !== -1) {

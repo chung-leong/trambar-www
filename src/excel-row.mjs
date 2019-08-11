@@ -24,26 +24,6 @@ class ExcelRow {
         }
     }
 
-    plainText(options) {
-        return this.map((cell) => cell.getPlainText(options));
-    }
-
-    richText(options) {
-        return this.map((cell) => cell.getRichText(options));
-    }
-
-    map(f) {
-        const columns = this.sheet.columns;
-        const object = {};
-        for (let [ index, cell ] of this.cell) {
-            const column = columns[index];
-            if (object[column.name] === undefined) {
-                object[column.name] = f(cell);
-            }
-        }
-        return object;
-    }
-
     filter(language) {
         if (this.language) {
             return this;

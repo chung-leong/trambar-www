@@ -114,7 +114,7 @@ class DataSource extends EventEmitter {
         }
         const promises = [];
         for (let relativeURL of relativeURLs) {
-            let objectURL = this.options.baseURL || '';
+            let objectURL = url;
             if (!objectURL.endsWith('/')) {
                 objectURL += '/';
             }
@@ -129,16 +129,26 @@ class DataSource extends EventEmitter {
         return query.results;
     }
 
-    findQuery(props) {
-        for (let query of this.queries) {
-            let different = false;
-            for (let [ key, value ] of Object.entries(props)) {
-                if (query[key] !== value) {
-                    different = true;
+    findQuery(predicate) {
+        if (predicate instanceof Function) {
+            const func = predicate;
+            for (let query of this.queries) {
+                if(func(query)) {
+                    return query;
                 }
             }
-            if (!different) {
-                return query;
+        } if (predicate instanceof Object) {
+            const props = predicate;
+            for (let query of this.queries) {
+                let different = false;
+                for (let [ key, value ] of Object.entries(props)) {
+                    if (query[key] !== value) {
+                        different = true;
+                    }
+                }
+                if (!different) {
+                    return query;
+                }
             }
         }
     }

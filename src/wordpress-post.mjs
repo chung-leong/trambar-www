@@ -1,0 +1,30 @@
+import { WordpressText } from './wordpress-text.mjs';
+
+class WordpressPost {
+    static create(data) {
+        const post = new WordpressPost;
+        post.id = data.id;
+        post.date = new Date(data.date_gmt + 'Z');
+        post.modified = new Date(data.modified_gmt + 'Z');
+        post.slug = data.slug;
+        post.status = data.status;
+        post.type = data.type;
+        post.link = data.link;
+        post.title = WordpressText.create(data.title);
+        post.contents = WordpressText.create(data.contents);
+        post.excerpt = WordpressText.create(data.excerpt);
+        post.author = data.author;
+        post.featuredMedia = data.featured_media;
+        post.sticky = data.sticky;
+        post.format = data.format;
+        post.meta = data.meta;
+        post.categories = data.categories;
+        post.tags = data.tags;
+        return post;
+    }
+}
+
+export {
+    WordpressPost,
+    WordpressPost as WordPressPost,
+};
