@@ -2,7 +2,8 @@ import React from 'react';
 import { Parser } from 'mark-gor/react';
 import { MarkdownBlock } from './markdown-block.mjs';
 import { MarkdownImage } from './markdown-image.mjs';
-import { chooseLanguageVersion, generateRichText } from './utils.mjs';
+import { chooseLanguageVersion } from '../utils/language-utils.mjs';
+import { generateRichText } from '../utils/text-utils.mjs';
 
 class MarkdownPage {
     static create(data) {

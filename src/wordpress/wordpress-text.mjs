@@ -1,4 +1,8 @@
-import { parseHTML, generateRichTextFromNode, generatePlainTextFromNode } from './utils.mjs';
+import {
+    parseHTML,
+    generateRichTextFromNode,
+    generatePlainTextFromNode
+} from '../utils/text-utils.mjs';
 
 class WordpressText {
     static create(data) {

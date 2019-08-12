@@ -1,4 +1,4 @@
-import { DataSource } from './data-source.mjs';
+import { DataSource } from '../data-source.mjs';
 import { ExcelFile } from './excel-file.mjs';
 
 class Excel extends DataSource {

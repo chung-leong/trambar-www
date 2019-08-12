@@ -1,4 +1,5 @@
-import { deriveImageProps, generateRichText } from './utils.mjs';
+import { deriveImageProps } from '../utils/image-utils.mjs';
+import { generateRichText } from '../utils/text-utils.mjs';
 
 class MarkdownImage {
     constructor(page) {

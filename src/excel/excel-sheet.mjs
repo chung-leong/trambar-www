@@ -1,7 +1,8 @@
 import { ExcelColumn } from './excel-column.mjs';
 import { ExcelRow } from './excel-row.mjs';
 import { ExcelCell } from './excel-cell.mjs';
-import { parsePath, chooseLanguageVersion } from './utils.mjs';
+import { parsePath } from '../utils/path-utils.mjs';
+import { chooseLanguageVersion } from '../utils/language-utils.mjs';
 
 class ExcelSheet {
     constructor(file) {

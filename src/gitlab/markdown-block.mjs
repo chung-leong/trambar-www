@@ -1,5 +1,5 @@
 import { Parser, Renderer } from 'mark-gor/react';
-import { generateRichText } from './utils.mjs';
+import { generateRichText } from '../utils/text-utils.mjs';
 
 class MarkdownBlock {
     constructor(page) {

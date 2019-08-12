@@ -1,4 +1,4 @@
-import { DataSource } from './data-source.mjs';
+import { DataSource } from '../data-source.mjs';
 import { MarkdownPage } from './markdown-page.mjs';
 
 class Gitlab extends DataSource {

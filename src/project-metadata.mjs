@@ -1,4 +1,5 @@
-import { chooseLanguageVersion, generateRichText } from './utils.mjs';
+import { chooseLanguageVersion } from './utils/language-utils.mjs';
+import { generateRichText } from './utils/text-utils.mjs';
 
 class ProjectMetadata {
     static create(data) {

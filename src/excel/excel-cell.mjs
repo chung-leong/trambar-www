@@ -1,4 +1,6 @@
-import { chooseLanguageVersion, deriveImageProps, generateRichText } from './utils.mjs';
+import { chooseLanguageVersion } from '../utils/language-utils.mjs';
+import { deriveImageProps } from '../utils/image-utils.mjs';
+import { generateRichText } from '../utils/text-utils.mjs';
 
 class ExcelCell {
     constructor(column) {

@@ -1,4 +1,4 @@
-import { DataSource } from './data-source.mjs';
+import { DataSource } from '../data-source.mjs';
 import { WordpressPost } from './wordpress-post.mjs';
 
 class Wordpress extends DataSource {

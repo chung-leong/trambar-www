@@ -1,29 +1,3 @@
-import React from 'react';
-import { Parser, DomHandler } from 'htmlparser2';
-
-function generateRichText(type, props, children, options) {
-    const { richTextAdjust } = options;
-    if (richTextAdjust instanceof Function) {
-        const result = richTextAdjust(type, props, children);
-        if (!(result instanceof Object)) {
-            throw new Error('Function should return an object');
-        }
-        type = result.type;
-        props = result.props;
-        children = result.children;
-    }
-    if (process.env.NODE_ENV !== 'production') {
-        if (children && typeof(children) !== 'string') {
-            children = React.Children.toArray(children);
-        }
-    }
-    if (type === undefined) {
-        return children;
-    } else {
-        return React.createElement(type, props, children);
-    }
-}
-
 function deriveImageProps(original, options) {
     const { imageWidth, imageHeight } = options;
     const { imageFormat, imageFilters, imageBaseURL } = options;
@@ -57,46 +31,6 @@ function deriveImageProps(original, options) {
             height: resized.height,
         }
     };
-}
-
-function parseHTML(html) {
-    let result, error;
-    const handler = new DomHandler((err, dom) => {
-        if (error) {
-            error = err;
-        } else {
-            result = dom;
-        }
-    });
-    const parser = new Parser(handler, {
-        decodeEntities: true
-    });
-    parser.write(html);
-    parser.end();
-    if (error) {
-        throw error;
-    }
-    return result;
-}
-
-function generateRichTextFromNode(node) {
-}
-
-function generatePlainTextFromNode(node) {
-    if (node instanceof Array) {
-        const list = []
-        for (let child of node) {
-            list.push(generatePlainTextFromNode(child));
-        }
-        return list.join('');
-    } else {
-        if (node.type === 'tag') {
-            const innerText = generatePlainTextFromNode(node.children);
-            return innerText;
-        } else if (node.type === 'text') {
-            return node.data;
-        }
-    }
 }
 
 function applyImageFilters(url, filters, srcFormat, dstFormat) {
@@ -239,65 +173,7 @@ function adjustImageDensity(visual, devicePixelRatio, limit) {
     return { width, height };
 }
 
-function parsePath(path, max) {
-    if (!(path instanceof Array)) {
-        path = (path + '').split('.');
-    }
-    if (path.length > max) {
-        throw new Error(`Path ${path.join('.')} contains too many names`);
-    }
-    return path;
-}
-
-function chooseLanguageVersion(objects, lang) {
-    const [ reqLC, reqCC ] = (lang) ? lang.toLowerCase().split('-') : [];
-    const list = [];
-    const existing = {};
-    for (let object of objects) {
-        const score = getLanguageMatch(object, reqLC, reqCC);
-        const previous = existing[object.name];
-        if (!previous) {
-            existing[object.name] = { index: list.length, score };
-            list.push(object);
-        } else if (previous.score < score) {
-            list[previous.index] = object;
-            previous.score = score;
-        }
-    }
-    return list;
-}
-
-const localeRegExp = /^\w{2}(\-\w{2})?$/;
-
-function getLanguageMatch(object, reqLC, reqCC) {
-    let highest = 0;
-    if (reqLC && object.flags instanceof Array) {
-        for (let flag of object.flags) {
-            if (localeRegExp.test(flag)) {
-                const [ lc, cc ] = flag.toLowerCase().split('-');
-                if (lc === reqLC) {
-                    let score = 50;
-                    if (cc === reqCC) {
-                        score = 100;
-                    }
-                    if (score > highest) {
-                        highest = score;
-                    }
-                }
-            }
-        }
-    }
-    return highest;
-}
-
 export {
-    parsePath,
-    chooseLanguageVersion,
-    generateRichText,
-    generateRichTextFromNode,
-    generatePlainTextFromNode,
-    parseHTML,
-
     deriveImageProps,
     applyImageFilters,
     adjustImageDimensions,
