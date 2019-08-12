@@ -5,8 +5,12 @@ import Adapter from 'enzyme-adapter-react-16';
 import Server from './server/server.mjs';
 
 import {
+    WordpressCategory,
+    WordpressPage,
     WordpressPost,
+    WordpressTag,
     WordpressText,
+    WordpressUser,
 } from '../index.mjs';
 
 configure({ adapter: new Adapter });
@@ -57,6 +61,76 @@ describe('Wordpress', function() {
             expect(post.title).to.be.instanceOf(WordpressText);
             expect(post.excerpt).to.be.instanceOf(WordpressText);
             expect(post.content).to.be.instanceOf(WordpressText);
+        })
+    })
+    describe('WordpressPage', function() {
+        it ('should have the right properties', async function() {
+            const data = await loadTestData('et', 'wp/v2/pages/141546');
+            const page = await loadTestObject('et', 'wp/v2/pages/141546', WordpressPage);
+
+            expect(page.id).to.eql(data.id);
+            expect(page.slug).to.eql(data.slug);
+            expect(page.status).to.eql(data.status);
+            expect(page.type).to.eql(data.type);
+            expect(page.link).to.eql(data.link);
+            expect(page.author).to.eql(data.author);
+            expect(page.featuredMedia).to.eql(data.featured_media);
+            expect(page.menuOrder).to.eql(data.menu_order);
+            expect(page.parent).to.eql(data.parent);
+            expect(page.meta).to.eql(data.meta);
+            expect(page.date).to.be.instanceOf(Date);
+            expect(page.date.toISOString()).to.contain(data.date_gmt);
+            expect(page.modified).to.be.instanceOf(Date);
+            expect(page.modified.toISOString()).to.contain(data.modified_gmt);
+            expect(page.title).to.be.instanceOf(WordpressText);
+            expect(page.excerpt).to.be.instanceOf(WordpressText);
+            expect(page.content).to.be.instanceOf(WordpressText);
+        })
+    })
+    describe('WordpressUser', function() {
+        it ('should have the right properties', async function() {
+            const data = await loadTestData('et', 'wp/v2/users/762');
+            const user = await loadTestObject('et', 'wp/v2/users/762', WordpressUser);
+
+            expect(user.id).to.eql(data.id);
+            expect(user.slug).to.eql(data.slug);
+            expect(user.url).to.eql(data.url);
+            expect(user.link).to.eql(data.link);
+            expect(user.avatarURLs).to.eql(data.avatar_urls);
+            expect(user.meta).to.eql(data.meta);
+            expect(user.name).to.be.instanceOf(WordpressText);
+            expect(user.description).to.be.instanceOf(WordpressText);
+        })
+    })
+    describe('WordpressTag', function() {
+        it ('should have the right properties', async function() {
+            const data = await loadTestData('et', 'wp/v2/tags/148');
+            const tag = await loadTestObject('et', 'wp/v2/tags/148', WordpressTag);
+
+            expect(tag.id).to.eql(data.id);
+            expect(tag.slug).to.eql(data.slug);
+            expect(tag.count).to.eql(data.count);
+            expect(tag.link).to.eql(data.link);
+            expect(tag.meta).to.eql(data.meta);
+            expect(tag.taxonomy).to.eql(data.taxonomy);
+            expect(tag.name).to.be.instanceOf(WordpressText);
+            expect(tag.description).to.be.instanceOf(WordpressText);
+        })
+    })
+    describe('WordpressCategory', function() {
+        it ('should have the right properties', async function() {
+            const data = await loadTestData('et', 'wp/v2/categories/8');
+            const category = await loadTestObject('et', 'wp/v2/categories/8', WordpressCategory);
+
+            expect(category.id).to.eql(data.id);
+            expect(category.slug).to.eql(data.slug);
+            expect(category.count).to.eql(data.count);
+            expect(category.link).to.eql(data.link);
+            expect(category.meta).to.eql(data.meta);
+            expect(category.taxonomy).to.eql(data.taxonomy);
+            expect(category.parent).to.eql(data.parent);
+            expect(category.name).to.be.instanceOf(WordpressText);
+            expect(category.description).to.be.instanceOf(WordpressText);
         })
     })
     describe('WordpressText', function() {

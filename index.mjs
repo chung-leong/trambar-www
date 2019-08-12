@@ -19,6 +19,7 @@ export * from './src/wordpress/wordpress-page.mjs';
 export * from './src/wordpress/wordpress-post.mjs';
 export * from './src/wordpress/wordpress-tag.mjs';
 export * from './src/wordpress/wordpress-text.mjs';
+export * from './src/wordpress/wordpress-user.mjs';
 export * from './src/wordpress/wordpress.mjs';
 
 export {
