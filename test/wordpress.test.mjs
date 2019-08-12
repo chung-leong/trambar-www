@@ -6,6 +6,7 @@ import Server from './server/server.mjs';
 
 import {
     WordpressCategory,
+    WordpressMedia,
     WordpressPage,
     WordpressPost,
     WordpressTag,
@@ -131,6 +132,33 @@ describe('Wordpress', function() {
             expect(category.parent).to.eql(data.parent);
             expect(category.name).to.be.instanceOf(WordpressText);
             expect(category.description).to.be.instanceOf(WordpressText);
+        })
+    })
+    describe('WordpressMedia', function() {
+        it ('should have the right properties', async function() {
+            const data = await loadTestData('et', 'wp/v2/media/296377');
+            const media = await loadTestObject('et', 'wp/v2/media/296377', WordpressMedia);
+
+            expect(media.id).to.eql(data.id);
+            expect(media.slug).to.eql(data.slug);
+            expect(media.status).to.eql(data.status);
+            expect(media.type).to.eql(data.type);
+            expect(media.link).to.eql(data.link);
+            expect(media.author).to.eql(data.author);
+            expect(media.altText).to.eql(data.alt_text);
+            expect(media.mediaType).to.eql(data.media_type);
+            expect(media.mimeType).to.eql(data.mime_type);
+            expect(media.mediaDetails).to.eql(data.media_details);
+            expect(media.post).to.eql(data.post);
+            expect(media.sourceURL).to.eql(data.source_url);
+            expect(media.meta).to.eql(data.meta);
+            expect(media.date).to.be.instanceOf(Date);
+            expect(media.date.toISOString()).to.contain(data.date_gmt);
+            expect(media.modified).to.be.instanceOf(Date);
+            expect(media.modified.toISOString()).to.contain(data.modified_gmt);
+            expect(media.title).to.be.instanceOf(WordpressText);
+            expect(media.description).to.be.instanceOf(WordpressText);
+            expect(media.caption).to.be.instanceOf(WordpressText);
         })
     })
     describe('WordpressText', function() {
