@@ -1,4 +1,5 @@
 import React from 'react';
+import { Parser, DomHandler } from 'htmlparser2';
 
 function generateRichText(type, props, children, options) {
     const { richTextAdjust } = options;
@@ -56,6 +57,46 @@ function deriveImageProps(original, options) {
             height: resized.height,
         }
     };
+}
+
+function parseHTML(html) {
+    let result, error;
+    const handler = new DomHandler((err, dom) => {
+        if (error) {
+            error = err;
+        } else {
+            result = dom;
+        }
+    });
+    const parser = new Parser(handler, {
+        decodeEntities: true
+    });
+    parser.write(html);
+    parser.end();
+    if (error) {
+        throw error;
+    }
+    return result;
+}
+
+function generateRichTextFromNode(node) {
+}
+
+function generatePlainTextFromNode(node) {
+    if (node instanceof Array) {
+        const list = []
+        for (let child of node) {
+            list.push(generatePlainTextFromNode(child));
+        }
+        return list.join('');
+    } else {
+        if (node.type === 'tag') {
+            const innerText = generatePlainTextFromNode(node.children);
+            return innerText;
+        } else if (node.type === 'text') {
+            return node.data;
+        }
+    }
 }
 
 function applyImageFilters(url, filters, srcFormat, dstFormat) {
@@ -253,6 +294,9 @@ export {
     parsePath,
     chooseLanguageVersion,
     generateRichText,
+    generateRichTextFromNode,
+    generatePlainTextFromNode,
+    parseHTML,
 
     deriveImageProps,
     applyImageFilters,
