@@ -1,4 +1,5 @@
 import { WordpressText } from './wordpress-text.mjs';
+import { getPlainTextProperties, getRichTextProperties } from '../utils/text-utils.mjs';
 
 class WordpressTag {
     static create(data) {
@@ -12,6 +13,18 @@ class WordpressTag {
         tag.taxonomy = data.taxonomy;
         tag.meta = data.meta;
         return tag;
+    }
+
+    plainText(options) {
+        return getPlainTextProperties(options);
+    }
+
+    richText(options) {
+        return getRichTextProperties(options);
+    }
+
+    filter(language) {
+        return this;
     }
 }
 

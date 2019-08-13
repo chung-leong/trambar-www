@@ -13,7 +13,7 @@ import {
 configure({ adapter: new Adapter });
 
 describe('RouteManager', function() {
-    it ('should be correctly exported from external package', function() {
+    it('should be correctly exported from external package', function() {
         expect(RouteManager).to.be.a('function');
         expect(RouteManagerEvent).to.be.a('function');
         expect(RouteManagerError).to.be.a('function');

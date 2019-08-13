@@ -1,4 +1,5 @@
 import { WordpressText } from './wordpress-text.mjs';
+import { getPlainTextProperties, getRichTextProperties } from '../utils/text-utils.mjs';
 
 class WordpressMedia {
     static create(data) {
@@ -22,6 +23,18 @@ class WordpressMedia {
         media.sourceURL = data.source_url;
         media.meta = data.meta;
         return media;
+    }
+
+    plainText(options) {
+        return getPlainTextProperties(options);
+    }
+
+    richText(options) {
+        return getRichTextProperties(options);
+    }
+
+    filter(language) {
+        return this;
     }
 }
 

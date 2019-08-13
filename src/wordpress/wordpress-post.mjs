@@ -1,4 +1,5 @@
 import { WordpressText } from './wordpress-text.mjs';
+import { getPlainTextProperties, getRichTextProperties } from '../utils/text-utils.mjs';
 
 class WordpressPost {
     static create(data) {
@@ -21,6 +22,18 @@ class WordpressPost {
         post.categories = data.categories;
         post.tags = data.tags;
         return post;
+    }
+
+    plainText(options) {
+        return getPlainTextProperties(options);
+    }
+
+    richText(options) {
+        return getRichTextProperties(options);
+    }
+
+    filter(language) {
+        return this;
     }
 }
 

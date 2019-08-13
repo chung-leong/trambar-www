@@ -1,4 +1,5 @@
 import { WordpressText } from './wordpress-text.mjs';
+import { getPlainTextProperties, getRichTextProperties } from '../utils/text-utils.mjs';
 
 class WordpressCategory {
     static create(data) {
@@ -13,6 +14,18 @@ class WordpressCategory {
         category.parent = data.parent;
         category.meta = data.meta;
         return category;
+    }
+
+    plainText(options) {
+        return getPlainTextProperties(options);
+    }
+
+    richText(options) {
+        return getRichTextProperties(options);
+    }
+
+    filter(language) {
+        return this;
     }
 }
 

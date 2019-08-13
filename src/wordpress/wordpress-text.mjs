@@ -1,7 +1,7 @@
 import {
     parseHTML,
-    generateRichTextFromNode,
-    generatePlainTextFromNode
+    generateRichTextFromNodes,
+    generatePlainTextFromNodes
 } from '../utils/text-utils.mjs';
 
 class WordpressText {
@@ -13,12 +13,16 @@ class WordpressText {
 
     plainText(options) {
         const tree = this.tree();
-        return generatePlainTextFromNode(tree);
+        return generatePlainTextFromNodes(tree, options || {});
     }
 
     richText(options) {
         const tree = this.tree();
-        return generateRichTextFromNode(tree);
+        return generateRichTextFromNodes(tree, options || {});
+    }
+
+    filter(language) {
+        return this;
     }
 
     tree() {
@@ -32,4 +36,5 @@ class WordpressText {
 
 export {
     WordpressText,
+    WordpressText as WordPressText,
 };

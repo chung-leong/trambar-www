@@ -24,7 +24,7 @@ describe('Excel', function() {
     before(() => {
         return Server.start(serverPort);
     })
-    it ('should be able to retrieve test data', async function() {
+    it('should be able to retrieve test data', async function() {
         const data = await loadTestData('test-1');
         expect(data.name).to.eql('test-1');
         expect(data.title).to.eql('Test file title');
@@ -33,7 +33,7 @@ describe('Excel', function() {
         expect(data.subject).to.eql('Test subject');
     })
     describe('ExcelFile', function() {
-        it ('should include metadata from file', async function() {
+        it('should include metadata from file', async function() {
             const data = await loadTestData('test-1');
             const file = await loadTestFile('test-1');
             expect(file.name).to.eql(data.name);
@@ -42,17 +42,17 @@ describe('Excel', function() {
             expect(file.keywords).to.eql(data.keywords);
             expect(file.keywords).to.eql(data.keywords);
         })
-        it ('should have the right number of sheets', async function() {
+        it('should have the right number of sheets', async function() {
             const file = await loadTestFile('test-1');
             expect(file.sheets).to.have.lengthOf(5);
         })
         describe('#sheet', function() {
-            it ('should return sheet with matching name', async function() {
+            it('should return sheet with matching name', async function() {
                 const file = await loadTestFile('test-1');
                 const sheet1 = file.sheet('Sheet1');
                 expect(sheet1).to.have.property('name', 'Sheet1');
             })
-            it ('should return the first sheet when there are multiple sheet with the same name', async function() {
+            it('should return the first sheet when there are multiple sheet with the same name', async function() {
                 const file = await loadTestFile('test-1');
                 const sheet3 = file.sheet('Names');
                 expect(sheet3).to.have.property('name', 'Names');
@@ -60,14 +60,14 @@ describe('Excel', function() {
             })
         })
         describe('#filter()', function() {
-            it ('should remove sheets with non-matching language code', async function() {
+            it('should remove sheets with non-matching language code', async function() {
                 const file = await loadTestFile('test-1');
                 const filtered = file.filter('pl');
                 expect(filtered.sheets).to.have.lengthOf(3);
                 const sheet3 = filtered.sheets[2];
                 expect(sheet3).to.have.property('flags').that.eql([ 'pl' ]);
             })
-            it ('should yield sheets with non-matching columns removed', async function() {
+            it('should yield sheets with non-matching columns removed', async function() {
                 const file = await loadTestFile('test-1');
                 const filtered = file.filter('pl');
                 const sheet2 = filtered.sheets[1];
@@ -75,17 +75,17 @@ describe('Excel', function() {
             })
         })
         describe('#get()', function() {
-            it ('should be able to find a column', async function() {
+            it('should be able to find a column', async function() {
                 const file = await loadTestFile('test-1');
                 const column = file.get([ 'Sheet1', 'plain text' ]);
                 expect(column).to.be.instanceOf(ExcelColumn);
             })
-            it ('should accept a string', async function() {
+            it('should accept a string', async function() {
                 const file = await loadTestFile('test-1');
                 const column = file.get('Sheet1.plain text');
                 expect(column).to.be.instanceOf(ExcelColumn);
             })
-            it ('should be able to find a cell', async function() {
+            it('should be able to find a cell', async function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.get([ 'Sheet1', 'plain text', 0 ]);
                 expect(cell).to.be.instanceOf(ExcelCell);
@@ -93,7 +93,7 @@ describe('Excel', function() {
             })
         })
         describe('#includes()', function() {
-            it ('should notice that a cell is not in the sheet', async function() {
+            it('should notice that a cell is not in the sheet', async function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.get([ 'Sheet2', 'phrase', 1 ]);
                 expect(cell).to.be.instanceOf(ExcelCell);
@@ -107,7 +107,7 @@ describe('Excel', function() {
             })
         })
         describe('#plainText()', function() {
-            it ('should return an objects with array properties', async function() {
+            it('should return an objects with array properties', async function() {
                 const file = await loadTestFile('test-1');
                 const object = file.plainText();
                 expect(object).to.have.property('Sheet1').that.is.instanceOf(Array);
@@ -119,7 +119,7 @@ describe('Excel', function() {
             })
         })
         describe('#richText()', function() {
-            it ('should return an objects with array properties', async function() {
+            it('should return an objects with array properties', async function() {
                 const file = await loadTestFile('test-1');
                 const object = file.richText();
                 expect(object).to.have.property('Sheet1').that.is.instanceOf(Array);
@@ -131,7 +131,7 @@ describe('Excel', function() {
             })
         })
         describe('#image()', function() {
-            it ('should return an image element based on a derived URL', async function() {
+            it('should return an image element based on a derived URL', async function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
                 const options = {
@@ -147,7 +147,7 @@ describe('Excel', function() {
         })
     })
     describe('ExcelSheet', function() {
-        it ('should have the right number of rows and columns', async function() {
+        it('should have the right number of rows and columns', async function() {
             const file = await loadTestFile('test-1');
             const [ sheet1, sheet2 ] = file.sheets;
             expect(sheet1.columns).to.have.lengthOf(3);
@@ -155,7 +155,7 @@ describe('Excel', function() {
             expect(sheet2.columns).to.have.lengthOf(6);
             expect(sheet2.rows).to.have.lengthOf(5);
         })
-        it ('should have flags extracted from name', async function() {
+        it('should have flags extracted from name', async function() {
             const file = await loadTestFile('test-1');
             const [ ,, sheet3, sheet4, sheet5 ] = file.sheets;
             expect(sheet3.flags).to.eql([ 'en' ]);
@@ -166,13 +166,13 @@ describe('Excel', function() {
             expect(sheet5.name).to.eql('Names');
         })
         describe('#column', function() {
-            it ('should return column with matching name', async function() {
+            it('should return column with matching name', async function() {
                 const file = await loadTestFile('test-1');
                 const sheet1 = file.sheet('Sheet1');
                 const column1 = sheet1.column('plain text')
                 expect(column1).to.have.property('name', 'plain text');
             })
-            it ('should return the first column when there are multiple columns with the same name', async function() {
+            it('should return the first column when there are multiple columns with the same name', async function() {
                 const file = await loadTestFile('test-1');
                 const sheet2 = file.sheet('Sheet2');
                 const column2 = sheet2.column('picture')
@@ -181,7 +181,7 @@ describe('Excel', function() {
             })
         })
         describe('#filter()', function() {
-            it ('should remove columns with non-matching language code', async function() {
+            it('should remove columns with non-matching language code', async function() {
                 const file = await loadTestFile('test-1');
                 const sheet2 = file.sheets[1];
                 const filtered = sheet2.filter('pl-pl');
@@ -196,7 +196,7 @@ describe('Excel', function() {
                     'Proszę',
                 ]);
             })
-            it ('should choose based on country code', async function() {
+            it('should choose based on country code', async function() {
                 const file = await loadTestFile('test-2');
                 const sheet1 = file.sheets[0];
                 const [ us ] = sheet1.filter('en-us').plainText();
@@ -210,7 +210,7 @@ describe('Excel', function() {
             })
         })
         describe('#plainText()', function() {
-            it ('should return an array of objects', async function() {
+            it('should return an array of objects', async function() {
                 const file = await loadTestFile('test-1');
                 const sheet2 = file.sheet('Sheet2');
                 const objects = sheet2.plainText();
@@ -225,13 +225,13 @@ describe('Excel', function() {
         })
     })
     describe('ExcelColumn', function() {
-        it ('should have the right number of cells', async function() {
+        it('should have the right number of cells', async function() {
             const file = await loadTestFile('test-1');
             const sheet2 = file.sheets[1];
             const [ column1 ] = sheet2.columns;
             expect(column1.cells).to.have.lengthOf(5);
         })
-        it ('should have flags extracted from text', async function() {
+        it('should have flags extracted from text', async function() {
             const file = await loadTestFile('test-1');
             const sheet2 = file.sheets[1];
             const [ column1, column2, column3, column4, column5, column6 ] = sheet2.columns;
@@ -250,14 +250,14 @@ describe('Excel', function() {
         })
     })
     describe('ExcelRow', function() {
-        it ('should have the right number of cells', async function() {
+        it('should have the right number of cells', async function() {
             const file = await loadTestFile('test-1');
             const sheet1 = file.sheets[0];
             const [ row1 ] = sheet1.rows;
             expect(row1.cells).to.have.lengthOf(3);
         })
         describe('#get()', function() {
-            it ('should be able to find a cell', async function() {
+            it('should be able to find a cell', async function() {
                 const file = await loadTestFile('test-1');
                 const sheet1 = file.sheets[0];
                 const [ row1 ] = sheet1.rows;
@@ -268,7 +268,7 @@ describe('Excel', function() {
     })
     describe('ExcelPlainTextCell', function() {
         describe('#richText', function() {
-            it ('should return plain text', async function() {
+            it('should return plain text', async function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.get([ 'Sheet1', 'plain text', 0 ]);
                 expect(cell).to.be.an.instanceOf(ExcelPlainTextCell);
@@ -276,7 +276,7 @@ describe('Excel', function() {
                 const text2 = cell.richText();
                 expect(text1).to.eql(text2);
             })
-            it ('should call richTextAdjust with type set to undefined', async function() {
+            it('should call richTextAdjust with type set to undefined', async function() {
                 let args;
                 const richTextAdjust = (type, props, children) => {
                     args = { type, props, children };
@@ -291,7 +291,7 @@ describe('Excel', function() {
                 expect(args.props).to.have.property('key', 0);
                 expect(args.children).to.be.a('string');
             })
-            it ('should yield an element when richTextAdjust provides a type', async function() {
+            it('should yield an element when richTextAdjust provides a type', async function() {
                 const richTextAdjust = (type, props, children) => {
                     return {
                         type: 'span',
@@ -312,7 +312,7 @@ describe('Excel', function() {
     })
     describe('ExcelRichTextCell', function() {
         describe('#plainText', function() {
-            it ('should return plain text', async function() {
+            it('should return plain text', async function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.get([ 'Sheet1', 'rich text', 0 ]);
                 expect(cell).to.be.an.instanceOf(ExcelRichTextCell);
@@ -321,7 +321,7 @@ describe('Excel', function() {
             })
         })
         describe('#richText', function() {
-            it ('should return element with bold text', async function() {
+            it('should return element with bold text', async function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.get([ 'Sheet1', 'rich text', 0 ]);
                 expect(cell).to.be.an.instanceOf(ExcelRichTextCell);
@@ -335,7 +335,7 @@ describe('Excel', function() {
                 });
                 expect(bold).to.not.be.null;
             })
-            it ('should return element with italic text', async function() {
+            it('should return element with italic text', async function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.get([ 'Sheet1', 'rich text', 0 ]);
                 expect(cell).to.be.an.instanceOf(ExcelRichTextCell);
@@ -349,7 +349,7 @@ describe('Excel', function() {
                 });
                 expect(italic).to.not.be.null;
             })
-            it ('should return element with underlined text', async function() {
+            it('should return element with underlined text', async function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.get([ 'Sheet1', 'rich text', 0 ]);
                 expect(cell).to.be.an.instanceOf(ExcelRichTextCell);
@@ -367,14 +367,14 @@ describe('Excel', function() {
     })
     describe('ExcelImageCell', function() {
         describe('#richText()', function() {
-            it ('should return an image element', async function() {
+            it('should return an image element', async function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
                 expect(cell).to.be.an.instanceOf(ExcelImageCell);
                 const img = cell.richText();
                 expect(img).to.have.property('type', 'img');
             })
-            it ('should apply width limit', async function() {
+            it('should apply width limit', async function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
                 const options = {
@@ -384,7 +384,7 @@ describe('Excel', function() {
                 const src = img.props.src;
                 expect(src).to.contain('re100-50');
             })
-            it ('should apply height limit', async function() {
+            it('should apply height limit', async function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
                 const options = {
@@ -394,7 +394,7 @@ describe('Excel', function() {
                 const src = img.props.src;
                 expect(src).to.contain('re200-100');
             })
-            it ('should crop image when both width and height are given', async function() {
+            it('should crop image when both width and height are given', async function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
                 const options = {
@@ -407,7 +407,7 @@ describe('Excel', function() {
                 // centering, then resize to 100x100
                 expect(src).to.contain('cr250-0-500-500+re100-100');
             })
-            it ('should crop image when both width and height are given', async function() {
+            it('should crop image when both width and height are given', async function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
                 const options = {
@@ -420,7 +420,7 @@ describe('Excel', function() {
                 // centering, then resize to 500x50
                 expect(src).to.contain('cr0-200-1000-100+re500-50');
             })
-            it ('should request a larger image when pixel ratio is > 1', async function() {
+            it('should request a larger image when pixel ratio is > 1', async function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
                 const options = {
@@ -434,7 +434,7 @@ describe('Excel', function() {
                 // centering, then resize to 750x75
                 expect(src).to.contain('cr0-200-1000-100+re750-75');
             })
-            it ('should set to set image dimension to pixel count', async function() {
+            it('should set to set image dimension to pixel count', async function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
                 const options = {
@@ -448,7 +448,7 @@ describe('Excel', function() {
                 expect(img.props.style.width).to.eql(500);
                 expect(img.props.style.height).to.eql(50);
             })
-            it ('should apply rounding in calculation with pixel ratio', async function() {
+            it('should apply rounding in calculation with pixel ratio', async function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
                 const options = {
@@ -462,7 +462,7 @@ describe('Excel', function() {
                 // centering, then resize to 667x67
                 expect(src).to.contain('cr0-200-1000-100+re667-67');
             })
-            it ('should allow adjustment of quality', async function() {
+            it('should allow adjustment of quality', async function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
                 const options = {
@@ -475,7 +475,7 @@ describe('Excel', function() {
                 const src = img.props.src;
                 expect(src).to.contain('q50');
             })
-            it ('should prepend URL with server address', async function() {
+            it('should prepend URL with server address', async function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
                 const options = {

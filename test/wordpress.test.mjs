@@ -14,6 +14,16 @@ import {
     WordpressUser,
 } from '../index.mjs';
 
+import {
+    WordPressCategory,
+    WordPressMedia,
+    WordPressPage,
+    WordPressPost,
+    WordPressTag,
+    WordPressText,
+    WordPressUser,
+} from '../index.mjs';
+
 configure({ adapter: new Adapter });
 
 const serverPort = 8711;
@@ -23,14 +33,23 @@ describe('Wordpress', function() {
     before(() => {
         return Server.start(serverPort);
     })
-    it ('should be able to retrieve test post', async function() {
+    it('should export classes under name variants', function() {
+        expect(WordPressCategory).to.be.a('function');
+        expect(WordPressMedia).to.be.a('function');
+        expect(WordPressPage).to.be.a('function');
+        expect(WordPressPost).to.be.a('function');
+        expect(WordPressTag).to.be.a('function');
+        expect(WordPressText).to.be.a('function');
+        expect(WordPressUser).to.be.a('function');
+    })
+    it('should be able to retrieve test post', async function() {
         const data = await loadTestData('et', 'wp/v2/posts/296375');
         expect(data.link).to.eql('https://www.extremetech.com/extreme/296375-curiosity-spots-unexpectedly-complex-martian-rock');
         expect(data.title).to.eql({
             rendered: 'Curiosity Spots Unexpectedly Complex Martian Rock'
         });
     })
-    it ('should be able to retrieve test post list', async function() {
+    it('should be able to retrieve test post list', async function() {
         const data = await loadTestData('et', 'wp/v2/posts');
         expect(data).to.eql([
             296375,
@@ -40,7 +59,7 @@ describe('Wordpress', function() {
         ]);
     })
     describe('WordpressPost', function() {
-        it ('should have the right properties', async function() {
+        it('should have the right properties', async function() {
             const data = await loadTestData('et', 'wp/v2/posts/296375');
             const post = await loadTestObject('et', 'wp/v2/posts/296375', WordpressPost);
 
@@ -65,7 +84,7 @@ describe('Wordpress', function() {
         })
     })
     describe('WordpressPage', function() {
-        it ('should have the right properties', async function() {
+        it('should have the right properties', async function() {
             const data = await loadTestData('et', 'wp/v2/pages/141546');
             const page = await loadTestObject('et', 'wp/v2/pages/141546', WordpressPage);
 
@@ -89,7 +108,7 @@ describe('Wordpress', function() {
         })
     })
     describe('WordpressUser', function() {
-        it ('should have the right properties', async function() {
+        it('should have the right properties', async function() {
             const data = await loadTestData('et', 'wp/v2/users/762');
             const user = await loadTestObject('et', 'wp/v2/users/762', WordpressUser);
 
@@ -104,7 +123,7 @@ describe('Wordpress', function() {
         })
     })
     describe('WordpressTag', function() {
-        it ('should have the right properties', async function() {
+        it('should have the right properties', async function() {
             const data = await loadTestData('et', 'wp/v2/tags/148');
             const tag = await loadTestObject('et', 'wp/v2/tags/148', WordpressTag);
 
@@ -119,7 +138,7 @@ describe('Wordpress', function() {
         })
     })
     describe('WordpressCategory', function() {
-        it ('should have the right properties', async function() {
+        it('should have the right properties', async function() {
             const data = await loadTestData('et', 'wp/v2/categories/8');
             const category = await loadTestObject('et', 'wp/v2/categories/8', WordpressCategory);
 
@@ -135,7 +154,7 @@ describe('Wordpress', function() {
         })
     })
     describe('WordpressMedia', function() {
-        it ('should have the right properties', async function() {
+        it('should have the right properties', async function() {
             const data = await loadTestData('et', 'wp/v2/media/296377');
             const media = await loadTestObject('et', 'wp/v2/media/296377', WordpressMedia);
 
@@ -163,7 +182,7 @@ describe('Wordpress', function() {
     })
     describe('WordpressText', function() {
         describe('#plainText()', function() {
-            it ('should strip off tags and decode HTML entities', async function() {
+            it('should strip off tags and decode HTML entities', async function() {
                 const post = await loadTestObject('et', 'wp/v2/posts/296453', WordpressPost);
                 const text = post.excerpt.plainText();
                 expect(text).to.eql('AMD is on the cusp of its second golden age. It’s about time. ')

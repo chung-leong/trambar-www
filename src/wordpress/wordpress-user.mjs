@@ -1,4 +1,5 @@
 import { WordpressText } from './wordpress-text.mjs';
+import { getPlainTextProperties, getRichTextProperties } from '../utils/text-utils.mjs';
 
 class WordpressUser {
     static create(data) {
@@ -12,6 +13,18 @@ class WordpressUser {
         user.avatarURLs = data.avatar_urls;
         user.meta = data.meta;
         return user;
+    }
+
+    plainText(options) {
+        return getPlainTextProperties(options);
+    }
+
+    richText(options) {
+        return getRichTextProperties(options);
+    }
+
+    filter(language) {
+        return this;
     }
 }
 
