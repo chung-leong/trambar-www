@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import {
     parseHTML,
     generateRichTextFromNodes,
+    generatePlainTextFromNodes,
 } from '../src/utils/text-utils.mjs';
 
 describe('Text utils', function() {
@@ -49,6 +50,13 @@ describe('Text utils', function() {
             expect(element.props).to.have.property('readOnly', true);
             expect(element.props).to.have.property('tabIndex', 5);
         })
+        it('should omit inline handler', function() {
+            const html = `<p onmouseover="alert('Hi!')">This is a test</p>`;
+            const nodes = parseHTML(html);
+            const fragment = generateRichTextFromNodes(nodes, {});
+            const element = fragment.props.children[0];
+            expect(element.props).to.not.have.property('onmouseover');
+        })
         it('should handle inline style', function() {
             const html = `<p style="font-family: Arial ; FONT-SIZE:16pt">This is a test</p>`;
             const nodes = parseHTML(html);
@@ -70,6 +78,66 @@ describe('Text utils', function() {
             expect(element.props.style).to.have.property('WebkitAnimationName', 'slidein');
             expect(element.props.style).to.have.property('MozAnimationName', 'slidein');
             expect(element.props.style).to.have.property('msAnimationName', 'slidein');
+        })
+    })
+    describe('#generatePlainTextFromNodes()', function() {
+        it('should normalize whitespaces', function() {
+            const html = `<p>This is a test\n\nand this is only a test</p>`;
+            const nodes = parseHTML(html);
+            const text = generatePlainTextFromNodes(nodes, {});
+            expect(text).to.eql('This is a test and this is only a test');
+        })
+        it ('should trim leading and trailing whitespaces', function() {
+            const html = `
+                <p>
+                    This is a test and this is only a test
+                </p>
+            `;
+            const nodes = parseHTML(html);
+            const text = generatePlainTextFromNodes(nodes, {});
+            expect(text).to.eql('This is a test and this is only a test');
+        })
+        it ('should separate block elements with linefeeds', function() {
+            const html = `
+                <div>This is a test</div>
+                <div>and this is only a test</div>
+            `;
+            const nodes = parseHTML(html);
+            const text = generatePlainTextFromNodes(nodes, {});
+            expect(text).to.eql('This is a test\nand this is only a test');
+        })
+        it ('should add extra linefeed between p elements', function() {
+            const html = `
+                <p>This is a test</p>
+                <p>and this is only a test</p>
+            `;
+            const nodes = parseHTML(html);
+            const text = generatePlainTextFromNodes(nodes, {});
+            expect(text).to.eql('This is a test\n\nand this is only a test');
+        })
+        it ('should add asterisk to list items', function() {
+            const html = `
+                <ul>
+                    <li>Item 1
+                    <li>Item 2
+                    <li>Item 3
+                </ul>
+            `;
+            const nodes = parseHTML(html);
+            const text = generatePlainTextFromNodes(nodes, {});
+            expect(text).to.eql('* Item 1\n* Item 2\n* Item 3');
+        })
+        it ('should prefix items in ordered list with number', function() {
+            const html = `
+                <ol>
+                    <li>Item 1
+                    <li>Item 2
+                    <li>Item 3
+                </ol>
+            `;
+            const nodes = parseHTML(html);
+            const text = generatePlainTextFromNodes(nodes, {});
+            expect(text).to.eql('1. Item 1\n2. Item 2\n3. Item 3');
         })
     })
 })

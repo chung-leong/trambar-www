@@ -24,23 +24,100 @@ function generateRichText(type, props, children, options) {
     }
 }
 
-function generatePlainTextFromNodes(nodes, options, key) {
-    const list = []
-    for (let [ index, child ] of nodes.entries()) {
-        const text = generatePlainTextFromNode(child, options);
-        list.push(text);
+const blockLevelTags = [
+    'address', 'article', 'aside', 'blockquote', 'details', 'dialog', 'dd',
+    'div', 'dl', 'dt', 'fieldset', 'figcaption', 'figure', 'footer', 'form',
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'hgroup', 'hr', 'li', 'main',
+    'nav', 'ol', 'p', 'pre', 'section', 'table', 'ul'
+];
+
+function isBlockLevel(node) {
+    if (node && node.type === 'tag') {
+        return blockLevelTags.indexOf(node.name) !== -1;
+    } else {
+        return false;
     }
-    return list.join('');
 }
 
-function generatePlainTextFromNode(node, options, key) {
-    if (node.type === 'tag') {
-        // TODO: add linefeeds
-        const innerText = generatePlainTextFromNodes(node.children, options);
-        return innerText;
-    } else if (node.type === 'text') {
-        return normalizeWhitespaces(node.data);
+function generatePlainTextFromNodes(nodes, options, key, parent) {
+    const list = []
+    const blockLevel = nodes.map(isBlockLevel);
+    for (let [ index, child ] of nodes.entries()) {
+        const text = generatePlainTextFromNode(child, options, index, parent);
+        if (blockLevel[index - 1] && blockLevel[index + 1]) {
+            // ignore whitespaces between block level elements
+            if (child.type === 'text' && !text.trim()) {
+                continue;
+            }
+        }
+        list.push(text);
     }
+    const text = list.join('');
+    if (key === undefined) {
+        return text.trim();
+    } else {
+        return text;
+    }
+}
+
+function generatePlainTextFromNode(node, options, key, parent) {
+    if (node.type === 'tag') {
+        const innerText = generatePlainTextFromNodes(node.children, options, key, node);
+        const outerText = wrapPlainText(innerText, node, parent);
+        return outerText;
+    } else if (node.type === 'text') {
+        let text = normalizeWhitespaces(node.data);
+        if (isBlockLevel(parent)) {
+            text = text.trim();
+        }
+        return text;
+    }
+}
+
+function wrapPlainText(innerText, node, parent) {
+    if (!isBlockLevel(node)) {
+        if (node.name === 'br') {
+            return innerText + '\n';
+        } else {
+            return innerText;
+        }
+    }
+    let text = innerText;
+    if (!/\n$/.test(text)) {
+        text += '\n';
+    }
+    switch (node.name) {
+        case 'h1':
+        case 'h2':
+        case 'h3':
+        case 'h4':
+        case 'h5':
+        case 'h6':
+        case 'p':
+            if (!/\n\n$/.test(text)) {
+                text += '\n';
+            }
+            break;
+        case 'li':
+            if (parent && parent.name === 'ol') {
+                let num = 1;
+                for (let child of parent.children) {
+                    if (child === node) {
+                        break;
+                    }
+                    if (child.name === 'li') {
+                        num++;
+                    }
+                }
+                text = `${num}. ${text}`;
+            } else {
+                text = `* ${text}`;
+            }
+            break;
+        case 'hr':
+            text = '――――――――――\n';
+    }
+    return text;
 }
 
 function normalizeWhitespaces(text) {
@@ -75,6 +152,9 @@ function generatePropsFromAttrs(attrs, options, key) {
     const props = { key };
     if (attrs instanceof Object) {
         for (let name in attrs) {
+            if (/^on/.test(name)) {
+                continue;
+            }
             const propName = generatePropNameFromAttr(name);
             const propValue = generatePropValueFromAttr(attrs[name], propName);
             props[propName] = propValue;
@@ -84,8 +164,7 @@ function generatePropsFromAttrs(attrs, options, key) {
 }
 
 function generatePropNameFromAttr(name) {
-    const nameLC = name.toLowerCase();
-    switch (nameLC) {
+    switch (name) {
         case 'class':
             return 'className';
         case 'readonly':
@@ -93,7 +172,7 @@ function generatePropNameFromAttr(name) {
         case 'tabindex':
             return 'tabIndex';
         default:
-            return nameLC;
+            return name;
     }
 }
 
@@ -149,7 +228,9 @@ function parseHTML(html) {
         }
     });
     const parser = new Parser(handler, {
-        decodeEntities: true
+        decodeEntities: true,
+        lowerCaseTags: true,
+        lowerCaseAttributeNames: true,
     });
     parser.write(html);
     parser.end();
