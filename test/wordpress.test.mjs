@@ -185,7 +185,7 @@ describe('Wordpress', function() {
             it('should strip off tags and decode HTML entities', async function() {
                 const post = await loadTestObject('et', 'wp/v2/posts/296453', WordpressPost);
                 const text = post.excerpt.plainText();
-                expect(text).to.eql('AMD is on the cusp of its second golden age. It’s about time. ')
+                expect(text).to.eql('AMD is on the cusp of its second golden age. It’s about time.')
             })
         })
     })

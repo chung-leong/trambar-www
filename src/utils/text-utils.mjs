@@ -127,12 +127,13 @@ function normalizeWhitespaces(text) {
 function generateRichTextFromNodes(nodes, options, key) {
     const list = []
     for (let [ index, child ] of nodes.entries()) {
-        list.push(generateRichTextFromNode(child, index));
+        const element = generateRichTextFromNode(child, options, index);
+        list.push(element);
     }
     if (key === undefined) {
         return generateRichText(React.Fragment, {}, list, options);
     } else {
-        return list;
+        return (list.length > 0) ? list : undefined;
     }
 }
 
@@ -163,33 +164,74 @@ function generatePropsFromAttrs(attrs, options, key) {
     return props;
 }
 
+const irregularPropNames = {
+    accesskey: 'accessKey',
+    allowfullscreen: 'allowFullScreen',
+    allowtransparency: 'allowTransparency',
+    cellpadding: 'cellPadding',
+    cellspacing: 'cellSpacing',
+    class: 'className',
+    colspan: 'colSpan',
+    contenteditable: 'contentEditable',
+    controlsList: 'controlsList',
+    crossorigin: 'crossOrigin',
+    datetime: 'dateTime',
+    enctype: 'encType',
+    formaction: 'formAction',
+    formenctype: 'formEncType',
+    formmethod: 'formMethod',
+    formnovalidate: 'formNoValidate',
+    formtarget: 'formTarget',
+    frameborder: 'frameBorder',
+    for: 'htmlFor',
+    'http-equiv': 'httpEquiv',
+    inputmode: 'inputMode',
+    marginheight: 'marginHeight',
+    marginwidth: 'marginWidth',
+    maxlength: 'maxLength',
+    mediagroup: 'mediaGroup',
+    minlength: 'minLength',
+    novalidate: 'noValidate',
+    playsinline: 'playsInline',
+    readonly: 'readOnly',
+    referrerpolicy: 'referrerPolicy',
+    rowspan: 'rowSpan',
+    srcset: 'srcSet',
+    tabindex: 'tabIndex',
+};
+
 function generatePropNameFromAttr(name) {
-    switch (name) {
-        case 'class':
-            return 'className';
-        case 'readonly':
-            return 'readOnly';
-        case 'tabindex':
-            return 'tabIndex';
-        default:
-            return name;
-    }
+    return irregularPropNames[name] || name;
 }
 
+const booleanPropNames = [
+    'allowFullScreen', 'async', 'autoplay', 'capture', 'checked', 'controls',
+    'default', 'defer', 'disabled', 'formNoValidate', 'hidden', 'loop',
+    'multiple', 'muted', 'noValidate', 'open', 'playsInline', 'readOnly',
+    'required', 'reversed', 'seamless', 'selected',
+];
+
+const numericPropNames = [
+    'cellPadding', 'cellSpacing', 'cols', 'colSpan', 'height', 'marginHeight',
+    'marginWidth', 'max', 'maxLength', 'min', 'minLength', 'optimum', 'rows',
+    'rowSpan', 'size', 'step', 'tabIndex', 'width',
+];
+
 function generatePropValueFromAttr(value, name) {
-    switch (name) {
-        case 'style':
-            return generateStyleFromAttr(value);
-        case 'disabled':
-        case 'readOnly':
-            return true;
-        case 'tabIndex':
-        case 'width':
-        case 'height':
-            return parseInt(value);
-        default:
-            return value;
+    if (booleanPropNames.indexOf(name) !== -1) {
+        return true;
+    } else if (name === 'style') {
+        return generateStyleFromAttr(value);
     }
+    if (booleanPropNames.indexOf(name) !== -1) {
+        return true;
+    } else if (numericPropNames.indexOf(name)) {
+        const num = parseFloat(value);
+        if (num === num) {
+            return num;
+        }
+    }
+    return value;
 }
 
 function generateStyleFromAttr(inlineStyle) {
