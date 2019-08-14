@@ -2,7 +2,7 @@ import { ExcelColumn } from './excel-column.mjs';
 import { ExcelRow } from './excel-row.mjs';
 import { ExcelCell } from './excel-cell.mjs';
 import { parsePath } from '../utils/path-utils.mjs';
-import { chooseLanguageVersion } from '../utils/language-utils.mjs';
+import { chooseLanguageVersion, isLocaleIdentifier } from '../utils/language-utils.mjs';
 
 class ExcelSheet {
     constructor(file) {
@@ -103,6 +103,28 @@ class ExcelSheet {
             sheet.rows.push(row.exclude(excluded));
         }
         return sheet;
+    }
+
+    languages() {
+        const list = [];
+        for (let column of this.columns) {
+            const columnList = column.languages();
+            for (let code of columnList) {
+                if (list.indexOf(code) === -1) {
+                    list.push(code);
+                }
+            }
+        }
+        if (list.length === 0) {
+            for (let flag of this.flags) {
+                if (isLocaleIdentifier(flag)) {
+                    if (list.indexOf(flag) === -1) {
+                        list.push(flag);
+                    }
+                }
+            }
+        }
+        return list;
     }
 
     includes(cell) {

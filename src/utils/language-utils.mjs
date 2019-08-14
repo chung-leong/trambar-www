@@ -16,13 +16,15 @@ function chooseLanguageVersion(objects, lang) {
     return list;
 }
 
-const localeRegExp = /^\w{2}(\-\w{2})?$/;
+function isLocaleIdentifier(flag) {
+    return /^\w{2}(\-\w{2})?$/.test(flag);
+}
 
 function getLanguageMatch(object, reqLC, reqCC) {
     let highest = 0;
     if (reqLC && object.flags instanceof Array) {
         for (let flag of object.flags) {
-            if (localeRegExp.test(flag)) {
+            if (isLocaleIdentifier(flag)) {
                 const [ lc, cc ] = flag.toLowerCase().split('-');
                 if (lc === reqLC) {
                     let score = 50;
@@ -41,4 +43,5 @@ function getLanguageMatch(object, reqLC, reqCC) {
 
 export {
     chooseLanguageVersion,
+    isLocaleIdentifier,
 };

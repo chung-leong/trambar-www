@@ -64,6 +64,10 @@ class ExcelRow {
         return row;
     }
 
+    languages() {
+        return this.sheet.languages();
+    }
+
     exclude(excluded) {
         const row = new ExcelRow(this.sheet);
         for (let [ index, cell ] of this.cells.entries()) {

@@ -83,6 +83,19 @@ class ExcelFile {
         return file;
     }
 
+    languages() {
+        const list = [];
+        for (let sheet of this.sheets) {
+            const sheetList = sheet.languages();
+            for (let code of sheetList) {
+                if (list.indexOf(code) === -1) {
+                    list.push(code);
+                }
+            }
+        }
+        return list;
+    }
+
     includes(object) {
         for (let sheet of this.sheets) {
             if (sheet.includes(object)) {

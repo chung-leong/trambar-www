@@ -1,4 +1,5 @@
 import { parsePath } from '../utils/path-utils.mjs';
+import { isLocaleIdentifier } from '../utils/language-utils.mjs';
 
 class ExcelColumn {
     constructor(sheet, data) {
@@ -43,6 +44,18 @@ class ExcelColumn {
         if (chosen.indexOf(column) !== -1) {
             return this;
         }
+    }
+
+    languages() {
+        const list = [];
+        for (let flag of this.flags) {
+            if (isLocaleIdentifier(flag)) {
+                if (list.indexOf(flag) === -1) {
+                    list.push(flag);
+                }
+            }
+        }
+        return list;
     }
 
     includes(cell) {

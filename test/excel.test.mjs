@@ -74,6 +74,18 @@ describe('Excel', function() {
                 expect(sheet2.columns).to.have.lengthOf(2);
             })
         })
+        describe('#languages()', function() {
+            it('should return a list of available languages', async function() {
+                const file = await loadTestFile('test-1');
+                const languages = file.languages();
+                expect(languages).to.eql([ 'en', 'pl', 'ua' ]);
+            })
+            it('should return a list of available languages from columns', async function() {
+                const file = await loadTestFile('test-2');
+                const languages = file.languages();
+                expect(languages).to.eql([ 'en-us', 'en-gb', 'en-au', 'en-ie' ]);
+            })
+        })
         describe('#get()', function() {
             it('should be able to find a column', async function() {
                 const file = await loadTestFile('test-1');
@@ -200,11 +212,11 @@ describe('Excel', function() {
                 const file = await loadTestFile('test-2');
                 const sheet1 = file.sheets[0];
                 const [ us ] = sheet1.filter('en-us').plainText();
-                const [ uk ] = sheet1.filter('en-uk').plainText();
+                const [ gb ] = sheet1.filter('en-gb').plainText();
                 const [ ie ] = sheet1.filter('en-ie').plainText();
                 const [ ca ] = sheet1.filter('en-ca').plainText();
                 expect(us).to.have.property('capital', 'Washington');
-                expect(uk).to.have.property('capital', 'London');
+                expect(gb).to.have.property('capital', 'London');
                 expect(ie).to.have.property('capital', 'Dublin');
                 expect(ca).to.have.property('capital', 'Washington');
             })
