@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { expect } from 'chai';
 import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import Server from './server/server.mjs';
+import Server, { fetchTestData } from './server/server.mjs';
 
 import {
     MarkdownPage,
@@ -88,20 +88,12 @@ describe('Markdown', function() {
 
 let testData = {};
 
-async function loadTestPage(repo, name) {
-    const data = await loadTestData(repo, name);
+async function loadTestPage(identifier, slug) {
+    const data = await loadTestData(identifier, slug);
     const file = MarkdownPage.create(data);
     return file;
 }
 
-async function loadTestData(repo, name) {
-    let data = testData[`${repo}/${name}`];
-    if (!data) {
-        const res = await fetch(`${serverAddress}/wiki/${repo}/${name}`);
-        if (res.status !== 200) {
-            throw new Error(res.statusText);
-        }
-        data = testData[`${repo}/${name}`] = await res.json();
-    }
-    return data;
+async function loadTestData(identifier, slug) {
+    return fetchTestData(`${serverAddress}/wiki/${identifier}/${slug}`);
 }

@@ -12,7 +12,8 @@ class ExcelFile {
         file.url = data.url || '';
         file.title = data.title || '';
         file.type = data.type || '';
-        file.name = data.name || '';
+        file.identifier = data.identifier || '';
+        file.filename = data.filename || '';
         file.keywords = data.keywords || [];
         file.subject = data.subject || '';
         file.description = data.description || '';

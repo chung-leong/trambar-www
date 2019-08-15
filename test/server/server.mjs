@@ -15,6 +15,21 @@ const serverProxy = {
     },
 };
 
+const testData = {};
+
+async function fetchTestData(url) {
+    let data = testData[url];
+    if (!data) {
+        const res = await fetch(url);
+        if (res.status !== 200) {
+            throw new Error(res.statusText);
+        }
+        data = testData[url] = await res.json();
+    }
+    return data;
+}
+
 export {
-    serverProxy as default
+    serverProxy as default,
+    fetchTestData,
 };

@@ -4,15 +4,15 @@ import { getPlainTextProperties, getRichTextProperties } from '../utils/text-uti
 class WordpressCategory {
     static create(data) {
         const category = new WordpressCategory;
-        category.id = data.id;
-        category.count = data.count;
-        category.name = WordpressText.create(data.name);
-        category.description = WordpressText.create(data.description);
-        category.link = data.link;
-        category.slug = data.slug;
-        category.taxonomy = data.taxonomy;
-        category.parent = data.parent;
-        category.meta = data.meta;
+        category.id = data.rest.id;
+        category.count = data.rest.count;
+        category.name = WordpressText.create(data.rest.name);
+        category.description = WordpressText.create(data.rest.description);
+        category.link = data.rest.link;
+        category.slug = data.rest.slug;
+        category.taxonomy = data.rest.taxonomy;
+        category.parent = data.rest.parent;
+        category.meta = data.rest.meta;
         return category;
     }
 

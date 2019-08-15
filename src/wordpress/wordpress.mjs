@@ -2,6 +2,10 @@ import { DataSource } from '../data-source.mjs';
 import { WordpressPost } from './wordpress-post.mjs';
 
 class Wordpress extends DataSource {
+    async fetchWPSites() {
+        const url = this.getURL([ 'rest' ], { });
+    }
+
     async fetchWPPost(name, id) {
         const url = this.getURL([ 'rest', name, 'wp', 'v2', 'posts', id ]);
         const post = await this.fetchObject(url, WordpressPost.create);

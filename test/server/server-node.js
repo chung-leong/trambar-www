@@ -26,12 +26,12 @@ async function start(port) {
     };
     app.use(CORS(corsOptions));
     app.set('json spaces', 2);
-    app.get('/excel/:name', handleExcelRequest);
+    app.get('/excel/:identifier', handleExcelRequest);
     app.get('/excel/', handleExcelListRequest);
-    app.get('/wiki/:repoName/:slug', handleWikiRequest);
-    app.get('/wiki/:repoName/', handleWikiListRequest);
+    app.get('/wiki/:identifier/:slug', handleWikiRequest);
+    app.get('/wiki/:identifier/', handleWikiListRequest);
     app.get('/wiki/', handleWikiListRequest);
-    app.get('/rest/:name/*', handleRestRequest);
+    app.get('/rest/:identifier/*', handleRestRequest);
     app.get('/rest/', handleRestListRequest);
     app.use(handleError);
 
@@ -73,8 +73,8 @@ async function stop() {
 
 async function handleExcelRequest(req, res, next) {
     try {
-        const name = req.params.name;
-        const data = await loadExcel(name);
+        const { identifier } = req.params;
+        const data = await loadExcel(identifier);
         res.json(data);
     } catch (err) {
         next(err);
@@ -83,9 +83,8 @@ async function handleExcelRequest(req, res, next) {
 
 async function handleExcelListRequest(req, res, next) {
     try {
-        const prefix = req.query.prefix || '';
-        const names = await findExcel(prefix);
-        res.json(names);
+        const identifiers = await findExcel();
+        res.json(identifiers);
     } catch (err) {
         next(err);
     }
@@ -93,9 +92,8 @@ async function handleExcelListRequest(req, res, next) {
 
 async function handleWikiRequest(req, res, next) {
     try {
-        const repoName = req.params.repoName;
-        const slug = req.params.slug;
-        const data = await loadWiki(repoName, slug);
+        const { identifier, slug } = req.params;
+        const data = await loadWiki(identifier, slug);
         res.json(data);
     } catch (err) {
         next(err);
@@ -104,18 +102,17 @@ async function handleWikiRequest(req, res, next) {
 
 async function handleWikiListRequest(req, res, next) {
     try {
-        const prefix = req.query.prefix || '';
-        const repoName = req.params.repoName;
-        if (repoName !== undefined) {
-            const names = await findWiki(repoName, prefix);
-            res.json(names);
+        const { identifier } = req.params;
+        if (identifier !== undefined) {
+            const slugs = await findWiki(identifier);
+            res.json(slugs);
         } else {
             const urls = [];
-            const repoNames = await findRepos();
-            for (let repoName of repoNames) {
-                const names = await findWiki(repoName, prefix);
-                for (let name of names) {
-                    urls.push(`${repoName}/${name}`);
+            const identifiers = await findRepos();
+            for (let identifier of identifiers) {
+                const slugs = await findWiki(identifier);
+                for (let slug of slugs) {
+                    urls.push(`${identifier}/${slug}`);
                 }
             }
             res.json(urls);
@@ -127,9 +124,9 @@ async function handleWikiListRequest(req, res, next) {
 
 async function handleRestRequest(req, res, next) {
     try {
-        const { name } = req.params;
+        const { identifier } = req.params;
         const path = req.params[0];
-        const data = await findRestObjects(name, path);
+        const data = await findRestObjects(identifier, path);
         res.json(data);
     } catch (err) {
         next(err);
@@ -150,8 +147,8 @@ function handleError(err, req, res, next) {
     res.sendStatus(400);
 }
 
-async function loadExcel(name) {
-    const path = `${__dirname}/../assets/excel/${name}.xlsx`;
+async function loadExcel(identifier) {
+    const path = `${__dirname}/../assets/excel/${identifier}.xlsx`;
     const buffer = await readFile(path);
     const workbook = await parseSpreadsheet(buffer);
     const mediaImports = findMediaImports(workbook.sheets);
@@ -166,20 +163,17 @@ async function loadExcel(name) {
         mediaImport.height = 500;
         delete mediaImport.src;
     }
-    return { name, ...workbook };
+    return { identifier, ...workbook };
 }
 
-async function findExcel(prefix) {
+async function findExcel() {
     const path = `${__dirname}/../assets/excel`;
     const filenames = await readdir(path);
     const names = [];
     for (let filename of filenames) {
         const m = /(.*)\.xlsx$/.exec(filename);
         if (m) {
-            const name = m[1];
-            if (name.startsWith(prefix)) {
-                names.push(name);
-            }
+            names.push(m[1]);
         }
     }
     return _.sortBy(names);
@@ -221,30 +215,27 @@ async function findRepos() {
     return _.sortBy(names);
 }
 
-async function findWiki(repoName, prefix) {
+async function findWiki(repoName) {
     const path = `${__dirname}/../assets/gitlab/${repoName}`;
     const filenames = await readdir(path);
-    const names = [];
+    const slugs = [];
     for (let filename of filenames) {
         const m = /(.*)\.md$/.exec(filename);
         if (m) {
-            const name = m[1];
-            if (name.startsWith(prefix)) {
-                names.push(name);
-            }
+            slugs.push(m[1]);
         }
     }
-    return _.sortBy(names);
+    return _.sortBy(slugs);
 }
 
-async function findRestObjects(name, path) {
+async function findRestObjects(identifier, path) {
     try {
-        const jsonPath = `${__dirname}/../assets/rest/${name}/${path}.json`;
+        const jsonPath = `${__dirname}/../assets/rest/${identifier}/${path}.json`;
         const jsonText = await readFile(jsonPath, 'utf8');
-        const data = JSON.parse(jsonText);
-        return data;
+        const rest = JSON.parse(jsonText);
+        return { identifier, rest };
     } catch (err) {
-        const folderPath = `${__dirname}/../assets/rest/${name}/${path}`;
+        const folderPath = `${__dirname}/../assets/rest/${identifier}/${path}`;
         const names = await readdir(folderPath);
         return _.map(names, (name) => {
             return parseInt(name);

@@ -4,22 +4,22 @@ import { getPlainTextProperties, getRichTextProperties } from '../utils/text-uti
 class WordpressPage {
     static create(data) {
         const page = new WordpressPage;
-        page.id = data.id;
-        page.date = new Date(data.date_gmt + 'Z');
-        page.modified = new Date(data.modified_gmt + 'Z');
-        page.slug = data.slug;
-        page.status = data.status;
-        page.type = data.type;
-        page.link = data.link;
-        page.title = WordpressText.create(data.title);
-        page.content = WordpressText.create(data.content);
-        page.excerpt = WordpressText.create(data.excerpt);
-        page.author = data.author;
-        page.featuredMedia = data.featured_media;
-        page.menuOrder = data.menu_order;
-        page.parent = data.parent;
-        page.format = data.format;
-        page.meta = data.meta;
+        page.id = data.rest.id;
+        page.date = new Date(data.rest.date_gmt + 'Z');
+        page.modified = new Date(data.rest.modified_gmt + 'Z');
+        page.slug = data.rest.slug;
+        page.status = data.rest.status;
+        page.type = data.rest.type;
+        page.link = data.rest.link;
+        page.title = WordpressText.create(data.rest.title);
+        page.content = WordpressText.create(data.rest.content);
+        page.excerpt = WordpressText.create(data.rest.excerpt);
+        page.author = data.rest.author;
+        page.featuredMedia = data.rest.featured_media;
+        page.menuOrder = data.rest.menu_order;
+        page.parent = data.rest.parent;
+        page.format = data.rest.format;
+        page.meta = data.rest.meta;
         return page;
     }
 

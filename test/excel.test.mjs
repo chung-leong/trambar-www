@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { expect } from 'chai';
 import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import Server from './server/server.mjs';
+import Server, { fetchTestData } from './server/server.mjs';
 
 import {
     ExcelFile,
@@ -26,7 +26,7 @@ describe('Excel', function() {
     })
     it('should be able to retrieve test data', async function() {
         const data = await loadTestData('test-1');
-        expect(data.name).to.eql('test-1');
+        expect(data.identifier).to.eql('test-1');
         expect(data.title).to.eql('Test file title');
         expect(data.description).to.eql('This is a test');
         expect(data.keywords).to.eql([ 'keyword1', 'keyword2', 'keyword3' ]);
@@ -36,7 +36,7 @@ describe('Excel', function() {
         it('should include metadata from file', async function() {
             const data = await loadTestData('test-1');
             const file = await loadTestFile('test-1');
-            expect(file.name).to.eql(data.name);
+            expect(file.identifier).to.eql(data.identifier);
             expect(file.title).to.eql(data.title);
             expect(file.description).to.eql(data.description);
             expect(file.keywords).to.eql(data.keywords);
@@ -506,22 +506,12 @@ describe('Excel', function() {
     });
 })
 
-let testData = {};
-
-async function loadTestFile(name) {
-    const data = await loadTestData(name);
+async function loadTestFile(identifier) {
+    const data = await loadTestData(identifier);
     const file = ExcelFile.create(data);
     return file;
 }
 
-async function loadTestData(name) {
-    let data = testData[name];
-    if (!data) {
-        const res = await fetch(`${serverAddress}/excel/${name}`);
-        if (res.status !== 200) {
-            throw new Error(res.statusText);
-        }
-        data = testData[name] = await res.json();
-    }
-    return data;
+async function loadTestData(identifier) {
+    return fetchTestData(`${serverAddress}/excel/${identifier}`);
 }

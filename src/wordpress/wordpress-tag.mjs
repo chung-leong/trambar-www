@@ -4,14 +4,14 @@ import { getPlainTextProperties, getRichTextProperties } from '../utils/text-uti
 class WordpressTag {
     static create(data) {
         const tag = new WordpressTag;
-        tag.id = data.id;
-        tag.count = data.count;
-        tag.name = WordpressText.create(data.name);
-        tag.description = WordpressText.create(data.description);
-        tag.link = data.link;
-        tag.slug = data.slug;
-        tag.taxonomy = data.taxonomy;
-        tag.meta = data.meta;
+        tag.id = data.rest.id;
+        tag.count = data.rest.count;
+        tag.name = WordpressText.create(data.rest.name);
+        tag.description = WordpressText.create(data.rest.description);
+        tag.link = data.rest.link;
+        tag.slug = data.rest.slug;
+        tag.taxonomy = data.rest.taxonomy;
+        tag.meta = data.rest.meta;
         return tag;
     }
 

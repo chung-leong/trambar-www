@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { expect } from 'chai';
 import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import Server from './server/server.mjs';
+import Server, { fetchTestData } from './server/server.mjs';
 
 import {
     DataSource,
@@ -37,7 +37,7 @@ describe('DataSource', function() {
             dataSource.activate();
             const file = await dataSource.fetchExcelFile('test-1');
             expect(file).to.be.an.instanceOf(ExcelFile);
-            expect(file.name).to.eql(data.name);
+            expect(file.identifier).to.eql(data.identifier);
             expect(file.title).to.eql(data.title);
             expect(file.description).to.eql(data.description);
             expect(file.keywords).to.eql(data.keywords);
@@ -75,16 +75,6 @@ describe('DataSource', function() {
             const file = await dataSource.fetchExcelFile('test-1');
             const files = await dataSource.fetchExcelFiles();
             expect(files[0]).to.equal(file);
-        })
-        it('should return only objects with matching prefix', async function() {
-            const options = {
-                baseURL: serverAddress
-            };
-            const dataSource = new DataSource([ Excel ], options);
-            dataSource.activate();
-            const files = await dataSource.fetchExcelFiles('test-1');
-            expect(files).to.have.lengthOf(1);
-            expect(files[0]).to.have.property('name', 'test-1');
         })
     })
     describe('#fetchWikiPage', function() {
@@ -144,44 +134,16 @@ describe('DataSource', function() {
             const pages = await dataSource.fetchWikiPages('repo1');
             expect(pages[0]).to.equal(page);
         })
-        it('should return only objects with matching prefix', async function() {
-            const options = {
-                baseURL: serverAddress
-            };
-            const dataSource = new DataSource([ Gitlab ], options);
-            dataSource.activate();
-            const pages = await dataSource.fetchWikiPages(undefined, 'test-3');
-            expect(pages).to.have.lengthOf(1);
-            expect(pages[0]).to.have.property('slug', 'test-3');
-        })
     })
     after(() => {
         return Server.stop();
     })
 })
 
-const testData = {};
-
-async function loadExcelData(name) {
-    let data = testData[name];
-    if (!data) {
-        const res = await fetch(`${serverAddress}/excel/${name}`);
-        if (res.status !== 200) {
-            throw new Error(res.statusText);
-        }
-        data = testData[name] = await res.json();
-    }
-    return data;
+async function loadExcelData(identifier) {
+    return fetchTestData(`${serverAddress}/excel/${identifier}`);
 }
 
-async function loadWikiData(repo, name) {
-    let data = testData[`${repo}/${name}`];
-    if (!data) {
-        const res = await fetch(`${serverAddress}/wiki/${repo}/${name}`);
-        if (res.status !== 200) {
-            throw new Error(res.statusText);
-        }
-        data = testData[`${repo}/${name}`] = await res.json();
-    }
-    return data;
+async function loadWikiData(identifier, slug) {
+    return fetchTestData(`${serverAddress}/wiki/${identifier}/${slug}`);
 }

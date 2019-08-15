@@ -2,18 +2,18 @@ import { DataSource } from '../data-source.mjs';
 import { MarkdownPage } from './markdown-page.mjs';
 
 class Gitlab extends DataSource {
-    async fetchWikiPage(repo, slug) {
-        const url = this.getURL([ 'wiki', repo, slug ]);
+    async fetchWikiPage(identifier, slug) {
+        const url = this.getURL([ 'wiki', identifier, slug ]);
         const file = await this.fetchObject(url, MarkdownPage.create);
         return file;
     }
 
-    async fetchWikiPages(repo, prefix) {
+    async fetchWikiPages(identifier) {
         const names = [ 'wiki' ];
-        if (repo) {
-            names.push(repo);
+        if (identifier) {
+            names.push(identifier);
         }
-        const url = this.getURL(names, { prefix });
+        const url = this.getURL(names);
         const files = await this.fetchObjects(url, MarkdownPage.create);
         return files;
     }
