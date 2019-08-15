@@ -4,6 +4,7 @@ import { getPlainTextProperties, getRichTextProperties } from '../utils/text-uti
 class WordpressCategory {
     static create(data) {
         const category = new WordpressCategory;
+        category.site = data.identifier;
         category.id = data.rest.id;
         category.count = data.rest.count;
         category.name = WordpressText.create(data.rest.name);
@@ -17,11 +18,11 @@ class WordpressCategory {
     }
 
     plainText(options) {
-        return getPlainTextProperties(options);
+        return getPlainTextProperties(this, options);
     }
 
     richText(options) {
-        return getRichTextProperties(options);
+        return getRichTextProperties(this, options);
     }
 
     filter(language) {

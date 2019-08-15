@@ -17,6 +17,7 @@ export * from './src/wordpress/wordpress-category.mjs';
 export * from './src/wordpress/wordpress-media.mjs';
 export * from './src/wordpress/wordpress-page.mjs';
 export * from './src/wordpress/wordpress-post.mjs';
+export * from './src/wordpress/wordpress-site.mjs';
 export * from './src/wordpress/wordpress-tag.mjs';
 export * from './src/wordpress/wordpress-text.mjs';
 export * from './src/wordpress/wordpress-user.mjs';

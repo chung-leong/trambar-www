@@ -4,6 +4,7 @@ import { getPlainTextProperties, getRichTextProperties } from '../utils/text-uti
 class WordpressUser {
     static create(data) {
         const user = new WordpressUser;
+        user.site = data.identifier;
         user.id = data.rest.id;
         user.url = data.rest.url;
         user.name = WordpressText.create(data.rest.name);

@@ -9,6 +9,7 @@ import {
     WordpressMedia,
     WordpressPage,
     WordpressPost,
+    WordpressSite,
     WordpressTag,
     WordpressText,
     WordpressUser,
@@ -19,6 +20,7 @@ import {
     WordPressMedia,
     WordPressPage,
     WordPressPost,
+    WordPressSite,
     WordPressTag,
     WordPressText,
     WordPressUser,
@@ -38,9 +40,15 @@ describe('Wordpress', function() {
         expect(WordPressMedia).to.be.a('function');
         expect(WordPressPage).to.be.a('function');
         expect(WordPressPost).to.be.a('function');
+        expect(WordPressSite).to.be.a('function');
         expect(WordPressTag).to.be.a('function');
         expect(WordPressText).to.be.a('function');
         expect(WordPressUser).to.be.a('function');
+    })
+    it('should be able to retrieve site info', async function() {
+        const data = await loadTestData('et', '');
+        expect(data.rest.url).to.eql('https://www.extremetech.com');
+        expect(data.rest.name).to.eql('ExtremeTech');
     })
     it('should be able to retrieve test post', async function() {
         const data = await loadTestData('et', 'wp/v2/posts/296375');
@@ -57,6 +65,20 @@ describe('Wordpress', function() {
             296424,
             296453,
         ]);
+    })
+    describe('WordpressSite', function() {
+        it('should have the right properties', async function() {
+            const data = await loadTestData('et', '');
+            const category = await loadTestObject('et', '', WordpressSite);
+
+            expect(category.identifier).to.eql('et');
+            expect(category.url).to.eql(data.rest.url);
+            expect(category.home).to.eql(data.rest.home);
+            expect(category.gmtOffset).to.eql(data.rest.gmt_offset);
+            expect(category.timezone).to.eql(data.rest.timezone_string);
+            expect(category.name).to.be.instanceOf(WordpressText);
+            expect(category.description).to.be.instanceOf(WordpressText);
+        })
     })
     describe('WordpressPost', function() {
         it('should have the right properties', async function() {

@@ -4,6 +4,7 @@ import { getPlainTextProperties, getRichTextProperties } from '../utils/text-uti
 class WordpressPage {
     static create(data) {
         const page = new WordpressPage;
+        page.site = data.identifier;
         page.id = data.rest.id;
         page.date = new Date(data.rest.date_gmt + 'Z');
         page.modified = new Date(data.rest.modified_gmt + 'Z');
@@ -24,11 +25,11 @@ class WordpressPage {
     }
 
     plainText(options) {
-        return getPlainTextProperties(options);
+        return getPlainTextProperties(this, options);
     }
 
     richText(options) {
-        return getRichTextProperties(options);
+        return getRichTextProperties(this, options);
     }
 
     filter(language) {

@@ -4,6 +4,7 @@ import { getPlainTextProperties, getRichTextProperties } from '../utils/text-uti
 class WordpressMedia {
     static create(data) {
         const media = new WordpressMedia;
+        media.site = data.identifier;
         media.id = data.rest.id;
         media.date = new Date(data.rest.date_gmt + 'Z');
         media.modified = new Date(data.rest.modified_gmt + 'Z');
@@ -26,11 +27,11 @@ class WordpressMedia {
     }
 
     plainText(options) {
-        return getPlainTextProperties(options);
+        return getPlainTextProperties(this, options);
     }
 
     richText(options) {
-        return getRichTextProperties(options);
+        return getRichTextProperties(this, options);
     }
 
     filter(language) {

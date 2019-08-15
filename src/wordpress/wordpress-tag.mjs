@@ -4,6 +4,7 @@ import { getPlainTextProperties, getRichTextProperties } from '../utils/text-uti
 class WordpressTag {
     static create(data) {
         const tag = new WordpressTag;
+        tag.site = data.identifier;
         tag.id = data.rest.id;
         tag.count = data.rest.count;
         tag.name = WordpressText.create(data.rest.name);
@@ -16,11 +17,11 @@ class WordpressTag {
     }
 
     plainText(options) {
-        return getPlainTextProperties(options);
+        return getPlainTextProperties(this, options);
     }
 
     richText(options) {
-        return getRichTextProperties(options);
+        return getRichTextProperties(this, options);
     }
 
     filter(language) {

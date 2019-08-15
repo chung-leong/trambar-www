@@ -32,6 +32,7 @@ async function start(port) {
     app.get('/wiki/:identifier/', handleWikiListRequest);
     app.get('/wiki/', handleWikiListRequest);
     app.get('/rest/:identifier/*', handleRestRequest);
+    app.get('/rest/:identifier', handleRestRequest);
     app.get('/rest/', handleRestListRequest);
     app.use(handleError);
 
@@ -229,17 +230,24 @@ async function findWiki(repoName) {
 }
 
 async function findRestObjects(identifier, path) {
-    try {
-        const jsonPath = `${__dirname}/../assets/rest/${identifier}/${path}.json`;
+    if (path) {
+        try {
+            const jsonPath = `${__dirname}/../assets/rest/${identifier}/${path}.json`;
+            const jsonText = await readFile(jsonPath, 'utf8');
+            const rest = JSON.parse(jsonText);
+            return { identifier, rest };
+        } catch (err) {
+            const folderPath = `${__dirname}/../assets/rest/${identifier}/${path}`;
+            const names = await readdir(folderPath);
+            return _.map(names, (name) => {
+                return parseInt(name);
+            });
+        }
+    } else {
+        const jsonPath = `${__dirname}/../assets/rest/${identifier}.json`;
         const jsonText = await readFile(jsonPath, 'utf8');
         const rest = JSON.parse(jsonText);
         return { identifier, rest };
-    } catch (err) {
-        const folderPath = `${__dirname}/../assets/rest/${identifier}/${path}`;
-        const names = await readdir(folderPath);
-        return _.map(names, (name) => {
-            return parseInt(name);
-        });
     }
 }
 
