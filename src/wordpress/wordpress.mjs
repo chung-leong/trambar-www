@@ -3,14 +3,28 @@ import { WordpressSite } from './wordpress-site.mjs';
 import { WordpressPost } from './wordpress-post.mjs';
 
 class Wordpress extends DataSource {
-    async fetchWPSite(identifier) {
-        const url = this.getURL([ 'rest', identifier ]);
-        return this.fetchObject(url, WordpressSite.create);
+    async fetchWPCategory(identifier, criteria) {
+        return this.fetchWPObject(identifier, criteria, WordpressCategory);
     }
 
-    async fetchWPSites() {
-        const url = this.getURL([ 'rest' ], { type: 'wordpress' });
-        return this.fetchObjects(url, WordpressSite.create);
+    async fetchWPCategories(identifier, criteria) {
+        return this.fetchWPObjects(identifier, criteria, WordpressCategory);
+    }
+
+    async fetchWPMedia(identifier, criteria) {
+        return this.fetchWPObject(identifier, criteria, WordpressMedia);
+    }
+
+    async fetchWPMedias(identifier, criteria) {
+        return this.fetchWPObjects(identifier, criteria, WordpressMedia);
+    }
+
+    async fetchWPPage(identifier, criteria) {
+        return this.fetchWPObject(identifier, criteria, WordpressPage);
+    }
+
+    async fetchWPPages(identifier, criteria) {
+        return this.fetchWPObjects(identifier, criteria, WordpressPage);
     }
 
     async fetchWPPost(identifier, criteria) {
@@ -21,12 +35,30 @@ class Wordpress extends DataSource {
         return this.fetchWPObjects(identifier, criteria, WordpressPost);
     }
 
-    async fetchWPPage(identifier, criteria) {
-        return this.fetchWPObject(identifier, criteria, WordpressPage);
+    async fetchWPSite(identifier) {
+        const url = this.getURL([ 'rest', identifier ]);
+        return this.fetchObject(url, WordpressSite.create);
     }
 
-    async fetchWPPages(identifier, criteria) {
-        return this.fetchWPObjects(identifier, criteria, WordpressPage);
+    async fetchWPSites() {
+        const url = this.getURL([ 'rest' ], { type: 'wordpress' });
+        return this.fetchObjects(url, WordpressSite.create);
+    }
+
+    async fetchWPTag(identifier, criteria) {
+        return this.fetchWPObject(identifier, criteria, WordpressTag);
+    }
+
+    async fetchWPTags(identifier, criteria) {
+        return this.fetchWPObjects(identifier, criteria, WordpressTag);
+    }
+
+    async fetchWPUser(identifier, criteria) {
+        return this.fetchWPObject(identifier, criteria, WordpressUser);
+    }
+
+    async fetchWPUsers(identifier, criteria) {
+        return this.fetchWPObjects(identifier, criteria, WordpressUser);
     }
 
     async fetchWPObject(identifier, criteria, type) {
