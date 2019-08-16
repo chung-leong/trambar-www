@@ -3,34 +3,40 @@ import { WordpressSite } from './wordpress-site.mjs';
 import { WordpressPost } from './wordpress-post.mjs';
 
 class Wordpress extends DataSource {
+    async fetchWPSite(identifier) {
+        const url = this.getURL([ 'rest', identifier ]);
+        const site = await this.fetchObject(url, WordpressSite.create);
+        return site;
+    }
+
     async fetchWPSites() {
         const url = this.getURL([ 'rest' ], { type: 'wordpress' });
         const sites = await this.fetchObjects(url, WordpressSite.create);
         return sites;
     }
 
-    async fetchWPPost(name, id) {
-        const url = this.getURL([ 'rest', name, 'wp', 'v2', 'posts', id ]);
+    async fetchWPPost(identifier, id) {
+        const url = this.getURL([ 'rest', identifier, 'wp', 'v2', 'posts', id ]);
         const post = await this.fetchObject(url, WordpressPost.create);
         return post;
     }
 
-    async fetchWPPostBySlug(name, slug) {
-        const id = await this.findWPObjectIDBySlug(name, 'posts', slug);
+    async fetchWPPostBySlug(identifier, slug) {
+        const id = await this.findWPObjectIDBySlug(identifier, 'posts', slug);
         if (id) {
-            return this.fetchWPPost(name, id);
+            return this.fetchWPPost(identifier, id);
         }
     }
 
-    async fetchWPPosts(name, query) {
-        const url = this.getURL([ 'rest', name, 'wp', 'v2', 'posts' ], query);
+    async fetchWPPosts(identifier, query) {
+        const url = this.getURL([ 'rest', identifier, 'wp', 'v2', 'posts' ], query);
         const posts = await this.fetchObjects(url, WordpressPost.create);
         return posts;
     }
 
-    async findWPObjectIDBySlug(name, folder, slug) {
+    async findWPObjectIDBySlug(identifier, folder, slug) {
         // look for it among cached queries
-        const folderURL = this.getURL([ 'rest', name, 'wp', 'v2', folder ]);
+        const folderURL = this.getURL([ 'rest', identifier, 'wp', 'v2', folder ]);
         const query = this.findQuery((query) => {
             if (query.result && query.result.slug === slug) {
                 if (query.url.startsWith(folderURL)) {
@@ -45,7 +51,7 @@ class Wordpress extends DataSource {
         }
 
         // retrieve id from server
-        const idURL = this.getURL([ 'rest', name, 'wp', 'v2', folder ], { slug });
+        const idURL = this.getURL([ 'rest', identifier, 'wp', 'v2', folder ], { slug });
         const ids = await this.fetchObject(idURL);
         return ids[0];
     }
