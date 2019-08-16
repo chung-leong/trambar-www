@@ -36,6 +36,10 @@ class WordpressPost {
     filter(language) {
         return this;
     }
+
+    languages() {
+        return [];
+    }
 }
 
 export {

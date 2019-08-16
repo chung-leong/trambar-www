@@ -25,6 +25,10 @@ class WordpressText {
         return this;
     }
 
+    languages() {
+        return [];
+    }
+
     tree() {
         if (!this.dom) {
             this.dom = parseHTML(this.html);

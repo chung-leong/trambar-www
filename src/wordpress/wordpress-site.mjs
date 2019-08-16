@@ -25,6 +25,10 @@ class WordpressSite {
     filter(language) {
         return this;
     }
+
+    languages() {
+        return [];
+    }
 }
 
 export {

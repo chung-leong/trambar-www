@@ -35,6 +35,10 @@ class WordpressPage {
     filter(language) {
         return this;
     }
+
+    languages() {
+        return [];
+    }
 }
 
 export {

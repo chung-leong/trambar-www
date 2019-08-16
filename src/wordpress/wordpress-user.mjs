@@ -27,6 +27,10 @@ class WordpressUser {
     filter(language) {
         return this;
     }
+
+    languages() {
+        return [];
+    }
 }
 
 export {

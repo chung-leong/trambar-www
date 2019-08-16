@@ -37,6 +37,10 @@ class WordpressMedia {
     filter(language) {
         return this;
     }
+
+    languages() {
+        return [];
+    }
 }
 
 export {

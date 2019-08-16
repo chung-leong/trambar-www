@@ -9,6 +9,7 @@ class ExcelFile {
 
     static create(data) {
         const file = new ExcelFile;
+        file.identifier = data.identifier;
         file.url = data.url || '';
         file.title = data.title || '';
         file.type = data.type || '';
@@ -68,6 +69,7 @@ class ExcelFile {
             return this;
         }
         const file = new ExcelFile;
+        file.identifier = this.identifier;
         file.url = this.url;
         file.title = this.title;
         file.type = this.type;

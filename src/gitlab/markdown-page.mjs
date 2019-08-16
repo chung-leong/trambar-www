@@ -8,8 +8,8 @@ import { generateRichText } from '../utils/text-utils.mjs';
 class MarkdownPage {
     static create(data) {
         const page = new MarkdownPage;
-        page.url = data.url || '';
         page.identifier = data.identifier;
+        page.url = data.url || '';
         page.slug = data.slug;
         page.title = data.title;
         page.images = [];
@@ -116,6 +116,7 @@ class MarkdownPage {
         const chosen = chooseLanguageVersion(choices, language);
 
         const page = new MarkdownPage;
+        page.identifier = this.identifier;
         page.slug = this.slug;
         page.title = this.title;
         page.images = this.images;
@@ -127,6 +128,11 @@ class MarkdownPage {
             }
         }
         return page;
+    }
+
+    languages() {
+        // TODO
+        return [];
     }
 
     includes(block) {

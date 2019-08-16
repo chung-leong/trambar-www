@@ -28,6 +28,10 @@ class WordpressCategory {
     filter(language) {
         return this;
     }
+
+    languages() {
+        return [];
+    }
 }
 
 export {

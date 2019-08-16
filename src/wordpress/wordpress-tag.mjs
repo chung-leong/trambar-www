@@ -27,6 +27,10 @@ class WordpressTag {
     filter(language) {
         return this;
     }
+
+    languages() {
+        return [];
+    }
 }
 
 export {
