@@ -2,6 +2,8 @@ import { WordpressText } from './wordpress-text.mjs';
 import { getPlainTextProperties, getRichTextProperties } from '../utils/text-utils.mjs';
 
 class WordpressPage {
+    static folder = 'pages';
+
     static create(data) {
         const page = new WordpressPage;
         page.site = data.identifier;

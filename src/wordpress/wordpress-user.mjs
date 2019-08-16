@@ -2,6 +2,8 @@ import { WordpressText } from './wordpress-text.mjs';
 import { getPlainTextProperties, getRichTextProperties } from '../utils/text-utils.mjs';
 
 class WordpressUser {
+    static folder = 'users';
+
     static create(data) {
         const user = new WordpressUser;
         user.site = data.identifier;

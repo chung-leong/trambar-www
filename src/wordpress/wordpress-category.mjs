@@ -2,6 +2,8 @@ import { WordpressText } from './wordpress-text.mjs';
 import { getPlainTextProperties, getRichTextProperties } from '../utils/text-utils.mjs';
 
 class WordpressCategory {
+    static folder = 'categories';
+
     static create(data) {
         const category = new WordpressCategory;
         category.site = data.identifier;

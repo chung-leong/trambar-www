@@ -2,6 +2,8 @@ import { WordpressText } from './wordpress-text.mjs';
 import { getPlainTextProperties, getRichTextProperties } from '../utils/text-utils.mjs';
 
 class WordpressMedia {
+    static folder = 'media';
+
     static create(data) {
         const media = new WordpressMedia;
         media.site = data.identifier;

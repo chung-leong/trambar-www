@@ -5,38 +5,68 @@ import { WordpressPost } from './wordpress-post.mjs';
 class Wordpress extends DataSource {
     async fetchWPSite(identifier) {
         const url = this.getURL([ 'rest', identifier ]);
-        const site = await this.fetchObject(url, WordpressSite.create);
-        return site;
+        return this.fetchObject(url, WordpressSite.create);
     }
 
     async fetchWPSites() {
         const url = this.getURL([ 'rest' ], { type: 'wordpress' });
-        const sites = await this.fetchObjects(url, WordpressSite.create);
-        return sites;
+        return this.fetchObjects(url, WordpressSite.create);
     }
 
-    async fetchWPPost(identifier, id) {
-        const url = this.getURL([ 'rest', identifier, 'wp', 'v2', 'posts', id ]);
-        const post = await this.fetchObject(url, WordpressPost.create);
-        return post;
+    async fetchWPPost(identifier, criteria) {
+        return this.fetchWPObject(identifier, criteria, WordpressPost);
     }
 
-    async fetchWPPostBySlug(identifier, slug) {
-        const id = await this.findWPObjectIDBySlug(identifier, 'posts', slug);
-        if (id) {
-            return this.fetchWPPost(identifier, id);
+    async fetchWPPosts(identifier, criteria) {
+        return this.fetchWPObjects(identifier, criteria, WordpressPost);
+    }
+
+    async fetchWPPage(identifier, criteria) {
+        return this.fetchWPObject(identifier, criteria, WordpressPage);
+    }
+
+    async fetchWPPages(identifier, criteria) {
+        return this.fetchWPObjects(identifier, criteria, WordpressPage);
+    }
+
+    async fetchWPObject(identifier, criteria, type) {
+        if (typeof(criteria) === 'number' || parseInt(criteria) > 0) {
+            const id = criteria;
+            const url = this.getURL([ 'rest', identifier, 'wp', 'v2', type.folder, id ]);
+            return this.fetchObject(url, type.create);
+        } else if (typeof(criteria) === 'string') {
+            const slug = criteria;
+            const id = await this.findWPObjectIDBySlug(identifier, slug, type);
+            if (id) {
+                return this.fetchWPObject(identifier, id, type);
+            }
+        } else if (criteria instanceof Object) {
+            const [ object ] = await this.fetchWPObjects(identifier, criteria, type);
+            return object;
+        } else {
+            throw new Error('Invalid criteria');
         }
     }
 
-    async fetchWPPosts(identifier, query) {
-        const url = this.getURL([ 'rest', identifier, 'wp', 'v2', 'posts' ], query);
-        const posts = await this.fetchObjects(url, WordpressPost.create);
-        return posts;
+    async fetchWPObjects(identifier, criteria, type) {
+        if (criteria instanceof Array) {
+            const promises = criteria.map((key) => {
+                return fetchWPObject(identifier, key, type);
+            });
+            return Promise.all(promises);
+        } else if (criteria == null || criteria instanceof Object) {
+            const query = criteria;
+            const url = this.getURL([ 'rest', identifier, 'wp', 'v2', type.folder ], query);
+            const posts = await this.fetchObjects(url, type.create);
+            return posts;
+        } else {
+            throw new Error('Invalid criteria');
+        }
     }
 
-    async findWPObjectIDBySlug(identifier, folder, slug) {
+    async findWPObjectIDBySlug(identifier, slug, type) {
         // look for it among cached queries
-        const folderURL = this.getURL([ 'rest', identifier, 'wp', 'v2', folder ]);
+        const folderURL = this.getURL([ 'rest', identifier, 'wp', 'v2', type.folder ]);
         const query = this.findQuery((query) => {
             if (query.result && query.result.slug === slug) {
                 if (query.url.startsWith(folderURL)) {
@@ -51,7 +81,7 @@ class Wordpress extends DataSource {
         }
 
         // retrieve id from server
-        const idURL = this.getURL([ 'rest', identifier, 'wp', 'v2', folder ], { slug });
+        const idURL = this.getURL([ 'rest', identifier, 'wp', 'v2', type.folder ], { slug });
         const ids = await this.fetchObject(idURL);
         return ids[0];
     }

@@ -2,6 +2,8 @@ import { WordpressText } from './wordpress-text.mjs';
 import { getPlainTextProperties, getRichTextProperties } from '../utils/text-utils.mjs';
 
 class WordpressTag {
+    static folder = 'tags';
+
     static create(data) {
         const tag = new WordpressTag;
         tag.site = data.identifier;
