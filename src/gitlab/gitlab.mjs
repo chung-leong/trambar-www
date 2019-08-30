@@ -3,7 +3,7 @@ import { MarkdownPage } from './markdown-page.mjs';
 
 class Gitlab extends DataSource {
     async fetchWikiPage(identifier, slug) {
-        const url = this.getURL([ 'wiki', identifier, slug ]);
+        const url = this.getDataURL([ 'wiki', identifier, slug ]);
         const file = await this.fetchObject(url, MarkdownPage.create);
         return file;
     }
@@ -13,7 +13,7 @@ class Gitlab extends DataSource {
         if (identifier) {
             names.push(identifier);
         }
-        const url = this.getURL(names);
+        const url = this.getDataURL(names);
         const files = await this.fetchObjects(url, MarkdownPage.create);
         return files;
     }

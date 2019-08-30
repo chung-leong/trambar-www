@@ -51,18 +51,18 @@ class DataSource extends EventEmitter {
     }
 
     async fetchProjectMeta(name) {
-        const url = this.getURL([ 'meta' ]);
+        const url = this.getDataURL([ 'meta' ]);
         const metadata = await this.fetchObject(url, ProjectMetadata.create);
         return metadata;
     }
 
-    getURL(names, query) {
+    getDataURL(names, query) {
         let url = this.options.baseURL || '';
         if (names.length > 0) {
             if (!url.endsWith('/')) {
                 url += '/';
             }
-            url += names.map(encodeURIComponent).join('/');
+            url += 'data/' + names.map(encodeURIComponent).join('/');
         }
         if (query instanceof Object) {
             const pairs = [];

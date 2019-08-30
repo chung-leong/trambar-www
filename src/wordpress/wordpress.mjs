@@ -1,8 +1,27 @@
 import { DataSource } from '../data-source.mjs';
-import { WordpressSite } from './wordpress-site.mjs';
+import { WordpressCategory } from './wordpress-category.mjs';
+import { WordpressMedia } from './wordpress-media.mjs';
+import { WordpressPage } from './wordpress-page.mjs';
 import { WordpressPost } from './wordpress-post.mjs';
+import { WordpressSite } from './wordpress-site.mjs';
+import { WordpressTag } from './wordpress-tag.mjs';
+import { WordpressUser } from './wordpress-user.mjs';
 
 class Wordpress extends DataSource {
+    getWPDataURL(identifier, parts, query) {
+        const full = [ 'rest' ];
+        if (identifier) {
+            full.push(identifier);
+            if (parts && parts.length > 0) {
+                full.push('wp', 'v2');
+                for (let part of parts) {
+                    full.push(part);
+                }
+            }
+        }
+        return this.getDataURL(full, query);
+    }
+
     async fetchWPCategory(identifier, criteria) {
         return this.fetchWPObject(identifier, criteria, WordpressCategory);
     }
@@ -36,12 +55,12 @@ class Wordpress extends DataSource {
     }
 
     async fetchWPSite(identifier) {
-        const url = this.getURL([ 'rest', identifier ]);
+        const url = this.getWPDataURL(identifier);
         return this.fetchObject(url, WordpressSite.create);
     }
 
     async fetchWPSites() {
-        const url = this.getURL([ 'rest' ], { type: 'wordpress' });
+        const url = this.getWPDataURL(null, { type: 'wordpress' });
         return this.fetchObjects(url, WordpressSite.create);
     }
 
@@ -64,7 +83,7 @@ class Wordpress extends DataSource {
     async fetchWPObject(identifier, criteria, type) {
         if (typeof(criteria) === 'number' || parseInt(criteria) > 0) {
             const id = criteria;
-            const url = this.getURL([ 'rest', identifier, 'wp', 'v2', type.folder, id ]);
+            const url = this.getWPDataURL(identifier, [ type.folder, id ]);
             return this.fetchObject(url, type.create);
         } else if (typeof(criteria) === 'string') {
             const slug = criteria;
@@ -83,12 +102,12 @@ class Wordpress extends DataSource {
     async fetchWPObjects(identifier, criteria, type) {
         if (criteria instanceof Array) {
             const promises = criteria.map((key) => {
-                return fetchWPObject(identifier, key, type);
+                return this.fetchWPObject(identifier, key, type);
             });
             return Promise.all(promises);
         } else if (criteria == null || criteria instanceof Object) {
             const query = criteria;
-            const url = this.getURL([ 'rest', identifier, 'wp', 'v2', type.folder ], query);
+            const url = this.getWPDataURL(identifier, [ type.folder ], query);
             const posts = await this.fetchObjects(url, type.create);
             return posts;
         } else {
@@ -98,7 +117,7 @@ class Wordpress extends DataSource {
 
     async findWPObjectIDBySlug(identifier, slug, type) {
         // look for it among cached queries
-        const folderURL = this.getURL([ 'rest', identifier, 'wp', 'v2', type.folder ]);
+        const folderURL = this.getWPDataURL(identifier, [ type.folder ]);
         const query = this.findQuery((query) => {
             if (query.result && query.result.slug === slug) {
                 if (query.url.startsWith(folderURL)) {
@@ -113,7 +132,7 @@ class Wordpress extends DataSource {
         }
 
         // retrieve id from server
-        const idURL = this.getURL([ 'rest', identifier, 'wp', 'v2', type.folder ], { slug });
+        const idURL = this.getWPDataURL(identifier, [ type.folder ], { slug });
         const ids = await this.fetchObject(idURL);
         return ids[0];
     }
