@@ -50,10 +50,20 @@ class DataSource extends EventEmitter {
         this.active = false;
     }
 
+    log() {
+        this.fetchGeoIP().catch((err) => {});
+    }
+
     async fetchProjectMeta(name) {
         const url = this.getDataURL([ 'meta' ]);
         const metadata = await this.fetchObject(url, ProjectMetadata.create);
         return metadata;
+    }
+
+    async fetchGeoIP() {
+        const url = this.getDataURL([ 'geoip' ]);
+        const info = await this.fetchObject(url);
+        return info;
     }
 
     getDataURL(names, query) {
