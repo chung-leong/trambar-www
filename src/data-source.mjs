@@ -4,6 +4,7 @@ import { ProjectMetadata } from './project-metadata.mjs';
 const defaultOptions = {
     baseURL: '',
     fetchFunc: null,
+    refreshDelay: 1000,
 };
 
 class DataSource extends EventEmitter {
@@ -11,6 +12,7 @@ class DataSource extends EventEmitter {
         super();
         this.active = false;
         this.activationPromise = null;
+        this.freshnessCheckInterval = 0;
         this.queries = [];
 
         this.options = {};
@@ -44,10 +46,15 @@ class DataSource extends EventEmitter {
             this.activationPromise = null;
             resolve();
         }
+        this.freshnessCheckInterval = setInterval(() => {
+            this.checkFreshness();
+        }, 1000);
     }
 
     deactivate() {
         this.active = false;
+        clearInterval(this.freshnessCheckInterval);
+        this.freshnessCheckInterval = 0;
     }
 
     log() {
@@ -72,7 +79,7 @@ class DataSource extends EventEmitter {
             if (!url.endsWith('/')) {
                 url += '/';
             }
-            url += 'data/' + names.map(encodeURIComponent).join('/');
+            url += 'data/' + names.map(encodeURIComponent).join('/') + '/';
         }
         if (query instanceof Object) {
             const pairs = [];
@@ -129,6 +136,9 @@ class DataSource extends EventEmitter {
                 objectURL += '/';
             }
             objectURL += relativeURL;
+            if (!objectURL.endsWith('/')) {
+                objectURL += '/';
+            }
             const promise = this.fetchObject(objectURL, itemTransform);
             promises.push(promise);
         }
@@ -169,6 +179,7 @@ class DataSource extends EventEmitter {
             promise: null,
             result: null,
             dirty: false,
+            stale: null,
         };
         this.queries.push(query);
         return query;
@@ -179,6 +190,7 @@ class DataSource extends EventEmitter {
             const response = await this.fetch(query.url, { method: 'GET' });
             const etag = response.headers.get('etag');
             const mtime = response.headers.get('last-modified');
+            const status = response.headers.get('x-cache-status');
             let changed = true;
             if (etag && query.etag === etag) {
                 changed = false;
@@ -194,6 +206,11 @@ class DataSource extends EventEmitter {
                 query.mtime = mtime;
             }
             query.dirty = false;
+            if (status === 'STALE' || status === 'UPDATING') {
+                query.stale = new Date;
+            } else {
+                query.stale = null;
+            }
             return changed;
         } catch (err) {
             query.error = err;
@@ -206,14 +223,14 @@ class DataSource extends EventEmitter {
     }
 
     async checkObject(query) {
-        const changed = await updateObject(query);
+        const changed = await this.updateObject(query);
         if (changed) {
             this.triggerEvent(new DataSourceEvent('change', this));
         }
     }
 
     async checkListing(query) {
-        const changed = await updateListing(query);
+        const changed = await this.updateListing(query);
         if (changed) {
             const objectURLs = query.result;
             for (let objectURL of objectURLs) {
@@ -223,9 +240,28 @@ class DataSource extends EventEmitter {
                 };
                 const objectQuery = this.findQuery(props);
                 if (objectQuery && objectQuery.dirty) {
-                    await updateObject(objectQuery);
+                    await this.updateObject(objectQuery);
                 }
             }
+            this.triggerEvent(new DataSourceEvent('change', this));
+        }
+    }
+
+    checkFreshness() {
+        const now = new Date;
+        const delay = this.options.refreshDelay;
+        let invalidated = false;
+        for (let query of this.queries) {
+            if (query.stale) {
+                const elapsed = now - query.stale;
+                if (elapsed > delay) {
+                    query.dirty = true;
+                    query.stale = null;
+                    invalidated = true;
+                }
+            }
+        }
+        if (invalidated) {
             this.triggerEvent(new DataSourceEvent('change', this));
         }
     }
