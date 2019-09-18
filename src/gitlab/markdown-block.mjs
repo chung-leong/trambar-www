@@ -60,6 +60,21 @@ class MarkdownBlock {
         }
     }
 
+    links(external) {
+        const list = [];
+        if (this.token.children) {
+            for (let token of this.token.children) {
+                if (token.type === 'link') {
+                    const url = token.href;
+                    if (external || /^[\w\-]+$/.test(url)) {
+                        list.push(url);
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
     json(heading) {
         let currentHeading;
         for (let token of this.tokens) {

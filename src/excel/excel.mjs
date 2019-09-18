@@ -8,8 +8,8 @@ class Excel extends DataSource {
         return file;
     }
 
-    async fetchExcelFiles() {
-        const url = this.getDataURL([ 'excel' ]);
+    async fetchExcelFiles(criteria) {
+        const url = this.getDataURL([ 'excel' ], criteria);
         const files = await this.fetchObjects(url, ExcelFile.create);
         return files;
     }

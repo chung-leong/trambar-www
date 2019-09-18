@@ -131,8 +131,25 @@ class MarkdownPage {
     }
 
     languages() {
-        // TODO
-        return [];
+        const list = [];
+        for (let block of this.blocks) {
+            const language = block.language();
+            if (language) {
+                list.push(language);
+            }
+        }
+        return list;
+    }
+
+    links(external) {
+        const list = [];
+        for (let block of this.blocks) {
+            const links = block.links(external);
+            for (let link of links) {
+                list.push(link);
+            }
+        }
+        return list;
     }
 
     includes(block) {

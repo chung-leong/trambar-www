@@ -8,12 +8,12 @@ class Gitlab extends DataSource {
         return file;
     }
 
-    async fetchWikiPages(identifier) {
+    async fetchWikiPages(identifier, criteria) {
         const names = [ 'wiki' ];
         if (identifier) {
             names.push(identifier);
         }
-        const url = this.getDataURL(names);
+        const url = this.getDataURL(names, criteria);
         const files = await this.fetchObjects(url, MarkdownPage.create);
         return files;
     }

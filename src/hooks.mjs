@@ -28,22 +28,32 @@ function useRichText(hookOpts) {
     });
 }
 
-function useLanguageFilter(def) {
+function useLanguageFilter() {
     const context = useContext(TextContext);
     return useListener((object) => {
-		let language;
+		let language = 'en';
 		if (context && context.language) {
 			language = context.language;
-		} else {
-			language = def || 'en';
 		}
         return object.filter(language);
     });
+}
+
+function useDateText(options) {
+	const context = useContext(TextContext);
+	return useListener((date) => {
+		let language = 'en';
+		if (context && context.language) {
+			language = context.language;
+		}
+		return date.toLocaleDateString(language, options);
+	});
 }
 
 export {
     useLanguageFilter,
     usePlainText,
     useRichText,
+	useDateText,
     TextContext,
 };
