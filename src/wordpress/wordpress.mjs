@@ -108,7 +108,7 @@ class Wordpress extends DataSource {
         } else if (criteria == null || criteria instanceof Object) {
             const query = criteria;
             const url = this.getWPDataURL(identifier, [ type.folder ], query);
-            const posts = await this.fetchObjects(url, type.create);
+            const posts = await this.fetchObjects(url, type.create, 'page');
             return posts;
         } else {
             throw new Error('Invalid criteria');

@@ -1,16 +1,7 @@
 import React, { useContext, useDebugValue, useRef, useCallback } from 'react';
-//import { useListener } from 'relaks';
+import { useListener } from 'relaks';
 
 const TextContext = React.createContext();
-
-function useListener(f) {
-	var ref = useRef({});
-	ref.current.f = f;
-	useDebugValue(f);
-	return useCallback(function () {
-		return ref.current.f.apply(null, arguments);
-	}, []);
-}
 
 function usePlainText(hookOpts) {
     const context = useContext(TextContext);

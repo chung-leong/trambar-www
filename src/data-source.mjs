@@ -112,8 +112,8 @@ class DataSource extends EventEmitter {
         return query.result;
     }
 
-    async fetchObjects(url, itemTransform) {
-        const props = { url, itemTransform };
+    async fetchObjects(url, itemTransform, pageVariable) {
+        const props = { url, itemTransform, pageVariable };
         let query = this.findQuery(props);
         if (query) {
             if (query.dirty) {
@@ -121,6 +121,7 @@ class DataSource extends EventEmitter {
             }
         } else {
             query = this.addQuery(props);
+            query.pageQueries = [ {} ];
             query.promise = this.updateListing(query);
         }
         await query.promise;
@@ -129,24 +130,32 @@ class DataSource extends EventEmitter {
             throw new Error('Server did not return a list of URLs');
         }
         const promises = [];
-        for (let relativeURL of relativeURLs) {
-            const qIndex = url.indexOf('?');
-            let objectURL = (qIndex !== -1) ? url.substr(0, qIndex) : url;
-            if (!objectURL.endsWith('/')) {
-                objectURL += '/';
-            }
-            objectURL += relativeURL;
-            if (!objectURL.endsWith('/')) {
-                objectURL += '/';
-            }
-            const promise = this.fetchObject(objectURL, itemTransform);
+        const absoluteURLs = resolveURLs(url, relativeURLs);
+        for (let absoluteURL of absoluteURLs) {
+            const promise = this.fetchObject(absoluteURL, itemTransform);
             promises.push(promise);
         }
-        const results = await Promise.all(promises);
-        if (!compareArrays(results, query.results)) {
-            query.results = results;
+        const objects = await Promise.all(promises);
+        if (!compareArrays(objects, query.objects)) {
+            if (pageVariable) {
+                objects.more = this.requestMore.bind(this, query);
+            }
+            query.objects = objects;
         }
-        return query.results;
+        return query.objects;
+    }
+
+    async requestMore(query) {
+        const pageQueryFirst = query.pageQueries[0];
+        const pageQueryLast = query.pageQueries[query.pageQueries.length - 1];
+        if (pageQueryFirst.result && pageQueryLast.result) {
+            const firstPageCount = pageQueryFirst.result.length;
+            const lastPageCount = pageQueryLast.result.length;
+            if (lastPageCount >= firstPageCount) {
+                query.pageQueries.push({});
+                await this.checkListing(query);
+            }
+        }
     }
 
     findQuery(predicate) {
@@ -205,12 +214,13 @@ class DataSource extends EventEmitter {
                 query.etag = etag;
                 query.mtime = mtime;
             }
-            query.dirty = false;
             if (status === 'STALE' || status === 'UPDATING') {
                 query.stale = new Date;
             } else {
                 query.stale = null;
             }
+            query.dirty = false;
+            query.error = null;
             return changed;
         } catch (err) {
             query.error = err;
@@ -219,7 +229,50 @@ class DataSource extends EventEmitter {
     }
 
     async updateListing(query) {
-        return this.updateObject(query);
+        const promises = [];
+        let page = 0;
+        for (let pageQuery of query.pageQueries) {
+            page++;
+            if (!pageQuery.promise) {
+                pageQuery.url = addPageNumber(query.url, query.pageVariable, page);
+                pageQuery.promise = this.updateObject(pageQuery);
+            }
+            if (pageQuery.dirty || pageQuery.error) {
+                pageQuery.promise = this.updateObject(pageQuery);
+            }
+            promises.push(pageQuery.promise);
+        }
+        try {
+            const pageChanged = await Promise.all(promises);
+            let changed = some(pageChanged);
+            if (changed) {
+                const items = [];
+                for (let pageQuery of query.pageQueries) {
+                    if (pageQuery.result) {
+                        for (let item of pageQuery.result) {
+                            // check for duplication in case page boundaries shifted
+                            // in the middle of retrieval
+                            if (items.indexOf(item) === -1) {
+                                items.push(item);
+                            }
+                        }
+                    }
+                }
+                query.result = items;
+            }
+            query.stale = null;
+            for (let pageQuery of query.pageQueries) {
+                if (pageQuery.stale) {
+                    query.stale = pageQuery.stale;
+                }
+            }
+            query.dirty = false;
+            query.error = null;
+            return changed;
+        } catch (err) {
+            query.error = err;
+            throw err;
+        }
     }
 
     async checkObject(query) {
@@ -257,6 +310,14 @@ class DataSource extends EventEmitter {
                 if (elapsed > delay) {
                     query.dirty = true;
                     query.stale = null;
+                    if (query.pageQueries) {
+                        for (let pageQuery of query.pageQueries) {
+                            if (pageQuery.stale) {
+                                pageQuery.dirty = true;
+                                pageQuery.stale = null;
+                            }
+                        }
+                    }
                     invalidated = true;
                 }
             }
@@ -318,6 +379,24 @@ class DataSourceError extends Error {
 class DataSourceEvent extends GenericEvent {
 }
 
+function resolveURLs(url, relativeURLs) {
+    const list = [];
+    const qIndex = url.indexOf('?');
+    const baseURL = (qIndex !== -1) ? url.substr(0, qIndex) : url;
+    for (let relativeURL of relativeURLs) {
+        let absoluteURL = baseURL;
+        if (!absoluteURL.endsWith('/')) {
+            absoluteURL += '/';
+        }
+        absoluteURL += relativeURL;
+        if (!absoluteURL.endsWith('/')) {
+            absoluteURL += '/';
+        }
+        list.push(absoluteURL);
+    }
+    return list;
+}
+
 function compareArrays(array1, array2) {
     if (!array1 || !array2) {
         return false;
@@ -331,6 +410,23 @@ function compareArrays(array1, array2) {
         }
     }
     return true;
+}
+
+function addPageNumber(url, pageVariable, pageNumber) {
+    if (pageNumber > 1) {
+        url += (url.indexOf('?') === -1) ? '?' : '&';
+        url += pageVariable + '=' + pageNumber;
+    }
+    return url;
+}
+
+function some(array) {
+    for (let el of array) {
+        if (el) {
+            return true;
+        }
+    }
+    return false;
 }
 
 export {
