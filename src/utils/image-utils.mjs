@@ -1,8 +1,13 @@
 function deriveImageProps(original, options) {
-    const { imageWidth, imageHeight } = options;
+    const { imageWidth, imageHeight, imageMaxWidth, imageMaxHeight } = options;
     const { imageFormat, imageFilters, imageBaseURL } = options;
     const { devicePixelRatio } = options;
-    const resized = adjustImageDimensions(original, { width: imageWidth, height: imageHeight });
+    const resized = adjustImageDimensions(original, {
+        width: imageWidth,
+        height: imageHeight,
+        maxWidth: imageMaxWidth,
+        maxHeight: imageMaxHeight,
+    });
     const source = adjustImageDensity(resized, devicePixelRatio || 1, original);
 
     const dimFilters = {};
@@ -154,13 +159,21 @@ function adjustImageDimensions(original, desired) {
         height = desired.height;
     } else if (desired.width) {
         width = desired.width;
-        height = Math.round(desired.width / aspectRatio);
+        height = Math.round(width / aspectRatio);
     } else if (desired.height) {
-        width = Math.round(desired.height * aspectRatio);
         height = desired.height;
+        width = Math.round(height * aspectRatio);
     } else {
         width = original.width;
         height = original.height;
+        if (width > desired.maxWidth) {
+            width = desired.maxWidth;
+            height = Math.round(width / aspectRatio);
+        }
+        if (height > desired.maxHeight) {
+            height = desired.maxHeight;
+            width = Math.round(height * aspectRatio);
+        }
     }
     return { width, height, crop };
 }
