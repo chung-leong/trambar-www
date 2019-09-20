@@ -64,11 +64,11 @@ function useEnvMonitor(vars) {
         };
     }, [ displayChanged ]);
     const [ connectionChanged, setConnectionChanged ] = useEventTime();
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     const connectionParams = useMemo(() => {
         if (harvesting()) {
             return {};
         }
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
         return {
             onLine: navigator.onLine,
             connectionType: (connection) ? connection.type || connection.effectiveType : 'unknown',
@@ -86,6 +86,7 @@ function useEnvMonitor(vars) {
         };
     }, []);
     useEffect(() => {
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
         window.addEventListener('online', setConnectionChanged);
         window.addEventListener('offline', setConnectionChanged);
         if (connection) {
