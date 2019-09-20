@@ -31,7 +31,7 @@
     "htmlparser2": "^4.0.0",
     "mark-gor": "0.0.8",
     "react": "^16.9.0",
-    "relaks": "git+https://github.com/trambarhq/relaks.git",
+    "relaks": "trambarhq/relaks.git#development",
     "relaks-event-emitter": "0.0.6",
     "relaks-harvest": "^2.0.2",
     "relaks-route-manager": "0.0.22"
