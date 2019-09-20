@@ -16,56 +16,52 @@ function useEnvMonitor(vars) {
         if (harvesting()) {
             return {};
         }
-        if (typeof(navigator) === 'object') {
-            const ua = navigator.userAgent;
-            const uaFragmentsBrowser = {
-                firefox: 'Firefox',
-                opera: 'Opera',
-                ie: 'Trident',
-                edge: 'Edge',
-                chrome: 'Chrome',
-                safari: 'Safari',
-            };
-            const uaFragmentsOS = {
-                wp: 'Windows Phone',
-                windows: 'Windows',
-                ios: 'iPhone OS',
-                osx: 'OS X',
-                android: 'Android',
-                linux: 'Linux',
-            };
-            let os = 'unknown', browser = 'unknown'
-            for (let [ name, fragment ] of Object.entries(uaFragmentsOS)) {
-                if (ua.indexOf(fragment) > -1) {
-                    os = name;
-                    break;
-                }
+        const ua = navigator.userAgent;
+        const uaFragmentsBrowser = {
+            firefox: 'Firefox',
+            opera: 'Opera',
+            ie: 'Trident',
+            edge: 'Edge',
+            chrome: 'Chrome',
+            safari: 'Safari',
+        };
+        const uaFragmentsOS = {
+            wp: 'Windows Phone',
+            windows: 'Windows',
+            ios: 'iPhone OS',
+            osx: 'OS X',
+            android: 'Android',
+            linux: 'Linux',
+        };
+        let os = 'unknown', browser = 'unknown'
+        for (let [ name, fragment ] of Object.entries(uaFragmentsOS)) {
+            if (ua.indexOf(fragment) > -1) {
+                os = name;
+                break;
             }
-            for (let [ name, fragment ] of Object.entries(uaFragmentsBrowser)) {
-                if (ua.indexOf(fragment) > -1) {
-                    browser = name;
-                    break;
-                }
-            }
-            return { os, browser };
         }
+        for (let [ name, fragment ] of Object.entries(uaFragmentsBrowser)) {
+            if (ua.indexOf(fragment) > -1) {
+                browser = name;
+                break;
+            }
+        }
+        return { os, browser };
     }, []);
     const [ displayChanged, setDisplayChanged ] = useEventTime();
     const displayParams = useMemo(() => {
         if (harvesting()) {
             return {};
         }
-        if (typeof(document) === 'object') {
-            const viewport = document.documentElement;
-            return {
-                devicePixelRatio: window.devicePixelRatio,
-                screenWidth: screen.width,
-                screenHeight: screen.height,
-                viewportWidth: viewport.clientWidth,
-                viewportHeight: viewport.clientHeight,
-                orientationType: (screen.orientation) ? screen.orientation.type : 'unknown',
-            };
-        }
+        const viewport = document.documentElement;
+        return {
+            devicePixelRatio: window.devicePixelRatio,
+            screenWidth: screen.width,
+            screenHeight: screen.height,
+            viewportWidth: viewport.clientWidth,
+            viewportHeight: viewport.clientHeight,
+            orientationType: (screen.orientation) ? screen.orientation.type : 'unknown',
+        };
     }, [ displayChanged ]);
     const [ connectionChanged, setConnectionChanged ] = useEventTime();
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
