@@ -1,5 +1,6 @@
 import React, { useMemo, useContext, useEffect, useDebugValue } from 'react';
 import { useListener, useEventTime } from 'relaks';
+import { harvesting } from 'relaks-harvest';
 
 const Env = React.createContext();
 const defEnv = {};
@@ -12,6 +13,9 @@ function useEnv() {
 
 function useEnvMonitor(vars) {
     const browserParams = useMemo(() => {
+        if (harvesting()) {
+            return {};
+        }
         if (typeof(navigator) === 'object') {
             const ua = navigator.userAgent;
             const uaFragmentsBrowser = {
@@ -48,6 +52,9 @@ function useEnvMonitor(vars) {
     }, []);
     const [ displayChanged, setDisplayChanged ] = useEventTime();
     const displayParams = useMemo(() => {
+        if (harvesting()) {
+            return {};
+        }
         if (typeof(document) === 'object') {
             const viewport = document.documentElement;
             return {
@@ -60,6 +67,17 @@ function useEnvMonitor(vars) {
             };
         }
     }, [ displayChanged ]);
+    const [ connectionChanged, setConnectionChanged ] = useEventTime();
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    const connectionParams = useMemo(() => {
+        if (harvesting()) {
+            return {};
+        }
+        return {
+            onLine: navigator.onLine,
+            connectionType: (connection) ? connection.type || connection.effectiveType : 'unknown',
+        };
+    }, [ connectionChanged ]);
 
     useEffect(() => {
         window.addEventListener('resize', setDisplayChanged);
@@ -71,12 +89,28 @@ function useEnvMonitor(vars) {
             window.removeEventListener('visibilitychange', setDisplayChanged);
         };
     }, []);
+    useEffect(() => {
+        window.addEventListener('online', setConnectionChanged);
+        window.addEventListener('offline', setConnectionChanged);
+        if (connection) {
+            connection.addEventListener('typechange', setConnectionChanged);
+        }
+        return () => {
+            window.removeEventListener('online', setConnectionChanged);
+            window.removeEventListener('offline', setConnectionChanged);
+            if (connection) {
+                connection.removeEventListener('typechange', setConnectionChanged);
+            }
+        };
+    }, []);
 
     const deps = [
         browserParams,
         displayParams,
+        connectionParams,
         ...Object.values(vars),
     ];
+    useDebugValue(vars);
     return useMemo(() => {
         return {
             ...browserParams,

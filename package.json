@@ -33,7 +33,7 @@
     "react": "^16.9.0",
     "relaks": "trambarhq/relaks.git#development",
     "relaks-event-emitter": "0.0.6",
-    "relaks-harvest": "^2.0.2",
+    "relaks-harvest": "^2.0.3",
     "relaks-route-manager": "0.0.22"
   },
   "devDependencies": {
@@ -51,7 +51,7 @@
     "cors": "^2.8.5",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
-    "exceljs": "^1.15.0",
+    "exceljs": "^2.0.1",
     "express": "^4.17.1",
     "karma": "^4.3.0",
     "karma-babel-preprocessor": "^8.0.1",
@@ -64,7 +64,7 @@
     "lodash": "^4.17.15",
     "mocha": "^6.2.0",
     "react-dom": "^16.9.0",
-    "webpack": "^4.39.3",
-    "webpack-cli": "^3.3.7"
+    "webpack": "^4.40.2",
+    "webpack-cli": "^3.3.9"
   }
 }
