@@ -5,12 +5,17 @@ function generateRichText(type, props, children, options) {
     const { richTextAdjust } = options;
     if (richTextAdjust instanceof Function) {
         const result = richTextAdjust(type, props, children);
-        if (!(result instanceof Object)) {
-            throw new Error('Function should return an object');
+        if (result !== undefined) {
+            if (result === null) {
+                return null;
+            }
+            if (!(result instanceof Object)) {
+                throw new Error('Function should return an object');
+            }
+            type = result.type;
+            props = result.props;
+            children = result.children;
         }
-        type = result.type;
-        props = result.props;
-        children = result.children;
     }
     if (process.env.NODE_ENV !== 'production') {
         if (children && typeof(children) !== 'string') {
