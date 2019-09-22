@@ -45,12 +45,12 @@ class ExcelRow {
         return object;
     }
 
-    filter(language) {
+    filter(language, noFallback) {
         if (this.language) {
             return this;
         }
         const columns = this.sheet.columns;
-        const chosen = chooseLanguageVersion(columns, language);
+        const chosen = chooseLanguageVersion(columns, language, noFallback);
         const excluded = [];
         for (let column of this.sheet.columns) {
             if (chosen.indexOf(column) === -1) {

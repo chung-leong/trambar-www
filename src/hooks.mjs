@@ -122,7 +122,11 @@ function usePlainText(hookOpts) {
     const options = { ...env, ...hookOpts };
     useDebugValue(hookOpts);
     return useListener((object) => {
-        return object.plainText(options);
+        if (object.plainText instanceof Function) {
+            return object.plainText(options);
+        } else {
+            return object + '';
+        }
     });
 }
 
@@ -131,18 +135,38 @@ function useRichText(hookOpts) {
     const options = { ...env, ...hookOpts };
     useDebugValue(hookOpts);
     return useListener((object) => {
-        return object.richText(options);
+        if (object.richText instanceof Function) {
+            return object.richText(options);
+        } else {
+            return object + '';
+        }
     });
 }
 
-function useLanguageFilter() {
+function useLanguageFilter(noFallback) {
     const env = useEnv();
     const language = env.language || 'en';
     useDebugValue(language);
     return useListener((object) => {
-        return object.filter(language);
+        if (object.filter instanceof Function) {
+            return object.filter(language, noFallback);
+        } else {
+            return object;
+        }
     });
 }
+
+function useLocalized() {
+    const env = useEnv();
+    const func = env.localizeFunc;
+    if (func) {
+        return func;
+    } else {
+        return passthru;
+    }
+}
+
+const passthru = function(arg) { return arg };
 
 export {
     useEnv,
@@ -150,5 +174,6 @@ export {
     useLanguageFilter,
     usePlainText,
     useRichText,
+    useLocalized,
     Env,
 };

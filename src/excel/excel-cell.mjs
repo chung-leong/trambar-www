@@ -21,7 +21,7 @@ class ExcelCell {
 
     filter(language) {
         const columns = this.column.sheet.columns;
-        const chosen = chooseLanguageVersion(columns, language);
+        const chosen = chooseLanguageVersion(columns, language, noFallback);
         if (chosen.indexOf(this.column) !== -1) {
             return this;
         }

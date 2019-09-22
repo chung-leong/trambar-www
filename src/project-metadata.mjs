@@ -33,7 +33,7 @@ class ProjectMetadata {
         return { name, title };
     }
 
-    filter(language) {
+    filter(language, noFallback) {
         if (this.language) {
             return this;
         }
@@ -45,7 +45,7 @@ class ProjectMetadata {
                 name: 'title'
             });
         }
-        const chosen = chooseLanguageVersion(choices, language);
+        const chosen = chooseLanguageVersion(choices, language, noFallback);
 
         const metadata = new ProjectMetadata;
         metadata.name = this.name;

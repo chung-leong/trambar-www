@@ -1,4 +1,5 @@
 export * from './src/data-source.mjs';
+export * from './src/locale-manager.mjs';
 export * from './src/hooks.mjs';
 export * from './src/project-metadata.mjs';
 

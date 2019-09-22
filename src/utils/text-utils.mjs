@@ -2,9 +2,9 @@ import React from 'react';
 import { Parser, DomHandler } from 'htmlparser2';
 
 function generateRichText(type, props, children, options) {
-    const { richTextAdjust } = options;
-    if (richTextAdjust instanceof Function) {
-        const result = richTextAdjust(type, props, children);
+    const { adjustFunc } = options;
+    if (adjustFunc instanceof Function) {
+        const result = adjustFunc(type, props, children);
         if (result !== undefined) {
             if (result === null) {
                 return null;

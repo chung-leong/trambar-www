@@ -77,7 +77,7 @@ class MarkdownPage {
         }
     }
 
-    filter(language) {
+    filter(language, noFallback) {
         if (this.language) {
             return this;
         }
@@ -113,7 +113,7 @@ class MarkdownPage {
             }
             currentSection.blocks.push(block);
         }
-        const chosen = chooseLanguageVersion(choices, language);
+        const chosen = chooseLanguageVersion(choices, language, noFallback);
 
         const page = new MarkdownPage;
         page.identifier = this.identifier;

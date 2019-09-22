@@ -39,8 +39,8 @@ class ExcelColumn {
         return objects;
     }
 
-    filter(language) {
-        const chosen = chooseLanguageVersion(this.sheet.columns, language);
+    filter(language, noFallback) {
+        const chosen = chooseLanguageVersion(this.sheet.columns, language, noFallback);
         if (chosen.indexOf(column) !== -1) {
             return this;
         }

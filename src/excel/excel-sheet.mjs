@@ -80,7 +80,7 @@ class ExcelSheet {
         return objects;
     }
 
-    filter(language) {
+    filter(language, noFallback) {
         if (this.language) {
             return this;
         }
@@ -89,7 +89,7 @@ class ExcelSheet {
         sheet.flags = this.flags;
         sheet.language = language;
 
-        const chosen = chooseLanguageVersion(this.columns, language);
+        const chosen = chooseLanguageVersion(this.columns, language, noFallback);
         const excluded = [];
         for (let column of this.columns) {
             if (chosen.indexOf(column) === -1) {

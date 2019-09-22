@@ -1,4 +1,4 @@
-function chooseLanguageVersion(objects, lang) {
+function chooseLanguageVersion(objects, lang, noFallback) {
     const [ reqLC, reqCC ] = (lang) ? lang.toLowerCase().split('-') : [];
     const list = [];
     const existing = {};
@@ -6,8 +6,10 @@ function chooseLanguageVersion(objects, lang) {
         const score = getLanguageMatch(object, reqLC, reqCC);
         const previous = existing[object.name];
         if (!previous) {
-            existing[object.name] = { index: list.length, score };
-            list.push(object);
+            if (score !== 0 || !noFallback) {
+                existing[object.name] = { index: list.length, score };
+                list.push(object);
+            }
         } else if (previous.score < score) {
             list[previous.index] = object;
             previous.score = score;
@@ -21,19 +23,21 @@ function isLocaleIdentifier(flag) {
 }
 
 function getLanguageMatch(object, reqLC, reqCC) {
-    let highest = 0;
+    let highest;
     if (reqLC && object.flags instanceof Array) {
         for (let flag of object.flags) {
             if (isLocaleIdentifier(flag)) {
                 const [ lc, cc ] = flag.toLowerCase().split('-');
+                let score = 0;
                 if (lc === reqLC) {
-                    let score = 50;
                     if (cc === reqCC) {
                         score = 100;
+                    } else {
+                        score = 50;
                     }
-                    if (score > highest) {
-                        highest = score;
-                    }
+                }
+                if (!(highest > score)) {
+                    highest = score;
                 }
             }
         }

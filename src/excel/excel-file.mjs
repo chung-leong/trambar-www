@@ -64,7 +64,7 @@ class ExcelFile {
         return object;
     }
 
-    filter(language) {
+    filter(language, noFallback) {
         if (this.language) {
             return this;
         }
@@ -79,9 +79,9 @@ class ExcelFile {
         file.description = this.description;
         file.language = language;
 
-        const sheets = chooseLanguageVersion(this.sheets, language);
+        const sheets = chooseLanguageVersion(this.sheets, language, noFallback);
         for (let sheet of sheets) {
-            file.sheets.push(sheet.filter(language))
+            file.sheets.push(sheet.filter(language, noFallback))
         }
         return file;
     }
@@ -115,6 +115,24 @@ class ExcelFile {
                 return image;
             }
         }
+    }
+
+    localization(language) {
+        const filtered = this.filter(language, true);
+        const table = {};
+        for (let sheet of filtered.sheets) {
+            if (sheet.columns.length >= 2) {
+                for (let row of sheet.rows) {
+                    const [ cell1, cell2 ] = row.cells;
+                    if (cell1 && cell2) {
+                        const phrase = cell1.plainText();
+                        const translation = cell2.plainText();
+                        table[phrase] = translation;
+                    }
+                }
+            }
+        }
+        return table;
     }
 }
 
