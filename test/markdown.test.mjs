@@ -95,5 +95,5 @@ async function loadTestPage(identifier, slug) {
 }
 
 async function loadTestData(identifier, slug) {
-    return fetchTestData(`${serverAddress}/wiki/${identifier}/${slug}`);
+    return fetchTestData(`${serverAddress}/data/wiki/${identifier}/${slug}`);
 }

@@ -225,7 +225,7 @@ async function loadTestObject(identifier, path, ObjectClass) {
 }
 
 async function loadTestData(identifier, path) {
-    let url = `${serverAddress}/rest/${identifier}`;
+    let url = `${serverAddress}/data/rest/${identifier}`;
     if (path) {
         url += `/${path}`;
     }

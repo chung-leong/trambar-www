@@ -73,6 +73,12 @@ describe('Excel', function() {
                 const sheet2 = filtered.sheets[1];
                 expect(sheet2.columns).to.have.lengthOf(2);
             })
+            it('should remove all columns non-matching code when noFallback is specific', async function() {
+                const file = await loadTestFile('test-1');
+                const filtered = file.filter('fr', true);
+                const sheet2 = filtered.sheets[1];
+                expect(sheet2.columns).to.have.lengthOf(0);
+            })
         })
         describe('#languages()', function() {
             it('should return a list of available languages', async function() {
@@ -288,9 +294,9 @@ describe('Excel', function() {
                 const text2 = cell.richText();
                 expect(text1).to.eql(text2);
             })
-            it('should call richTextAdjust with type set to undefined', async function() {
+            it('should call adjustFunc with type set to undefined', async function() {
                 let args;
-                const richTextAdjust = (type, props, children) => {
+                const adjustFunc = (type, props, children) => {
                     args = { type, props, children };
                     return { type, props, children };
                 };
@@ -298,13 +304,13 @@ describe('Excel', function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.get([ 'Sheet1', 'plain text', 0 ]);
                 expect(cell).to.be.an.instanceOf(ExcelPlainTextCell);
-                const text2 = cell.richText({ richTextAdjust });
+                const text2 = cell.richText({ adjustFunc });
                 expect(args.type).to.be.undefined;
                 expect(args.props).to.have.property('key', 0);
                 expect(args.children).to.be.a('string');
             })
-            it('should yield an element when richTextAdjust provides a type', async function() {
-                const richTextAdjust = (type, props, children) => {
+            it('should yield an element when adjustFunc provides a type', async function() {
+                const adjustFunc = (type, props, children) => {
                     return {
                         type: 'span',
                         props: { ...props, className: 'chicken' },
@@ -315,10 +321,32 @@ describe('Excel', function() {
                 const file = await loadTestFile('test-1');
                 const cell = file.get([ 'Sheet1', 'plain text', 0 ]);
                 expect(cell).to.be.an.instanceOf(ExcelPlainTextCell);
-                const element = cell.richText({ richTextAdjust });
+                const element = cell.richText({ adjustFunc });
                 expect(element.type).to.eql('span');
                 expect(element.props).to.have.property('className', 'chicken');
                 expect(element.props.children).to.be.a('string');
+            })
+            it('should make no change when adjustFunc returns undefined', async function() {
+                const adjustFunc = (type, props, children) => {
+                    return undefined;
+                };
+
+                const file = await loadTestFile('test-1');
+                const cell = file.get([ 'Sheet1', 'rich text', 0 ]);
+                expect(cell).to.be.an.instanceOf(ExcelRichTextCell);
+                const element = cell.richText({ adjustFunc });
+                expect(element.type).to.eql('span');
+            })
+            it('should yield null when adjustFunc returns null', async function() {
+                const adjustFunc = (type, props, children) => {
+                    return null;
+                };
+
+                const file = await loadTestFile('test-1');
+                const cell = file.get([ 'Sheet1', 'rich text', 0 ]);
+                expect(cell).to.be.an.instanceOf(ExcelRichTextCell);
+                const element = cell.richText({ adjustFunc });
+                expect(element).to.be.null;
             })
         })
     })
@@ -513,5 +541,5 @@ async function loadTestFile(identifier) {
 }
 
 async function loadTestData(identifier) {
-    return fetchTestData(`${serverAddress}/excel/${identifier}`);
+    return fetchTestData(`${serverAddress}/data/excel/${identifier}`);
 }

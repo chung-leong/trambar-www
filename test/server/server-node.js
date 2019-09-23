@@ -26,14 +26,14 @@ async function start(port) {
     };
     app.use(CORS(corsOptions));
     app.set('json spaces', 2);
-    app.get('/excel/:identifier', handleExcelRequest);
-    app.get('/excel/', handleExcelListRequest);
-    app.get('/wiki/:identifier/:slug', handleWikiRequest);
-    app.get('/wiki/:identifier/', handleWikiListRequest);
-    app.get('/wiki/', handleWikiListRequest);
-    app.get('/rest/:identifier/*', handleRestRequest);
-    app.get('/rest/:identifier', handleRestRequest);
-    app.get('/rest/', handleRestListRequest);
+    app.get('/data/excel/:identifier/', handleExcelRequest);
+    app.get('/data/excel/', handleExcelListRequest);
+    app.get('/data/wiki/:identifier/:slug/', handleWikiRequest);
+    app.get('/data/wiki/:identifier/', handleWikiListRequest);
+    app.get('/data/wiki/', handleWikiListRequest);
+    app.get('/data/rest/:identifier/*', handleRestRequest);
+    app.get('/data/rest/:identifier/', handleRestRequest);
+    app.get('/data/rest/', handleRestListRequest);
     app.use(handleError);
 
     // start up server

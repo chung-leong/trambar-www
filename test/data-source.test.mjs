@@ -141,9 +141,9 @@ describe('DataSource', function() {
 })
 
 async function loadExcelData(identifier) {
-    return fetchTestData(`${serverAddress}/excel/${identifier}`);
+    return fetchTestData(`${serverAddress}/data/excel/${identifier}`);
 }
 
 async function loadWikiData(identifier, slug) {
-    return fetchTestData(`${serverAddress}/wiki/${identifier}/${slug}`);
+    return fetchTestData(`${serverAddress}/data/wiki/${identifier}/${slug}`);
 }
