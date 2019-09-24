@@ -143,9 +143,22 @@ function useRichText(hookOpts) {
     });
 }
 
-function useLanguageFilter(noFallback) {
+function useLanguage() {
     const env = useEnv();
-    const language = env.language || 'en';
+    const { locale } = env;
+    let language;
+    if (locale && locale.language) {
+        language = locale.language;
+    }
+    if (!language) {
+        language = 'en';
+    }
+    useDebugValue(language);
+    return language;
+}
+
+function useLanguageFilter(noFallback) {
+    const language = useLanguage();
     useDebugValue(language);
     return useListener((object) => {
         if (object.filter instanceof Function) {
@@ -158,19 +171,21 @@ function useLanguageFilter(noFallback) {
 
 function useLocalized() {
     const env = useEnv();
-    const func = env.localizeFunc;
-    if (func) {
-        return func;
-    } else {
-        return passthru;
-    }
+    useDebugValue(!!(env.locale && env.locale.localize instanceof Function));
+    return useListener((data, params) => {
+        const { locale } = env;
+        if (locale && locale.localize instanceof Function) {
+            return locale.localize(data, params);
+        } else {
+            return data;
+        }
+    });
 }
-
-const passthru = function(arg) { return arg };
 
 export {
     useEnv,
     useEnvMonitor,
+    useLanguage,
     useLanguageFilter,
     usePlainText,
     useRichText,
