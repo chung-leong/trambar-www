@@ -15,6 +15,9 @@ class MarkdownBlock {
 
     plainText(options) {
         const fragments = [];
+        const normalize = (text) => {
+            return text.replace(/\n/g, ' ');
+        };
         const add = (token) => {
             if (token.children instanceof Array) {
                 for (let child of token.children) {
@@ -24,10 +27,10 @@ class MarkdownBlock {
             switch (token.type) {
                 case 'url':
                 case 'autolink':
-                case 'text': fragments.push(token.text); break;
+                case 'codespan':
+                case 'text': fragments.push(normalize(token.text)); break;
                 case 'image': fragments.push(`[${token.text}]`); break;
-                case 'code':
-                case 'blockquote':
+                case 'code': fragments.push(token.text, '\n\n'); break;
                 case 'heading':
                 case 'paragraph': fragments.push('\n\n'); break;
                 case 'br':
@@ -35,6 +38,7 @@ class MarkdownBlock {
                 case 'list_item':
                 case 'loose_item':
                 case 'table':
+                case 'table_header':
                 case 'table_row': fragments.push('\n'); break;
                 case 'table_header_cell':
                 case 'table_row_cell': fragments.push('\t'); break;
