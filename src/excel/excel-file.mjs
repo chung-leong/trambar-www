@@ -117,8 +117,8 @@ class ExcelFile {
         }
     }
 
-    localization(language) {
-        const filtered = this.filter(language, true);
+    localization(language, noFallback) {
+        const filtered = this.filter(language, noFallback);
         const table = {};
         for (let sheet of filtered.sheets) {
             if (sheet.columns.length >= 2) {

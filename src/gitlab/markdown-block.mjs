@@ -14,7 +14,35 @@ class MarkdownBlock {
     }
 
     plainText(options) {
-        return this.token.captured;
+        const fragments = [];
+        const add = (token) => {
+            if (token.children instanceof Array) {
+                for (let child of token.children) {
+                    add(child);
+                }
+            }
+            switch (token.type) {
+                case 'url':
+                case 'autolink':
+                case 'text': fragments.push(token.text); break;
+                case 'image': fragments.push(`[${token.text}]`); break;
+                case 'code':
+                case 'blockquote':
+                case 'heading':
+                case 'paragraph': fragments.push('\n\n'); break;
+                case 'br':
+                case 'list':
+                case 'list_item':
+                case 'loose_item':
+                case 'table':
+                case 'table_row': fragments.push('\n'); break;
+                case 'table_header_cell':
+                case 'table_row_cell': fragments.push('\t'); break;
+                case 'hr': fragments.push('-----\n'); break;
+            }
+        };
+        add(this.token);
+        return fragments.join('');
     }
 
     richText(options) {
@@ -33,6 +61,10 @@ class MarkdownBlock {
             },
         });
         return renderer.renderToken(this.token, this.index);
+    }
+
+    markdown(options) {
+        return this.token.captured;
     }
 
     heading() {

@@ -47,6 +47,14 @@ class MarkdownPage {
         return generateRichText(React.Fragment, {}, children, options);
     }
 
+    markdown(options) {
+        const fragments = [];
+        for (let block of this.blocks) {
+            fragments.push(block.markdown(options));
+        }
+        return fragments.join('');
+    }
+
     image(url) {
         for (let img of this.images) {
             const image = img.image(url);
@@ -154,6 +162,28 @@ class MarkdownPage {
 
     includes(block) {
         return (this.blocks.indexOf(block) !== -1);
+    }
+
+    localization(language, noFallback) {
+        const filtered = this.filter(language, noFallback);
+        const table = {};
+        let phrase = undefined;
+        let translation = '';
+        for (let block of filtered.blocks) {
+            if (block.token.type === 'heading') {
+                if (phrase) {
+                    table[phrase] = translation.trim();
+                }
+                phrase = block.plainText().trim();
+                translation = '';
+            } else if (block.token.type === 'paragraph') {
+                translation += block.plainText();
+            }
+        }
+        if (phrase) {
+            table[phrase] = translation.trim();
+        }
+        return table;
     }
 }
 

@@ -32,10 +32,24 @@ describe('Markdown', function() {
         })
         describe('#plainText', function() {
             it('should return plain text', async function() {
-                const page = await loadTestPage('repo1', 'test-1');
+                const page = await loadTestPage('repo2', 'test-2');
                 const text = page.plainText();
-                expect(text).to.contain('New York');
-                expect(text).to.contain('London');
+                const expected = `
+Hello
+
+World
+
+This is a test and this is only a test.
+
+Look at this picture: [internal image].
+
+Look at this one too: [external image]
+
+Internal link
+Another internal link
+External link
+`;
+                expect(text.trim()).to.equal(expected.trim());
             })
         })
         describe('#filter', function() {
