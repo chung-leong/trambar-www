@@ -279,6 +279,8 @@ function parseHTML(html) {
         lowerCaseTags: true,
         lowerCaseAttributeNames: true,
     });
+    // fix unescaped <
+    html = html.replace(/<(\d)/g, '&lt;\\1');
     parser.write(html);
     parser.end();
     if (error) {
