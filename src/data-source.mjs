@@ -142,16 +142,14 @@ class DataSource extends EventEmitter {
             }
             query.objects = objects;
         }
+        objects.total = query.result.total;
+        objects.pages = query.result.pages;
         return query.objects;
     }
 
     async requestMore(query) {
-        const pageQueryFirst = query.pageQueries[0];
-        const pageQueryLast = query.pageQueries[query.pageQueries.length - 1];
-        if (pageQueryFirst.result && pageQueryLast.result) {
-            const firstPageCount = pageQueryFirst.result.length;
-            const lastPageCount = pageQueryLast.result.length;
-            if (lastPageCount >= firstPageCount) {
+        if (query.result) {
+            if (query.pageQueries.length < query.result.pages) {
                 query.pageQueries.push({});
                 await this.checkListing(query);
             }
@@ -200,6 +198,8 @@ class DataSource extends EventEmitter {
             const etag = response.headers.get('etag');
             const mtime = response.headers.get('last-modified');
             const status = response.headers.get('x-cache-status');
+            const total = response.headers.get('x-total');
+            const pages = response.headers.get('x-total-pages');
             let changed = true;
             if (etag && query.etag === etag) {
                 changed = false;
@@ -213,6 +213,14 @@ class DataSource extends EventEmitter {
                 query.result = result;
                 query.etag = etag;
                 query.mtime = mtime;
+                if (result instanceof Array) {
+                    if (total) {
+                        result.total = parseInt(total);
+                    }
+                    if (pages) {
+                        result.pages = parseInt(pages);
+                    }
+                }
             }
             if (status === 'STALE' || status === 'UPDATING') {
                 query.stale = new Date;
@@ -247,13 +255,22 @@ class DataSource extends EventEmitter {
             let changed = some(pageChanged);
             if (changed) {
                 const items = [];
-                for (let pageQuery of query.pageQueries) {
+                for (let [ pageIndex, pageQuery ] of query.pageQueries.entries()) {
                     if (pageQuery.result) {
                         for (let item of pageQuery.result) {
                             // check for duplication in case page boundaries shifted
                             // in the middle of retrieval
                             if (items.indexOf(item) === -1) {
                                 items.push(item);
+                            }
+                        }
+
+                        if (pageChanged[pageIndex]) {
+                            if (pageQuery.result.total) {
+                                items.total = pageQuery.result.total;
+                            }
+                            if (pageQuery.result.pages) {
+                                items.pages = pageQuery.result.pages;
                             }
                         }
                     }
