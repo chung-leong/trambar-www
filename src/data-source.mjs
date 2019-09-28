@@ -5,6 +5,7 @@ const defaultOptions = {
     baseURL: '',
     fetchFunc: null,
     refreshDelay: 1000,
+    refreshInterval: Infinity,
 };
 
 class DataSource extends EventEmitter {
@@ -48,7 +49,7 @@ class DataSource extends EventEmitter {
         }
         this.freshnessCheckInterval = setInterval(() => {
             this.checkFreshness();
-        }, 1000);
+        }, 250);
     }
 
     deactivate() {
@@ -222,10 +223,13 @@ class DataSource extends EventEmitter {
                     }
                 }
             }
+            const now = new Date;;
             if (status === 'STALE' || status === 'UPDATING') {
-                query.stale = new Date;
+                query.stale = now;
+                query.fresh = null;
             } else {
                 query.stale = null;
+                query.fresh = now;
             }
             query.dirty = false;
             query.error = null;
@@ -238,17 +242,20 @@ class DataSource extends EventEmitter {
 
     async updateListing(query) {
         const promises = [];
-        let page = 0;
-        for (let pageQuery of query.pageQueries) {
-            page++;
+        for (let [ pageIndex, pageQuery ] of query.pageQueries.entries()) {
+            let promise;
             if (!pageQuery.promise) {
-                pageQuery.url = addPageNumber(query.url, query.pageVariable, page);
-                pageQuery.promise = this.updateObject(pageQuery);
+                pageQuery.url = addPageNumber(query.url, query.pageVariable, pageIndex + 1);
+                promise = this.updateObject(pageQuery);
+            } else if (pageQuery.dirty || pageQuery.error) {
+                promise = this.updateObject(pageQuery);
             }
-            if (pageQuery.dirty || pageQuery.error) {
-                pageQuery.promise = this.updateObject(pageQuery);
+            if (promise) {
+                pageQuery.promise = promise;
+                promises.push(promise);
+            } else {
+                promises.push(false);
             }
-            promises.push(pageQuery.promise);
         }
         try {
             const pageChanged = await Promise.all(promises);
@@ -277,11 +284,20 @@ class DataSource extends EventEmitter {
                 }
                 query.result = items;
             }
-            query.stale = null;
+            let minStaleTime = null;
             for (let pageQuery of query.pageQueries) {
                 if (pageQuery.stale) {
-                    query.stale = pageQuery.stale;
+                    if (!minStaleTime || minStaleTime > pageQuery.stale) {
+                        minStaleTime = pageQuery.stale;
+                    }
                 }
+            }
+            if (minStaleTime) {
+                query.stale = minStaleTime;
+                query.fresh = null;
+            } else {
+                query.stale = null;
+                query.fresh = new Date;
             }
             query.dirty = false;
             query.error = null;
@@ -293,53 +309,77 @@ class DataSource extends EventEmitter {
     }
 
     async checkObject(query) {
-        const changed = await this.updateObject(query);
-        if (changed) {
-            this.triggerEvent(new DataSourceEvent('change', this));
+        if (!query.checking) {
+            query.checking = true;
+            const changed = await this.updateObject(query);
+            query.checking = false;
+            if (changed) {
+                this.triggerEvent(new DataSourceEvent('change', this));
+            }
         }
     }
 
     async checkListing(query) {
-        const changed = await this.updateListing(query);
-        if (changed) {
-            const objectURLs = query.result;
-            for (let objectURL of objectURLs) {
-                const props = {
-                    url: objectURL,
-                    transform: query.itemTransform
-                };
-                const objectQuery = this.findQuery(props);
-                if (objectQuery && objectQuery.dirty) {
-                    await this.updateObject(objectQuery);
+        if (!query.checking) {
+            query.checking = true;
+            const changed = await this.updateListing(query);
+            query.checking = false;
+            if (changed) {
+                const objectURLs = query.result;
+                for (let objectURL of objectURLs) {
+                    const props = {
+                        url: objectURL,
+                        transform: query.itemTransform
+                    };
+                    const objectQuery = this.findQuery(props);
+                    if (objectQuery && objectQuery.dirty) {
+                        await this.updateObject(objectQuery);
+                    }
                 }
+                this.triggerEvent(new DataSourceEvent('change', this));
             }
-            this.triggerEvent(new DataSourceEvent('change', this));
         }
     }
 
     checkFreshness() {
         const now = new Date;
-        const delay = this.options.refreshDelay;
-        let invalidated = false;
+        const { refreshDelay, refreshInterval } = this.options;
+        const invalidating = [];
         for (let query of this.queries) {
             if (query.stale) {
+                // we received stale data from Nginx
                 const elapsed = now - query.stale;
-                if (elapsed > delay) {
-                    query.dirty = true;
-                    query.stale = null;
-                    if (query.pageQueries) {
-                        for (let pageQuery of query.pageQueries) {
-                            if (pageQuery.stale) {
-                                pageQuery.dirty = true;
-                                pageQuery.stale = null;
-                            }
-                        }
-                    }
-                    invalidated = true;
+                if (elapsed > refreshDelay) {
+                    // a short time has passed since we received
+                    // stale data from Nginx; the server should have
+                    // brought the data up-to-date by now
+                    invalidating.push(query);
+                }
+            } else if (query.fresh) {
+                const elapsed = now - query.fresh;
+                if (elapsed > refreshInterval) {
+                    // some time has passed since we received
+                    // fresh data from Nginx; check with the server in
+                    // case the data has changed
+                    invalidating.push(query);
                 }
             }
         }
-        if (invalidated) {
+        if (invalidating.length > 0) {
+            for (let query of invalidating) {
+                query.dirty = true;
+                query.stale = null;
+                query.fresh = null;
+                if (query.pageQueries) {
+                    for (let pageQuery of query.pageQueries) {
+                        if (pageQuery.promise) {
+                            pageQuery.dirty = true;
+                            pageQuery.stale = null;
+                            pageQuery.fresh = null;
+                        }
+                    }
+                }
+            }
             this.triggerEvent(new DataSourceEvent('change', this));
         }
     }
