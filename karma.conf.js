@@ -38,15 +38,21 @@ module.exports = function(config) {
                         type: 'javascript/auto',
                         query: {
                             presets: [
-                                [ 'env', { modules: false } ],
-                                'react',
-                                'stage-0',
+                                [ '@babel/env', { modules: false } ],
+                                [ '@babel/react' ],
                             ],
                             plugins: [
-                                'syntax-async-functions',
-                                'syntax-class-properties',
-                                'transform-regenerator',
-                                'transform-runtime',
+                                '@babel/proposal-class-properties',
+                                '@babel/proposal-export-default-from',
+                                '@babel/proposal-export-namespace-from',
+                                '@babel/proposal-json-strings',
+                                '@babel/proposal-nullish-coalescing-operator',
+                                '@babel/proposal-optional-chaining',
+                                '@babel/proposal-throw-expressions',
+                                '@babel/syntax-dynamic-import',
+                                '@babel/syntax-import-meta',
+                                '@babel/transform-regenerator',
+                                '@babel/transform-runtime',
                             ],
                         }
                     },
