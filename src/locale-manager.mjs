@@ -1,4 +1,5 @@
 import EventEmitter, { GenericEvent } from 'relaks-event-emitter';
+import { pickLanguageVersion } from './utils/language-utils.mjs';
 
 const defaultOptions = {
     loadFunc: async function() {
@@ -59,23 +60,7 @@ class LocaleManager extends EventEmitter {
         } else if (data instanceof Date) {
             return data.toLocaleDateString(this.language, params);
         } else if (data instanceof Object) {
-            let chosen = data[this.language];
-            if (chosen === undefined) {
-                const [ lc, cc ] = this.language.split('-');
-                chosen = data[lc];
-            }
-            if (chosen === undefined) {
-                for (let key of data) {
-                    chosen = data[key];
-                    break;
-                }
-            }
-            if (chosen === undefined) {
-                chosen = '';
-            } else {
-                chosen = chosen + '';
-            }
-            return chosen;
+            return pickLanguageVersion(data, this.language);
         }
     }
 }

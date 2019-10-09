@@ -45,7 +45,21 @@ function getLanguageMatch(object, reqLC, reqCC) {
     return highest;
 }
 
+function pickLanguageVersion(versions, language, noFallback) {
+    const choices = [];
+    for (let [ lang, text ] of Object.entries(versions)) {
+        choices.push({
+            flags: [ lang ],
+            text,
+            name: 'text'
+        });
+    }
+    const [ chosen ] = chooseLanguageVersion(choices, language, noFallback);
+    return (chosen) ? chosen.text : '';
+}
+
 export {
     chooseLanguageVersion,
+    pickLanguageVersion,
     isLocaleIdentifier,
 };

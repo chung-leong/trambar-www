@@ -1,4 +1,4 @@
-import { chooseLanguageVersion } from './utils/language-utils.mjs';
+import { pickLanguageVersion } from './utils/language-utils.mjs';
 import { generateRichText } from './utils/text-utils.mjs';
 
 class ProjectMetadata {
@@ -6,6 +6,8 @@ class ProjectMetadata {
         const metadata = new ProjectMetadata;
         metadata.name = data.name || '';
         metadata.title = data.title || {};
+        metadata.description = data.description || {};
+        metadata.archived = data.archived || false;
         return metadata;
     }
 
@@ -13,43 +15,36 @@ class ProjectMetadata {
         return {
             name: this.name,
             title: this.title,
-        }
+            description: this.description,
+        };
     }
 
     richText(options) {
         const rt = (text) => {
-            return generateRichText(undefined, { key: 0 }, text, options || {});
+            if (text instanceof Object) {
+                const multilingual = {};
+                for (let [ lang, langText ] of Object.entries(text)) {
+                    multilingual[lang] = rt(langText);
+                }
+                return multilingual;
+            } else {
+                return generateRichText(undefined, { key: 0 }, text, options || {});
+            }
         };
         const name = rt(this.name);
-        let title;
-        if (this.title instanceof Object) {
-            title = {};
-            for (let [ lang, text ] of Object.entries(this.title)) {
-                title[lang] = rt(text);
-            }
-        } else {
-            title = rt(this.title);
-        }
-        return { name, title };
+        const title = rt(this.title);
+        const description = rt(this.description);
+        return { name, title, description };
     }
 
     filter(language, noFallback) {
         if (this.language) {
             return this;
         }
-        const choices = [];
-        for (let [ lang, text ] of Object.entries(this.title)) {
-            choices.push({
-                flags: [ lang ],
-                text,
-                name: 'title'
-            });
-        }
-        const chosen = chooseLanguageVersion(choices, language, noFallback);
-
         const metadata = new ProjectMetadata;
         metadata.name = this.name;
-        metadata.title = (chosen[0]) ? chosen[0].text : '';
+        metadata.title = pickLanguageVersion(this.title, language);
+        metadata.description = pickLanguageVersion(this.description, language);
         metadata.language = language;
         return metadata;
     }
