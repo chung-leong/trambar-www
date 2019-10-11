@@ -8,7 +8,9 @@ class ExcelCell {
     }
 
     static create(column, data) {
-        if (containsPlainText(data)) {
+        if (data == null) {
+            return ExcelEmptyCell.create(column);
+        } else if (containsPlainText(data)) {
             return ExcelPlainTextCell.create(column, data);
         } else if (containsRichText(data)) {
             return ExcelRichTextCell.create(column, data);
@@ -146,8 +148,26 @@ class ExcelErrorCell extends ExcelCell {
     }
 }
 
+class ExcelEmptyCell extends ExcelCell {
+    static create(column) {
+        const cell = new ExcelEmptyCell(column);
+        return cell;
+    }
+
+    plainText(options) {
+        return '';
+    }
+
+    richText(options) {
+        return null;
+    }
+}
+
 function containsPlainText(data) {
     if (data instanceof Object) {
+        return false;
+    }
+    if (data == null) {
         return false;
     }
     return true;
