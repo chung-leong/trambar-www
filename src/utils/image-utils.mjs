@@ -34,8 +34,7 @@ function deriveImageProps(original, options) {
         style: {
             width: resized.width,
             height: resized.height,
-        },
-        title: source.error,
+        }
     };
 }
 

@@ -13,7 +13,6 @@ class MarkdownImage {
         img.width = data.width;
         img.height = data.height;
         img.format = data.format;
-        img.error = data.error;
         return img;
     }
 
