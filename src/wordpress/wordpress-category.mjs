@@ -1,42 +1,26 @@
-import { WordpressText } from './wordpress-text.mjs';
-import { getPlainTextProperties, getRichTextProperties } from '../utils/text-utils.mjs';
+import { WordpressObject } from './wordpress-object.mjs';
+import { HTMLText } from '../html-text.mjs';
 
-class WordpressCategory {
-    static folder = 'categories';
+class WordpressCategory extends WordpressObject {
+  constructor(identifiers, json) {
+    super(identifiers, json);
 
-    static create(data) {
-        const category = new WordpressCategory;
-        category.site = data.identifier;
-        category.id = data.rest.id;
-        category.count = data.rest.count;
-        category.name = WordpressText.create(data.rest.name);
-        category.description = WordpressText.create(data.rest.description);
-        category.link = data.rest.link;
-        category.slug = data.rest.slug;
-        category.taxonomy = data.rest.taxonomy;
-        category.parent = data.rest.parent;
-        category.meta = data.rest.meta;
-        return category;
-    }
+    this.id = json.id;
+    this.count = json.count;
+    this.name = new HTMLText(json.name);
+    this.description = new HTMLText(json.description);
+    this.link = json.link;
+    this.slug = json.slug;
+    this.taxonomy = json.taxonomy;
+    this.parent = json.parent;
+    this.meta = json.meta;
+  }
 
-    plainText(options) {
-        return getPlainTextProperties(this, options);
-    }
-
-    richText(options) {
-        return getRichTextProperties(this, options);
-    }
-
-    filter(language) {
-        return this;
-    }
-
-    languages() {
-        return [];
-    }
+  static getObjectFolder() {
+    return 'wp/v2/categories';
+  }
 }
 
 export {
-    WordpressCategory,
-    WordpressCategory as WordPressCategory,
+  WordpressCategory,
 };

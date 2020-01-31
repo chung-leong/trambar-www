@@ -1,55 +1,32 @@
-import { pickLanguageVersion } from './utils/language-utils.mjs';
-import { generateRichText } from './utils/text-utils.mjs';
+import { DataSourceObject } from './data-source-object.mjs';
+import { HTMLText } from './html-text.mjs';
 
-class ProjectMetadata {
-    static create(data) {
-        const metadata = new ProjectMetadata;
-        metadata.name = data.name || '';
-        metadata.title = data.title || {};
-        metadata.description = data.description || {};
-        metadata.archived = data.archived || false;
-        return metadata;
-    }
+class ProjectMetadata extends DataSourceObject {
+  constructor(identifiers, json) {
+    super(identifiers, json);
 
-    plainText(options) {
-        return {
-            name: this.name,
-            title: this.title,
-            description: this.description,
-        };
-    }
+    this.name = json.name || '';
+    this.title = createHTMLText(json.title);
+    this.description = createHTMLText(json.description);
+    this.archived = json.archived || false;
+  }
 
-    richText(options) {
-        const rt = (text) => {
-            if (text instanceof Object) {
-                const multilingual = {};
-                for (let [ lang, langText ] of Object.entries(text)) {
-                    multilingual[lang] = rt(langText);
-                }
-                return multilingual;
-            } else {
-                return generateRichText(undefined, { key: 0 }, text, options || {});
-            }
-        };
-        const name = rt(this.name);
-        const title = rt(this.title);
-        const description = rt(this.description);
-        return { name, title, description };
-    }
+  static getObjectURL(identifiers) {
+    return `meta/`;
+  }
+}
 
-    filter(language, noFallback) {
-        if (this.language) {
-            return this;
-        }
-        const metadata = new ProjectMetadata;
-        metadata.name = this.name;
-        metadata.title = pickLanguageVersion(this.title, language);
-        metadata.description = pickLanguageVersion(this.description, language);
-        metadata.language = language;
-        return metadata;
+function createHTMLText(langText) {
+  const tokens = [];
+  if (langText instanceof Object) {
+    for (let [ lang, text ] of Object.entries(langText)) {
+      tokens.push({ type: 'h1', children: [ text ] });
+      tokens.push(text);
     }
+  }
+  return new HTMLText(tokens);
 }
 
 export {
-    ProjectMetadata
+  ProjectMetadata
 };

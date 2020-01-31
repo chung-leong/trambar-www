@@ -1,25 +1,19 @@
 import { DataSource } from '../data-source.mjs';
-import { MarkdownPage } from './markdown-page.mjs';
+import { GitlabObject } from './gitlab-object.mjs';
+import { GitlabWiki } from './gitlab-wiki.mjs';
 
 class Gitlab extends DataSource {
-    async fetchWikiPage(identifier, slug) {
-        const url = this.getDataURL([ 'wiki', identifier, slug ]);
-        const file = await this.fetchObject(url, MarkdownPage.create);
-        return file;
-    }
+  async fetchWikiPage(repoId, slug) {
+    return this.fetchObject(GitlabWiki, repoId, slug);
+  }
 
-    async fetchWikiPages(identifier, criteria) {
-        const names = [ 'wiki' ];
-        if (identifier) {
-            names.push(identifier);
-        }
-        const url = this.getDataURL(names, criteria);
-        const files = await this.fetchObjects(url, MarkdownPage.create);
-        return files;
-    }
+  async findWikiPages(repoId, criteria) {
+    return this.findObjects(GitlabWiki, repoId, criteria);
+  }
 }
 
 export {
-    Gitlab,
-    Gitlab as GitLab,
+  Gitlab,
+  GitlabObject,
+  GitlabWiki,
 };

@@ -1,41 +1,25 @@
-import { WordpressText } from './wordpress-text.mjs';
-import { getPlainTextProperties, getRichTextProperties } from '../utils/text-utils.mjs';
+import { WordpressObject } from './wordpress-object.mjs';
+import { HTMLText } from '../html-text.mjs';
 
-class WordpressTag {
-    static folder = 'tags';
+class WordpressTag extends WordpressObject {
+  constructor(identifiers, json) {
+    super(identifiers, json);
 
-    static create(data) {
-        const tag = new WordpressTag;
-        tag.site = data.identifier;
-        tag.id = data.rest.id;
-        tag.count = data.rest.count;
-        tag.name = WordpressText.create(data.rest.name);
-        tag.description = WordpressText.create(data.rest.description);
-        tag.link = data.rest.link;
-        tag.slug = data.rest.slug;
-        tag.taxonomy = data.rest.taxonomy;
-        tag.meta = data.rest.meta;
-        return tag;
-    }
+    this.id = json.id;
+    this.count = json.count;
+    this.name = new HTMLText(json.name);
+    this.description = new HTMLText(json.description);
+    this.link = json.link;
+    this.slug = json.slug;
+    this.taxonomy = json.taxonomy;
+    this.meta = json.meta;
+  }
 
-    plainText(options) {
-        return getPlainTextProperties(this, options);
-    }
-
-    richText(options) {
-        return getRichTextProperties(this, options);
-    }
-
-    filter(language) {
-        return this;
-    }
-
-    languages() {
-        return [];
-    }
+  static getObjectFolder() {
+    return 'wp/v2/tags';
+  }
 }
 
 export {
-    WordpressTag,
-    WordpressTag as WordPressTag,
+  WordpressTag,
 };

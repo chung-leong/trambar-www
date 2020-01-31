@@ -1,78 +1,18 @@
-import { parsePath } from '../utils/path-utils.mjs';
-import { isLocaleIdentifier } from '../utils/language-utils.mjs';
+import { ExcelObject } from './excel-object.mjs';
 
-class ExcelColumn {
-    constructor(sheet, data) {
-        this.sheet = sheet;
-        this.cells = [];
-    }
+class ExcelColumn extends ExcelObject {
+  constructor(sheet, data) {
+    super(sheet.identifiers, data);
 
-    static create(sheet, data) {
-        const column = new ExcelColumn(sheet);
-        column.name = data.name || '';
-        column.flags = data.flags || [];
-        return column;
-    }
+    this.sheet = sheet;
+    this.name = data.name || '';
+    this.flags = data.flags || [];
+    this.cells = [];
+  }
 
-    get(path) {
-        const names = parsePath(path, 1);
-        return this.row(names[0]);
-    }
-
-    row(index) {
-        return this.cells[index];
-    }
-
-    plainText(options) {
-        return this.map((cell) => cell.plainText(options));
-    }
-
-    richText(options) {
-        return this.map((cell) => cell.richText(options));
-    }
-
-    map(f) {
-        const objects = [];
-        for (let cell of this.cells) {
-            objects.push(f(cell));
-        }
-        return objects;
-    }
-
-    filter(language, noFallback) {
-        const chosen = chooseLanguageVersion(this.sheet.columns, language, noFallback);
-        if (chosen.indexOf(column) !== -1) {
-            return this;
-        }
-    }
-
-    languages() {
-        const list = [];
-        for (let flag of this.flags) {
-            if (isLocaleIdentifier(flag)) {
-                if (list.indexOf(flag) === -1) {
-                    list.push(flag);
-                }
-            }
-        }
-        return list;
-    }
-
-    includes(cell) {
-        if (cell && this === cell.column) {
-            return true;
-        }
-        return false;
-    }
-
-    image(url) {
-        for (let cell of this.cells) {
-            const image = cell.image(url);
-            if (image) {
-                return image;
-            }
-        }
-    }
+  row(index) {
+    return this.cells[index];
+  }
 }
 
 export {

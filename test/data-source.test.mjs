@@ -10,7 +10,7 @@ import {
     Gitlab,
 
     ExcelFile,
-    MarkdownPage,
+    GitlabWiki,
 } from '../index.mjs';
 
 configure({ adapter: new Adapter });
@@ -86,7 +86,7 @@ describe('DataSource', function() {
             const dataSource = new DataSource([ Gitlab ], options);
             dataSource.activate();
             const page = await dataSource.fetchWikiPage('repo1', 'test-1');
-            expect(page).to.be.an.instanceOf(MarkdownPage);
+            expect(page).to.be.an.instanceOf(GitlabWiki);
             expect(page.slug).to.eql(data.slug);
             expect(page.title).to.eql(data.title);
         })
@@ -110,9 +110,9 @@ describe('DataSource', function() {
             dataSource.activate();
             const pages = await dataSource.fetchWikiPages();
             expect(pages).to.have.lengthOf(3);
-            expect(pages[0]).to.be.instanceOf(MarkdownPage);
-            expect(pages[1]).to.be.instanceOf(MarkdownPage);
-            expect(pages[2]).to.be.instanceOf(MarkdownPage);
+            expect(pages[0]).to.be.instanceOf(GitlabWiki);
+            expect(pages[1]).to.be.instanceOf(GitlabWiki);
+            expect(pages[2]).to.be.instanceOf(GitlabWiki);
         })
         it('should fetch pages from specified repo', async function() {
             const options = {

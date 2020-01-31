@@ -1,51 +1,35 @@
-import { WordpressText } from './wordpress-text.mjs';
-import { getPlainTextProperties, getRichTextProperties } from '../utils/text-utils.mjs';
+import { WordpressObject } from './wordpress-object.mjs';
+import { HTMLText } from '../html-text.mjs';
 
-class WordpressMedia {
-    static folder = 'media';
+class WordpressMedia extends WordpressObject {
+  constructor(identifiers, json) {
+    super(identifiers, json);
 
-    static create(data) {
-        const media = new WordpressMedia;
-        media.site = data.identifier;
-        media.id = data.rest.id;
-        media.date = new Date(data.rest.date_gmt + 'Z');
-        media.modified = new Date(data.rest.modified_gmt + 'Z');
-        media.slug = data.rest.slug;
-        media.status = data.rest.status;
-        media.type = data.rest.type;
-        media.link = data.rest.link;
-        media.mediaType = data.rest.media_type;
-        media.mimeType = data.rest.mime_type;
-        media.title = WordpressText.create(data.rest.title);
-        media.description = WordpressText.create(data.rest.description);
-        media.caption = WordpressText.create(data.rest.caption);
-        media.author = data.rest.author;
-        media.altText = data.rest.alt_text;
-        media.mediaDetails = data.rest.media_details;
-        media.post = data.rest.post;
-        media.sourceURL = data.rest.source_url;
-        media.meta = data.rest.meta;
-        return media;
-    }
+    this.id = json.id;
+    this.date = new Date(json.date_gmt + 'Z');
+    this.modified = new Date(json.modified_gmt + 'Z');
+    this.slug = json.slug;
+    this.status = json.status;
+    this.type = json.type;
+    this.link = json.link;
+    this.mediaType = json.media_type;
+    this.mimeType = json.mime_type;
+    this.title = new HTMLText(json.title);
+    this.description = new HTMLText(json.description);
+    this.caption = new HTMLText(json.caption);
+    this.author = json.author;
+    this.altText = json.alt_text;
+    this.mediaDetails = json.media_details;
+    this.post = json.post;
+    this.sourceURL = json.source_url;
+    this.meta = json.meta;
+  }
 
-    plainText(options) {
-        return getPlainTextProperties(this, options);
-    }
-
-    richText(options) {
-        return getRichTextProperties(this, options);
-    }
-
-    filter(language) {
-        return this;
-    }
-
-    languages() {
-        return [];
-    }
+  static getObjectFolder() {
+    return 'wp/v2/media';
+  }
 }
 
 export {
-    WordpressMedia,
-    WordpressMedia as WordPressMedia,
+  WordpressMedia,
 };

@@ -1,49 +1,33 @@
-import { WordpressText } from './wordpress-text.mjs';
-import { getPlainTextProperties, getRichTextProperties } from '../utils/text-utils.mjs';
+import { WordpressObject } from './wordpress-object.mjs';
+import { HTMLText } from '../html-text.mjs';
 
-class WordpressPage {
-    static folder = 'pages';
+class WordpressPage extends WordpressObject {
+  constructor(identifiers, json) {
+    super(identifiers, json);
 
-    static create(data) {
-        const page = new WordpressPage;
-        page.site = data.identifier;
-        page.id = data.rest.id;
-        page.date = new Date(data.rest.date_gmt + 'Z');
-        page.modified = new Date(data.rest.modified_gmt + 'Z');
-        page.slug = data.rest.slug;
-        page.status = data.rest.status;
-        page.type = data.rest.type;
-        page.link = data.rest.link;
-        page.title = WordpressText.create(data.rest.title);
-        page.content = WordpressText.create(data.rest.content);
-        page.excerpt = WordpressText.create(data.rest.excerpt);
-        page.author = data.rest.author;
-        page.featuredMedia = data.rest.featured_media;
-        page.menuOrder = data.rest.menu_order;
-        page.parent = data.rest.parent;
-        page.format = data.rest.format;
-        page.meta = data.rest.meta;
-        return page;
-    }
+    this.id = json.id;
+    this.date = new Date(json.date_gmt + 'Z');
+    this.modified = new Date(json.modified_gmt + 'Z');
+    this.slug = json.slug;
+    this.status = json.status;
+    this.type = json.type;
+    this.link = json.link;
+    this.title = new HTMLText(json.title);
+    this.content = new HTMLText(json.content);
+    this.excerpt = new HTMLText(json.excerpt);
+    this.author = json.author;
+    this.featuredMedia = json.featured_media;
+    this.menuOrder = json.menu_order;
+    this.parent = json.parent;
+    this.format = json.format;
+    this.meta = json.meta;
+  }
 
-    plainText(options) {
-        return getPlainTextProperties(this, options);
-    }
-
-    richText(options) {
-        return getRichTextProperties(this, options);
-    }
-
-    filter(language) {
-        return this;
-    }
-
-    languages() {
-        return [];
-    }
+  static getObjectFolder() {
+    return 'wp/v2/pages';
+  }
 }
 
 export {
-    WordpressPage,
-    WordpressPage as WordPressPage,
+  WordpressPage,
 };

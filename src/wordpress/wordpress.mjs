@@ -1,6 +1,7 @@
 import { DataSource } from '../data-source.mjs';
 import { WordpressCategory } from './wordpress-category.mjs';
 import { WordpressMedia } from './wordpress-media.mjs';
+import { WordpressObject } from './wordpress-object.mjs';
 import { WordpressPage } from './wordpress-page.mjs';
 import { WordpressPost } from './wordpress-post.mjs';
 import { WordpressSite } from './wordpress-site.mjs';
@@ -8,137 +9,115 @@ import { WordpressTag } from './wordpress-tag.mjs';
 import { WordpressUser } from './wordpress-user.mjs';
 
 class Wordpress extends DataSource {
-    getWPDataURL(identifier, parts, query) {
-        const full = [ 'rest' ];
-        if (identifier) {
-            full.push(identifier);
-            if (parts && parts.length > 0) {
-                full.push('wp', 'v2');
-                for (let part of parts) {
-                    full.push(part);
-                }
-            }
+  async fetchWPCategory(siteId, categoryId) {
+    return this.fetchWPObject(WordpressCategory, siteId, categoryId);
+  }
+
+  async fetchWPCategories(siteId, categoryIds) {
+    return this.fetchWPObjects(WordpressCategory, siteId, categoryIds);
+  }
+
+  async fetchWPMedia(siteId, mediaId) {
+    return this.fetchWPObject(WordpressMedia, siteId, mediaId);
+  }
+
+  async fetchWPMedias(siteId, mediaIds) {
+    return this.fetchWPObjects(WordpressMedia, siteId, mediaIds);
+  }
+
+  async fetchWPPage(siteId, pageId) {
+    return this.fetchWPObject(WordpressPage, siteId, pageId);
+  }
+
+  async fetchWPPages(siteId, pageIds) {
+    return this.fetchWPObjects(WordpressPage, siteId, pageIds);
+  }
+
+  async fetchWPPost(siteId, postId) {
+    return this.fetchWPObject(WordpressPost, siteId, postId);
+  }
+
+  async fetchWPPosts(siteId, postIds) {
+    return this.fetchWPObjects(WordpressPost, siteId, postIds);
+  }
+
+  async findWPPosts(siteId, criteria) {
+    return this.findObjects(WordpressPost, [ siteId ], criteria);
+  }
+
+  async fetchWPTag(siteId, tagId) {
+    return this.fetchWPObject(WordpressTag, siteId, tagId);
+  }
+
+  async fetchWPTags(siteId, tagIds) {
+    return this.fetchWPObjects(WordpressTag, siteId, tagIds);
+  }
+
+  async fetchWPUser(siteId, userId) {
+    return this.fetchWPObject(WordpressUser, siteId, userId);
+  }
+
+  async fetchWPUsers(siteId, userIds) {
+    return this.fetchWPObjects(WordpressUser, siteId, userIds);
+  }
+
+  async findWPUsers(siteId, criteria) {
+    return this.findObjects(WordpressUser, [ siteId ], criteria);
+  }
+
+  async fetchWPSite(siteId) {
+    return this.fetchObject(WordpressSite, [ siteId ]);
+  }
+
+  async findWPSites() {
+    return this.findObjects(WordpressSite, [], {});
+  }
+
+  async fetchWPObject(constructor, siteId, objectId) {
+    if (typeof(objectId) === 'string') {
+      const number = parseInt(objectId);
+      if (!isNaN(number)) {
+        objectId = number;
+      } else {
+        return this.fetchWPObjectBySlug(constructor, siteId, objectId);
+      }
+    }
+    return this.fetchObject(constructor, [ siteId, objectId ]);
+  }
+
+  async fetchWPObjects(constructor, siteId, objectIds) {
+    const promises = objectIds.map((objectId) => {
+      return this.fetchWPObject(constructor, siteId, objectId);
+    });
+    const objects = await Promise.all(promises);
+    return objects;
+  }
+
+  async fetchWPObjectBySlug(constructor, siteId, slug) {
+    // look for it among cached queries
+    for (let query of this.queries) {
+      if (query.constructor === constructor) {
+        if (query.result && query.result.slug === slug) {
+          // in case the query needs to be refreshed
+          return this.fetchObject(constructor, [ siteId, query.result.id ]);
         }
-        return this.getDataURL(full, query);
+      }
     }
 
-    async fetchWPCategory(identifier, criteria) {
-        return this.fetchWPObject(identifier, criteria, WordpressCategory);
-    }
-
-    async fetchWPCategories(identifier, criteria) {
-        return this.fetchWPObjects(identifier, criteria, WordpressCategory);
-    }
-
-    async fetchWPMedia(identifier, criteria) {
-        return this.fetchWPObject(identifier, criteria, WordpressMedia);
-    }
-
-    async fetchWPMedias(identifier, criteria) {
-        return this.fetchWPObjects(identifier, criteria, WordpressMedia);
-    }
-
-    async fetchWPPage(identifier, criteria) {
-        return this.fetchWPObject(identifier, criteria, WordpressPage);
-    }
-
-    async fetchWPPages(identifier, criteria) {
-        return this.fetchWPObjects(identifier, criteria, WordpressPage);
-    }
-
-    async fetchWPPost(identifier, criteria) {
-        return this.fetchWPObject(identifier, criteria, WordpressPost);
-    }
-
-    async fetchWPPosts(identifier, criteria) {
-        return this.fetchWPObjects(identifier, criteria, WordpressPost);
-    }
-
-    async fetchWPSite(identifier) {
-        const url = this.getWPDataURL(identifier);
-        return this.fetchObject(url, WordpressSite.create);
-    }
-
-    async fetchWPSites() {
-        const url = this.getWPDataURL(null, { type: 'wordpress' });
-        return this.fetchObjects(url, WordpressSite.create);
-    }
-
-    async fetchWPTag(identifier, criteria) {
-        return this.fetchWPObject(identifier, criteria, WordpressTag);
-    }
-
-    async fetchWPTags(identifier, criteria) {
-        return this.fetchWPObjects(identifier, criteria, WordpressTag);
-    }
-
-    async fetchWPUser(identifier, criteria) {
-        return this.fetchWPObject(identifier, criteria, WordpressUser);
-    }
-
-    async fetchWPUsers(identifier, criteria) {
-        return this.fetchWPObjects(identifier, criteria, WordpressUser);
-    }
-
-    async fetchWPObject(identifier, criteria, type) {
-        if (typeof(criteria) === 'number' || parseInt(criteria) > 0) {
-            const id = criteria;
-            const url = this.getWPDataURL(identifier, [ type.folder, id ]);
-            return this.fetchObject(url, type.create);
-        } else if (typeof(criteria) === 'string') {
-            const slug = criteria;
-            const id = await this.findWPObjectIDBySlug(identifier, slug, type);
-            if (id) {
-                return this.fetchWPObject(identifier, id, type);
-            }
-        } else if (criteria instanceof Object) {
-            const [ object ] = await this.fetchWPObjects(identifier, criteria, type);
-            return object;
-        } else {
-            throw new Error('Invalid criteria');
-        }
-    }
-
-    async fetchWPObjects(identifier, criteria, type) {
-        if (criteria instanceof Array) {
-            const promises = criteria.map((key) => {
-                return this.fetchWPObject(identifier, key, type);
-            });
-            return Promise.all(promises);
-        } else if (criteria == null || criteria instanceof Object) {
-            const query = criteria;
-            const url = this.getWPDataURL(identifier, [ type.folder ], query);
-            const posts = await this.fetchObjects(url, type.create, 'page');
-            return posts;
-        } else {
-            throw new Error('Invalid criteria');
-        }
-    }
-
-    async findWPObjectIDBySlug(identifier, slug, type) {
-        // look for it among cached queries
-        const folderURL = this.getWPDataURL(identifier, [ type.folder ]);
-        const query = this.findQuery((query) => {
-            if (query.result && query.result.slug === slug) {
-                if (query.url.startsWith(folderURL)) {
-                    if (query.result.id) {
-                        return true;
-                    }
-                }
-            }
-        });
-        if (query) {
-            return query.result.id;
-        }
-
-        // retrieve id from server
-        const idURL = this.getWPDataURL(identifier, [ type.folder ], { slug });
-        const ids = await this.fetchObject(idURL);
-        return ids[0];
-    }
+    // retrieve id from server
+    const objects = await this.findObjects(constructor, [ siteId ], { slug });
+    return objects[0];
+  }
 }
 
 export {
-    Wordpress,
-    Wordpress as WordPress,
+  Wordpress,
+  WordpressCategory,
+  WordpressMedia,
+  WordpressObject,
+  WordpressPage,
+  WordpressPost,
+  WordpressSite,
+  WordpressTag,
+  WordpressUser,
 };
