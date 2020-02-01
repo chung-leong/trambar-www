@@ -4,7 +4,8 @@ const CORS = require('cors');
 const ExcelJS = require('exceljs');
 const Util = require('util');
 const FS = require('fs');
-const Crypto = require('crypto')
+const Crypto = require('crypto');
+const MarkGor = require('mark-gor');
 
 const readFile = Util.promisify(FS.readFile);
 const readdir = Util.promisify(FS.readdir);
@@ -186,7 +187,7 @@ async function loadWiki(repoName, slug) {
   const data = {
     slug: slug,
     title: slug.replace(/-/g, ' '),
-    markdown: text
+    json: parseMarkdown(text),
   };
   try {
     const jsonPath = `${__dirname}/../assets/gitlab/${repoName}/${slug}.json`;
@@ -370,4 +371,12 @@ function findMediaImports(sheets) {
     }
   }
   return list;
+}
+
+function parseMarkdown(text) {
+  const parser = new MarkGor.Parser;
+  const renderer = new MarkGor.JSONRenderer;
+  const tokens = parser.parse(text);
+  const json = renderer.render(tokens);
+  return json;
 }

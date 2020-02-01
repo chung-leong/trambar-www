@@ -34,7 +34,7 @@ function getPlainTextFromNodes(nodes, options, key, parent) {
     }
   }
   const text = list.join('');
-  if (key === undefined) {
+  if (!parent) {
     return text.trim();
   } else {
     return text;
@@ -43,15 +43,18 @@ function getPlainTextFromNodes(nodes, options, key, parent) {
 
 function getPlainTextFromNode(node, options, key, parent) {
   if (typeof(node) === 'object') {
-    const innerText = getPlainTextFromNodes(node.children, options, key, node);
-    const outerText = wrapPlainText(innerText, node, parent);
-    return outerText;
-  } else if (typeof(node) === 'string') {
-    let text = normalizeWhitespaces(node);
-    if (isBlockLevel(parent)) {
-      text = text.trim();
+    const { type, props, children } = node;
+    if (type === 'br') {
+      return '\n';
+    } else if (type === 'img') {
+      return (props.alt) ? `[${props.alt}]` : ``;
+    } else {
+      const innerText = getPlainTextFromNodes(children, options, key, node);
+      const outerText = wrapPlainText(innerText, node, parent);
+      return outerText;
     }
-    return text;
+  } else if (typeof(node) === 'string') {
+    return normalizeWhitespaces(node);
   }
 }
 
@@ -64,7 +67,7 @@ function getRichTextFromNodes(nodes, options, key) {
     }
   }
   if (key === undefined) {
-    return getRichText(React.Fragment, {}, list, options);
+    return createElement(React.Fragment, {}, list, options);
   } else {
     return (list.length > 0) ? list : undefined;
   }
@@ -73,14 +76,21 @@ function getRichTextFromNodes(nodes, options, key) {
 function getRichTextFromNode(node, options, key) {
   if (typeof(node) === 'object') {
     const { type, props, children } = node;
-    return getRichText(type, props, children, options);
+    let contents;
+    if (children instanceof Array) {
+      contents = [];
+      for (let [ index, child ] of children.entries()) {
+        contents.push(getRichTextFromNode(child, options, index));
+      }
+    }
+    return createElement(type, { ...props, key }, contents, options);
   } else if (typeof(node) === 'string') {
     const text = normalizeWhitespaces(node);
-    return getRichText(undefined, { key }, text, options);
+    return createElement(undefined, { key }, text, options);
   }
 }
 
-function getRichText(type, props, children, options) {
+function createElement(type, props, children, options) {
   const { adjustFunc } = options || {};
   if (adjustFunc instanceof Function) {
     const result = adjustFunc(type, props, children);
@@ -118,50 +128,47 @@ function isBlockLevel(node) {
 }
 
 function wrapPlainText(innerText, node, parent) {
-  if (!isBlockLevel(node)) {
-    if (node.name === 'br') {
-      return innerText + '\n';
-    } else {
-      return innerText;
+  if (isBlockLevel(node)) {
+    let text = innerText.trim();
+    if (!/\n$/.test(text)) {
+      text += '\n';
     }
-  }
-  let text = innerText;
-  if (!/\n$/.test(text)) {
-    text += '\n';
-  }
-  switch (node.type) {
-    case 'h1':
-    case 'h2':
-    case 'h3':
-    case 'h4':
-    case 'h5':
-    case 'h6':
-    case 'p':
-      if (!/\n\n$/.test(text)) {
-        text += '\n';
-      }
-      break;
-    case 'li':
-      if (parent && parent.name === 'ol') {
-        let num = 1;
-        for (let child of parent.children) {
-          if (child === node) {
-            break;
-          }
-          if (child.name === 'li') {
-            num++;
-          }
+    switch (node.type) {
+      case 'h1':
+      case 'h2':
+      case 'h3':
+      case 'h4':
+      case 'h5':
+      case 'h6':
+      case 'p':
+        if (!/\n\n$/.test(text)) {
+          text += '\n';
         }
-        text = `${num}. ${text}`;
-      } else {
-        text = `* ${text}`;
-      }
-      break;
-    case 'hr':
-      text = '――――――――――\n';
-      break;
+        break;
+      case 'li':
+        if (parent && parent.name === 'ol') {
+          let num = 1;
+          for (let child of parent.children) {
+            if (child === node) {
+              break;
+            }
+            if (child.name === 'li') {
+              num++;
+            }
+          }
+          text = `${num}. ${text}`;
+        } else {
+          text = `* ${text}`;
+        }
+        break;
+      case 'hr':
+        text = '――――――――――\n';
+        break;
+    }
+    return text;
+  } else {
+    return innerText;
   }
-  return text;
 }
 
 function normalizeWhitespaces(text) {

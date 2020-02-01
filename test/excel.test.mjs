@@ -177,8 +177,8 @@ describe('Excel', function() {
       const row = sheet.getRow(0);
       const cell = row.getColumn('rich text');
       expect(cell.type).to.eql('rich');
-      const richText = cell.content.getRichText();
-      const wrapper = mount(<div>{richText}</div>);
+      const fragment = cell.content.getRichText();
+      const wrapper = mount(<div>{fragment}</div>);
       const html = wrapper.html();
       expect(html).to.eql('<div><span>This is </span><span style="font-weight: bold;">another</span><span> </span><span style="font-style: italic; text-decoration: underline;">test</span></div>');
     })
@@ -188,8 +188,8 @@ describe('Excel', function() {
       const row = sheet.getRow(0);
       const cell = row.getColumn('image');
       expect(cell.type).to.eql('image');
-      const richText = cell.content.getRichText();
-      const wrapper = mount(<div>{richText}</div>);
+      const fragment = cell.content.getRichText();
+      const wrapper = mount(<div>{fragment}</div>);
       const html = wrapper.html();
       expect(html).to.eql('<div><img src="http://localhost/srv/media/image/69b1510906ccacbb9363690cbb4bd257" width="1000" height="500"></div>');
     })
