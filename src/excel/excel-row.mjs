@@ -13,13 +13,17 @@ class ExcelRow extends ExcelObject {
     });
   }
 
-  column(name) {
+  getColumn(name) {
     const columns = this.sheet.columns;
     for (let [ index, column ] of columns.entries()) {
       if (column.name === name) {
         return this.cells[index];
       }
     }
+  }
+
+  getAvailableLanguages() {
+    return this.sheet.getLanguageCodes();
   }
 }
 

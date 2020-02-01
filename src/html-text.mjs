@@ -8,77 +8,12 @@ class HTMLText {
     this.languageCodes = languageCodes;
   }
 
-  plainText(options) {
+  getPlainText(options) {
     return getPlainTextFromNodes(this.json, options);
   }
 
-  richText(options) {
+  getRichText(options) {
     return getRichTextFromNodes(this.json, options);
-  }
-
-  image(url) {
-    /* TODO */
-  }
-
-  filter(language, noFallback) {
-    const choices = [];
-    let currentLanguage;
-    let currentTopic = 0;
-    let currentSection;
-    for (let node of this.json) {
-      const newLanguage = getLanguageFromNode(node);
-      if (newLanguage) {
-        if (newLanguage !== 'zz') {
-          if (!currentLanguage) {
-            currentTopic++;
-          }
-          currentLanguage = newLanguage;
-        } else {
-          if (currentLanguage) {
-            currentTopic++;
-          }
-          currentLanguage = undefined;
-        }
-        currentSection = undefined;
-        continue;
-      }
-
-      if (!currentSection) {
-        currentSection = {
-          flags: (currentLanguage) ? [ currentLanguage ] : [],
-          blocks: [],
-          name: `T${currentTopic}`,
-        };
-        choices.push(currentSection);
-      }
-      currentSection.blocks.push(block);
-    }
-    const chosen = chooseLanguageVersion(choices, language, noFallback);
-  }
-
-  languages() {
-  }
-
-  localization(language, noFallback) {
-    const filtered = this.filter(language, noFallback);
-    const table = {};
-    let phrase = undefined;
-    let translation = '';
-    for (let block of filtered.blocks) {
-      if (block.token.type === 'heading') {
-        if (phrase) {
-          table[phrase] = translation.trim();
-        }
-        phrase = block.plainText().trim();
-        translation = '';
-      } else if (block.token.type === 'paragraph') {
-        translation += block.plainText();
-      }
-    }
-    if (phrase) {
-      table[phrase] = translation.trim();
-    }
-    return table;
   }
 }
 
@@ -112,7 +47,7 @@ function getPlainTextFromNode(node, options, key, parent) {
     const outerText = wrapPlainText(innerText, node, parent);
     return outerText;
   } else if (typeof(node) === 'string') {
-    let text = normalizeWhitespaces(node.data);
+    let text = normalizeWhitespaces(node);
     if (isBlockLevel(parent)) {
       text = text.trim();
     }
@@ -146,7 +81,7 @@ function getRichTextFromNode(node, options, key) {
 }
 
 function getRichText(type, props, children, options) {
-  const { adjustFunc } = options;
+  const { adjustFunc } = options || {};
   if (adjustFunc instanceof Function) {
     const result = adjustFunc(type, props, children);
     if (result !== undefined) {
@@ -233,6 +168,11 @@ function normalizeWhitespaces(text) {
     return text.replace(/\s+/g, ' ');
 }
 
+function isLanguageCode(text) {
+  return /^[a-z]{2}(\-[a-z]{2})?$/.test(text);
+}
+
 export {
-  HTMLText
+  HTMLText,
+  isLanguageCode
 };

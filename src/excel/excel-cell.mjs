@@ -39,9 +39,11 @@ class ExcelCell extends ExcelObject {
     } else if (data.type === 'image' && typeof(data.url) === 'string') {
       const img = {
         type: 'img',
-        src: data.url,
-        width: data.width,
-        height: data.height
+        props: {
+          src: data.url,
+          width: data.width,
+          height: data.height
+        }
       };
       json = [ img ];
       resources = [ data ];
@@ -59,7 +61,11 @@ class ExcelCell extends ExcelObject {
     this.column = column;
     this.type = type;
     this.data = data;
-    this.content = new HTMLText(json, resources);
+    this.content = new HTMLText(json, resources, column.languageCodes);
+  }
+
+  getAvailableLanguages() {
+    return this.column.getAvailableLanguages();
   }
 }
 

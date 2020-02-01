@@ -17,12 +17,25 @@ class ExcelFile extends ExcelObject {
     });
   }
 
-  sheet(name) {
+  getSheet(name) {
     for (let sheet of this.sheets) {
       if (sheet.name === name) {
         return sheet;
       }
     }
+  }
+
+  getAvailableLanguages() {
+    const codes = [];
+    for (let sheet of this.sheets) {
+      const sheetCodes = sheet.getAvailableLanguages();
+      for (let code of sheetCodes) {
+        if (codes.indexOf(code) === -1) {
+          codes.push(code);
+        }
+      }
+    }
+    return codes;
   }
 
   static getObjectURL(identifiers) {
