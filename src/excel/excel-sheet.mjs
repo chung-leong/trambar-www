@@ -10,7 +10,6 @@ class ExcelSheet extends ExcelObject {
     this.file = file;
     this.name = data.name || '';
     this.flags = data.flags || [];
-    this.languageCodes = this.findAvailableLanguage(data.flags);
     this.columns = (data.columns || []).map((columnData) => {
       return new ExcelColumn(this, columnData);
     });

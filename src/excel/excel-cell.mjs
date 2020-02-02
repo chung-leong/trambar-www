@@ -61,7 +61,7 @@ class ExcelCell extends ExcelObject {
     this.column = column;
     this.type = type;
     this.data = data;
-    this.content = new HTMLText(json, resources, column.languageCodes);
+    this.content = new HTMLText(json, resources);
   }
 
   getAvailableLanguages() {

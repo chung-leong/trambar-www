@@ -1,4 +1,5 @@
 import { ExcelObject } from './excel-object.mjs';
+import { isLanguageCode } from '../html-text.mjs';
 
 class ExcelColumn extends ExcelObject {
   constructor(sheet, data) {
@@ -7,7 +8,6 @@ class ExcelColumn extends ExcelObject {
     this.sheet = sheet;
     this.name = data.name || '';
     this.flags = data.flags || [];
-    this.languageCodes = this.findAvailableLanguage(data.flags, sheet.languageCodes);
     this.cells = [];
   }
 
@@ -16,7 +16,20 @@ class ExcelColumn extends ExcelObject {
   }
 
   getAvailableLanguages() {
-    return this.languageCodes || [];
+    const codes = [];
+    for (let flag of this.flags) {
+      if (isLanguageCode(flag)) {
+        codes.push(flag.toLowerCase());
+      }
+    }
+    if (codes.length === 0) {
+      for (let flag of this.sheet.flags) {
+        if (isLanguageCode(flag)) {
+          codes.push(flag.toLowerCase());
+        }
+      }
+    }
+    return codes;
   }
 }
 

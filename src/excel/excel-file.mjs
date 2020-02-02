@@ -6,15 +6,17 @@ class ExcelFile extends ExcelObject {
     super(identifiers, json);
 
     this.fileId = identifiers[0];
-    this.title = json.title || '';
-    this.type = json.type || '';
-    this.filename = json.filename || '';
-    this.keywords = json.keywords || [];
-    this.subject = json.subject || '';
-    this.description = json.description || '';
-    this.sheets = (json.sheets || []).map((sheetData) => {
-      return new ExcelSheet(this, sheetData);
-    });
+    if (json) {
+      this.title = json.title || '';
+      this.type = json.type || '';
+      this.filename = json.filename || '';
+      this.keywords = json.keywords || [];
+      this.subject = json.subject || '';
+      this.description = json.description || '';
+      this.sheets = (json.sheets || []).map((sheetData) => {
+        return new ExcelSheet(this, sheetData);
+      });
+    }
   }
 
   getSheet(name) {
@@ -36,6 +38,18 @@ class ExcelFile extends ExcelObject {
       }
     }
     return codes;
+  }
+
+  getLanguageSpecific(lang) {
+    const file = new ExcelFile(this.identifiers);
+    file.title = this.title;
+    file.type = this.type;
+    file.filename = this.filename;
+    file.keywords = this.keywords;
+    file.subject = this.subject;
+    file.description = this.description;
+    file.sheets = sheets;
+    return file;
   }
 
   static getObjectURL(identifiers) {

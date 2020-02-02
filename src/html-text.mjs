@@ -15,6 +15,19 @@ class HTMLText {
   getRichText(options) {
     return getRichTextFromNodes(this.json, options);
   }
+
+  getAvailableLanguages() {
+
+  }
+
+  getLanguageSpecific(code) {
+    if (this.languageCodes) {
+      const score = getLanguageMatch(this.languageCodes, code);
+      return (score > 0) ? this : null;
+    } else {
+      const sections = separateNodesByLanguages(this.json);
+    }
+  }
 }
 
 
@@ -177,6 +190,107 @@ function normalizeWhitespaces(text) {
 
 function isLanguageCode(text) {
   return /^[a-z]{2}(\-[a-z]{2})?$/.test(text);
+}
+
+function separateNodesByLanguages(nodes) {
+  const sections = [];
+  let topic = 0;
+  let languages;
+  let section;
+  for (let node of nodes) {
+    const newLanguages = getLanguageCodesFromNode(node);
+    if (newLanguages) {
+      if (newLanguages.length > 0) {
+        if (!languages) {
+          topic++;
+        }
+        languages = newLanguages;
+      } else {
+        if (languages) {
+          topic++;
+        }
+        languages = undefined;
+      }
+      section = undefined;
+      continue;
+    }
+    if (!section) {
+      section = { languages, topic, nodes: [] };
+      sections.push(section);
+    }
+    section.nodes.push(block);
+  }
+  return sections;
+}
+
+function getLanguageCodesFromNode(node) {
+  if (node instanceof Object && /^h[1-6]$/.test(node.type)) {
+    const text = getPlainTextFromNode(node, {});
+    const m = /^\s*\((.*)\)\s*$/.exec(text);
+    if (m) {
+      const codes = [];
+      const flags = m[1].split(/\s*,\s*/);
+      let reset = false;
+      for (let flag of flags) {
+        if (isLanguageCode(flag)) {
+          const code = flag.toLowerCase();
+          if (code !== 'zz') {
+            codes.push(code);
+          } else {
+            reset = true;
+          }
+        }
+      }
+      if (codes.length > 0 || rest) {
+        return codes;
+      }
+    }
+  }
+}
+
+function chooseLanguageVersion(sections, lang) {
+  const list = [];
+  const existing = {};
+  for (let section of sections) {
+    const score = getLanguageMatch(object, lang);
+    const previous = existing[object.name];
+    if (!previous) {
+      if (score !== 0) {
+        existing[object.name] = { index: list.length, score };
+        list.push(object);
+      }
+    } else if (previous.score < score) {
+      list[previous.index] = object;
+      previous.score = score;
+    }
+  }
+  return list;
+}
+
+function getLanguageMatch(languageCodes, lang) {
+  const [ reqLC, reqCC ] = (lang) ? lang.toLowerCase().split('-') : [];
+
+    let highest;
+
+    if (reqLC && object.flags instanceof Array) {
+        for (let flag of ) {
+            if (isLocaleIdentifier(flag)) {
+                const [ lc, cc ] = flag.toLowerCase().split('-');
+                let score = 0;
+                if (lc === reqLC) {
+                    if (cc === reqCC) {
+                        score = 100;
+                    } else {
+                        score = 50;
+                    }
+                }
+                if (!(highest > score)) {
+                    highest = score;
+                }
+            }
+        }
+    }
+    return highest;
 }
 
 export {

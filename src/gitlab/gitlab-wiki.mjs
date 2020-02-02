@@ -6,9 +6,11 @@ class GitlabWiki extends GitlabObject {
     super(identifiers, json);
 
     this.repoId = identifiers[0];
-    this.slug = json.slug;
-    this.title = json.title;
-    this.content = new HTMLText(json.json, json.resources);
+    if (json) {
+      this.slug = json.slug;
+      this.title = json.title;
+      this.content = new HTMLText(json.json, json.resources);
+    }
   }
 
   static getObjectURL(identifiers) {

@@ -21,6 +21,16 @@ class DataSourceObject {
     return codes;
   }
 
+  getLanguageSpecific(lang) {
+    const object = new this.constructor(this.identifiers);
+    for (let [ name, value ] of Object.entries(this)) {
+      if (value instanceof HTMLText) {
+        value = value.getLanguageSpecific(lang);
+      }
+      object[name] = value;
+    }
+  }
+
   static getObjectURL(identifiers) {
     return '';
   }
