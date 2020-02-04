@@ -1,5 +1,6 @@
 import { ExcelObject } from './excel-object.mjs';
 import { ExcelSheet } from './excel-sheet.mjs';
+import { chooseLanguageVersion } from '../html-text.mjs';
 
 class ExcelFile extends ExcelObject {
   constructor(identifiers, json) {
@@ -13,9 +14,17 @@ class ExcelFile extends ExcelObject {
       this.keywords = json.keywords || [];
       this.subject = json.subject || '';
       this.description = json.description || '';
-      this.sheets = (json.sheets || []).map((sheetData) => {
-        return new ExcelSheet(this, sheetData);
-      });
+      this.languages = [];
+      this.sheets = [];
+      for (let sheetData of json.sheets || []) {
+        const sheet = new ExcelSheet(identifiers, sheetData);
+        this.sheets.push(sheet);
+        for (let code of sheet.languages) {
+          if (this.languages.indexOf(code) === -1) {
+            this.languages.push(code);
+          }
+        }
+      }
     }
   }
 
@@ -27,19 +36,6 @@ class ExcelFile extends ExcelObject {
     }
   }
 
-  getAvailableLanguages() {
-    const codes = [];
-    for (let sheet of this.sheets) {
-      const sheetCodes = sheet.getAvailableLanguages();
-      for (let code of sheetCodes) {
-        if (codes.indexOf(code) === -1) {
-          codes.push(code);
-        }
-      }
-    }
-    return codes;
-  }
-
   getLanguageSpecific(lang) {
     const file = new ExcelFile(this.identifiers);
     file.title = this.title;
@@ -48,7 +44,13 @@ class ExcelFile extends ExcelObject {
     file.keywords = this.keywords;
     file.subject = this.subject;
     file.description = this.description;
-    file.sheets = sheets;
+    file.language = lang.toLowerCase();
+    file.sheets = [];
+    const chosen = chooseLanguageVersion(this.sheets, file.language);
+    for (let sheet of chosen) {
+      const newSheet = sheet.getLanguageSpecific(file.language);
+      file.sheets.push(newSheet);
+    }
     return file;
   }
 

@@ -17,7 +17,6 @@ class HTMLText {
   }
 
   getAvailableLanguages() {
-
   }
 
   getLanguageSpecific(code) {
@@ -25,7 +24,7 @@ class HTMLText {
       const score = getLanguageMatch(this.languageCodes, code);
       return (score > 0) ? this : null;
     } else {
-      const sections = separateNodesByLanguages(this.json);
+      const choices = separateNodesByLanguages(this.json);
     }
   }
 }
@@ -193,10 +192,10 @@ function isLanguageCode(text) {
 }
 
 function separateNodesByLanguages(nodes) {
-  const sections = [];
+  const choices = [];
   let topic = 0;
   let languages;
-  let section;
+  let choice;
   for (let node of nodes) {
     const newLanguages = getLanguageCodesFromNode(node);
     if (newLanguages) {
@@ -211,16 +210,16 @@ function separateNodesByLanguages(nodes) {
         }
         languages = undefined;
       }
-      section = undefined;
+      choice = undefined;
       continue;
     }
-    if (!section) {
-      section = { languages, topic, nodes: [] };
-      sections.push(section);
+    if (!choice) {
+      choice = { languages, name: 'T' + topic, nodes: [] };
+      choices.push(choice);
     }
-    section.nodes.push(block);
+    choice.nodes.push(block);
   }
-  return sections;
+  return choices;
 }
 
 function getLanguageCodesFromNode(node) {
@@ -248,17 +247,15 @@ function getLanguageCodesFromNode(node) {
   }
 }
 
-function chooseLanguageVersion(sections, lang) {
+function chooseLanguageVersion(choices, lang) {
   const list = [];
   const existing = {};
-  for (let section of sections) {
-    const score = getLanguageMatch(object, lang);
+  for (let object of choices) {
+    const score = getLanguageMatch(object.languages, lang);
     const previous = existing[object.name];
     if (!previous) {
-      if (score !== 0) {
-        existing[object.name] = { index: list.length, score };
-        list.push(object);
-      }
+      existing[object.name] = { index: list.length, score };
+      list.push(object);
     } else if (previous.score < score) {
       list[previous.index] = object;
       previous.score = score;
@@ -268,32 +265,45 @@ function chooseLanguageVersion(sections, lang) {
 }
 
 function getLanguageMatch(languageCodes, lang) {
-  const [ reqLC, reqCC ] = (lang) ? lang.toLowerCase().split('-') : [];
-
+  if (languageCodes instanceof Array) {
     let highest;
-
-    if (reqLC && object.flags instanceof Array) {
-        for (let flag of ) {
-            if (isLocaleIdentifier(flag)) {
-                const [ lc, cc ] = flag.toLowerCase().split('-');
-                let score = 0;
-                if (lc === reqLC) {
-                    if (cc === reqCC) {
-                        score = 100;
-                    } else {
-                        score = 50;
-                    }
-                }
-                if (!(highest > score)) {
-                    highest = score;
-                }
-            }
+    const [ reqLC, reqCC ] = lang.split('-');
+    for (let languageCode of languageCodes) {
+      const [ lc, cc ] = languageCode.split('-');
+      let score = 0;
+      if (lc === reqLC) {
+        if (cc === reqCC) {
+          score = 100;
+        } else {
+          score = 50;
         }
+      }
+      if (!(highest > score)) {
+        highest = score;
+      }
     }
     return highest;
+  } else {
+    return 1;
+  }
+}
+
+function findLanguageCodes(flags, defaultLanguages) {
+  const codes = [];
+  if (flags instanceof Array) {
+    for (let flag of flags) {
+      if (isLanguageCode(flag)) {
+        codes.push(flag.toLowerCase());
+      }
+    }
+  }
+  return (codes.length > 0) ? codes : defaultLanguages || [];
 }
 
 export {
   HTMLText,
-  isLanguageCode
+  isLanguageCode,
+  findLanguageCodes,
+  getLanguageMatch,
+  chooseLanguageVersion,
 };

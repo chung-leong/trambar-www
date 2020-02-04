@@ -2,8 +2,8 @@ import { ExcelObject } from './excel-object.mjs';
 import { HTMLText } from '../html-text.mjs';
 
 class ExcelCell extends ExcelObject {
-  constructor(column, data) {
-    super(column.identifiers, data);
+  constructor(identifiers, data, columnLanguages) {
+    super(identifiers, data);
 
     let json, resources, type;
     if (data == null) {
@@ -58,14 +58,10 @@ class ExcelCell extends ExcelObject {
       type = 'error';
     }
 
-    this.column = column;
     this.type = type;
     this.data = data;
     this.content = new HTMLText(json, resources);
-  }
-
-  getAvailableLanguages() {
-    return this.column.getAvailableLanguages();
+    this.languages = columnLanguages;
   }
 }
 

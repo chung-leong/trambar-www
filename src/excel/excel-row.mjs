@@ -1,16 +1,11 @@
 import { ExcelObject } from './excel-object.mjs';
-import { ExcelCell } from './excel-cell.mjs';
+import { chooseLanguageVersion } from '../html-text.mjs';
 
 class ExcelRow extends ExcelObject {
-  constructor(sheet, data) {
-    super(sheet.identifiers, data);
-
-    this.sheet = sheet;
-    this.cells = sheet.columns.map((column, index) => {
-      const cell = new ExcelCell(column, (data || [])[index]);
-      column.cells.push(cell);
-      return cell;
-    });
+  constructor(identifiers, data, sheetLanguageCodes) {
+    super(identifiers, data);
+    this.cells = [];
+    this.languages = sheetLanguageCodes;
   }
 
   getColumn(name) {
@@ -22,8 +17,14 @@ class ExcelRow extends ExcelObject {
     }
   }
 
-  getAvailableLanguages() {
-    return this.sheet.getLanguageCodes();
+  getLanguageSpecific(lang) {
+    const row = new ExcelRow(this.identifiers);
+    row.language = lang.toLowerCase();
+    const chosen = chooseLanguageVersion(this.cells, row.language);
+    for (let cell of chosen) {
+      row.cells.push(cell);
+    }
+    return row;
   }
 }
 
