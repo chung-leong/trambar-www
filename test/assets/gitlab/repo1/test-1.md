@@ -1,21 +1,21 @@
 # My Dear Dingo Donuts
 
-# pl
+# (pl)
 
 Odwiedź nas w naszym sklepie w Krakowie
 
-# en-US
+# (en-US)
 
 Visit our store in New York.
 
-# en-UK
+# (en-UK)
 
 Visit our store in London.
 
-# en-AU
+# (en-AU)
 
 Visit our store in Sydney.
 
-# zz
+# (zz)
 
 Copyright

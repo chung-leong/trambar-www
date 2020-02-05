@@ -71,30 +71,30 @@ Look at this one too: [external image]
       `;
       expect(html).to.equal(expected.trim().replace(/>\s+</g, '><'));
     })
-    /*
     it('should filter out other languages', async function() {
       const page = await loadTestPage('repo1', 'test-1');
-      const pageUK = page.filter('en-uk');
-      const textUK = pageUK.plainText();
+      const pageUK = page.getLanguageSpecific('en-uk');
+      const textUK = pageUK.content.getPlainText();
       expect(textUK).to.contain('Donuts');
       expect(textUK).to.not.contain('New York');
       expect(textUK).to.contain('London');
       expect(textUK).to.not.contain('Sydney');
 
-      const pageEN = page.filter('en');
-      const textEN = pageEN.plainText();
+      const pageEN = page.getLanguageSpecific('en');
+      const textEN = pageEN.content.getPlainText();
       expect(textEN).to.contain('Donuts');
       expect(textEN).to.contain('New York');
       expect(textEN).to.not.contain('London');
       expect(textEN).to.not.contain('Sydney');
 
-      const pagePL = page.filter('pl-pl');
-      const textPL = pagePL.plainText();
+      const pagePL = page.getLanguageSpecific('pl-pl');
+      const textPL = pagePL.content.getPlainText();
       expect(textPL).to.contain('Donuts');
       expect(textPL).to.contain('Krakow');
       expect(textPL).to.not.contain('London');
       expect(textPL).to.not.contain('Sydney');
     })
+    /*
     it('should extract JSON data embedded in Markdown text', async function() {
       const page = await loadTestPage('repo1', 'test-3');
       const data = page.json('Settings');

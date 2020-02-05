@@ -86,6 +86,15 @@ describe('Excel', function() {
         expect(cell1.content.getPlainText()).to.eql('Alice');
         expect(cell2.content.getPlainText()).to.eql('Beatrice');
       })
+      it('should return an object containing a sheet with language specific columns', async function() {
+        const file = await loadTestFile('test-2');
+        const fileGB = file.getLanguageSpecific('en-gb');
+        const fileAU = file.getLanguageSpecific('en-au');
+        const cellGB = fileGB.sheets[0].columns[0].cells[0];
+        const cellAU = fileAU.sheets[0].columns[0].cells[0];
+        expect(cellGB.content.getPlainText()).to.eql('London');
+        expect(cellAU.content.getPlainText()).to.eql('Canberra');
+      })
     })
     /*
     describe('#image()', function() {

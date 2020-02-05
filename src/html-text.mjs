@@ -2,10 +2,9 @@ import React from 'react';
 import { getTagProperties } from 'mark-gor/src/html-tags.mjs';
 
 class HTMLText {
-  constructor(json, resources, languageCodes) {
+  constructor(json, resources) {
     this.json = json;
     this.resources = resources;
-    this.languageCodes = languageCodes;
   }
 
   getPlainText(options) {
@@ -19,13 +18,16 @@ class HTMLText {
   getAvailableLanguages() {
   }
 
-  getLanguageSpecific(code) {
-    if (this.languageCodes) {
-      const score = getLanguageMatch(this.languageCodes, code);
-      return (score > 0) ? this : null;
-    } else {
-      const choices = separateNodesByLanguages(this.json);
+  getLanguageSpecific(lang) {
+    const choices = separateNodesByLanguages(this.json);
+    const chosen = chooseLanguageVersion(choices, lang);
+    const json = [];
+    for (let choice of chosen) {
+      for (let node of choice.nodes) {
+        json.push(node);
+      }
     }
+    return new HTMLText(json, this.resources);
   }
 }
 
@@ -188,7 +190,7 @@ function normalizeWhitespaces(text) {
 }
 
 function isLanguageCode(text) {
-  return /^[a-z]{2}(\-[a-z]{2})?$/.test(text);
+  return /^[a-z]{2}(\-[a-z]{2})?$/i.test(text);
 }
 
 function separateNodesByLanguages(nodes) {
@@ -217,7 +219,7 @@ function separateNodesByLanguages(nodes) {
       choice = { languages, name: 'T' + topic, nodes: [] };
       choices.push(choice);
     }
-    choice.nodes.push(block);
+    choice.nodes.push(node);
   }
   return choices;
 }
@@ -240,7 +242,7 @@ function getLanguageCodesFromNode(node) {
           }
         }
       }
-      if (codes.length > 0 || rest) {
+      if (codes.length > 0 || reset) {
         return codes;
       }
     }

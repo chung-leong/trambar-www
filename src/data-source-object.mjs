@@ -29,6 +29,7 @@ class DataSourceObject {
       }
       object[name] = value;
     }
+    return object;
   }
 
   static getObjectURL(identifiers) {
