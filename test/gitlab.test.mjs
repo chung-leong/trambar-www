@@ -71,7 +71,7 @@ Look at this one too: [external image]
       `;
       expect(html).to.equal(expected.trim().replace(/>\s+</g, '><'));
     })
-    it('should filter out other languages', async function() {
+    it('should handle text in multiple languages', async function() {
       const page = await loadTestPage('repo1', 'test-1');
       const pageUK = page.getLanguageSpecific('en-uk');
       const textUK = pageUK.content.getPlainText();
@@ -94,23 +94,26 @@ Look at this one too: [external image]
       expect(textPL).to.not.contain('London');
       expect(textPL).to.not.contain('Sydney');
     })
-    /*
-    it('should extract JSON data embedded in Markdown text', async function() {
+    it('should return a list of available languages', async function() {
+      const page = await loadTestPage('repo1', 'test-1');
+      const codes = page.getAvailableLanguages();
+      expect(codes).to.eql([ 'pl', 'en-us', 'en-uk', 'en-au' ]);
+    });
+    it('should yield JSON data embedded in Markdown text', async function() {
       const page = await loadTestPage('repo1', 'test-3');
-      const data = page.json('Settings');
+      const data = page.content.getJSON('Settings');
       expect(data).to.be.an.instanceOf(Object);
     })
     it('should return undefined if JSON is malformed', async function() {
       const page = await loadTestPage('repo1', 'test-3');
-      const data = page.json('Broken');
+      const data = page.content.getJSON('Broken');
       expect(data).to.be.undefined;
     })
     it('should return undefined if the heading cannot be found', async function() {
       const page = await loadTestPage('repo1', 'test-3');
-      const data = page.json('Non-existing');
+      const data = page.content.getJSON('Non-existing');
       expect(data).to.be.undefined;
     })
-    */
   })
   after(() => {
     return Server.stop();

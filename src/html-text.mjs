@@ -16,6 +16,18 @@ class HTMLText {
   }
 
   getAvailableLanguages() {
+    const codes = [];
+    const choices = separateNodesByLanguages(this.json);
+    for (let choice of choices) {
+      if (choice.languages) {
+        for (let code of choice.languages) {
+          if (codes.indexOf(code) === -1) {
+            codes.push(code);
+          }
+        }
+      }
+    }
+    return codes;
   }
 
   getLanguageSpecific(lang) {
@@ -28,6 +40,31 @@ class HTMLText {
       }
     }
     return new HTMLText(json, this.resources);
+  }
+
+  getJSON(title) {
+    let titleFound = false;
+    for (let node of this.json) {
+      if (node instanceof Object) {
+        if (/^h[1-6]$/.test(node.type)) {
+          const text = getPlainTextFromNode(node, {}).trim();
+          titleFound = (text === title);
+        } else if (node.type === 'pre') {
+          if (titleFound && node.children instanceof Array) {
+            for (let child of node.children) {
+              if (child.type === 'code') {
+                const text = getPlainTextFromNode(child, {});
+                try {
+                  return JSON.parse(text);
+                } catch (err) {
+                  console.error(err);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
 
@@ -226,11 +263,11 @@ function separateNodesByLanguages(nodes) {
 
 function getLanguageCodesFromNode(node) {
   if (node instanceof Object && /^h[1-6]$/.test(node.type)) {
-    const text = getPlainTextFromNode(node, {});
-    const m = /^\s*\((.*)\)\s*$/.exec(text);
+    const text = getPlainTextFromNode(node, {}).trim();
+    const m = /^\((.*)\)$/.exec(text);
     if (m) {
       const codes = [];
-      const flags = m[1].split(/\s*,\s*/);
+      const flags = m[1].trim().split(/\s*,\s*/);
       let reset = false;
       for (let flag of flags) {
         if (isLanguageCode(flag)) {
