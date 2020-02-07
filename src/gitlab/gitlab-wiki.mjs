@@ -9,7 +9,7 @@ class GitlabWiki extends GitlabObject {
     if (json) {
       this.slug = json.slug;
       this.title = json.title;
-      this.content = new HTMLText(json.json, json.resources);
+      this.content = new HTMLText(json);
     }
   }
 

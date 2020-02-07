@@ -6,7 +6,7 @@ import Server, { fetchTestData } from './server/server.mjs';
 
 import {
   GitlabWiki,
-} from '../index.mjs';
+} from '../src/index.mjs';
 
 configure({ adapter: new Adapter });
 
@@ -18,20 +18,20 @@ describe('Gitlab', function() {
     return Server.start(serverPort);
   })
   it('should be able to retrieve test data', async function() {
-    const data = await loadTestData('repo2', 'test-2');
+    const data = await loadTestData([ 'repo2', 'test-2' ]);
     expect(data.slug).to.eql('test-2');
     expect(data.json).to.be.instanceOf(Array);
     expect(data.resources).to.be.instanceOf(Array);
   })
   describe('GitlabWiki', function() {
     it('should include metadata from file', async function() {
-      const data = await loadTestData('repo1', 'test-1');
-      const page = await loadTestPage('repo1', 'test-1');
+      const data = await loadTestData([ 'repo1', 'test-1' ]);
+      const page = await loadTestPage([ 'repo1', 'test-1' ]);
       expect(page.slug).to.eql(data.slug);
       expect(page.title).to.eql(data.title);
     })
     it('should have the right plain text content', async function() {
-        const page = await loadTestPage('repo2', 'test-2');
+        const page = await loadTestPage([ 'repo2', 'test-2' ]);
         const text = page.content.getPlainText();
         const expected = `
 Hello
@@ -51,7 +51,7 @@ Look at this one too: [external image]
       expect(text).to.equal(expected.trim());
     })
     it('should have the right HTML content', async function() {
-      const page = await loadTestPage('repo2', 'test-2');
+      const page = await loadTestPage([ 'repo2', 'test-2' ]);
       const fragment = page.content.getRichText();
       const wrapper = mount(<div>{fragment}</div>);
       const html = wrapper.html();
@@ -72,7 +72,7 @@ Look at this one too: [external image]
       expect(html).to.equal(expected.trim().replace(/>\s+</g, '><'));
     })
     it('should handle text in multiple languages', async function() {
-      const page = await loadTestPage('repo1', 'test-1');
+      const page = await loadTestPage([ 'repo1', 'test-1' ]);
       const pageUK = page.getLanguageSpecific('en-uk');
       const textUK = pageUK.content.getPlainText();
       expect(textUK).to.contain('Donuts');
@@ -95,22 +95,22 @@ Look at this one too: [external image]
       expect(textPL).to.not.contain('Sydney');
     })
     it('should return a list of available languages', async function() {
-      const page = await loadTestPage('repo1', 'test-1');
+      const page = await loadTestPage([ 'repo1', 'test-1' ]);
       const codes = page.getAvailableLanguages();
       expect(codes).to.eql([ 'pl', 'en-us', 'en-uk', 'en-au' ]);
     });
     it('should yield JSON data embedded in Markdown text', async function() {
-      const page = await loadTestPage('repo1', 'test-3');
+      const page = await loadTestPage([ 'repo1', 'test-3' ]);
       const data = page.content.getJSON('Settings');
       expect(data).to.be.an.instanceOf(Object);
     })
     it('should return undefined if JSON is malformed', async function() {
-      const page = await loadTestPage('repo1', 'test-3');
+      const page = await loadTestPage([ 'repo1', 'test-3' ]);
       const data = page.content.getJSON('Broken');
       expect(data).to.be.undefined;
     })
     it('should return undefined if the heading cannot be found', async function() {
-      const page = await loadTestPage('repo1', 'test-3');
+      const page = await loadTestPage([ 'repo1', 'test-3' ]);
       const data = page.content.getJSON('Non-existing');
       expect(data).to.be.undefined;
     })
@@ -122,14 +122,14 @@ Look at this one too: [external image]
 
 let testData = {};
 
-async function loadTestPage(identifier, slug) {
-  const data = await loadTestData(identifier, slug);
-  const file = new GitlabWiki([ identifier, slug ], data);
+async function loadTestPage(identifiers) {
+  const data = await loadTestData(identifiers);
+  const file = new GitlabWiki(identifiers, data);
   return file;
 }
 
-async function loadTestData(identifier, slug) {
-  const objectURL = GitlabWiki.getObjectURL([ identifier, slug ]);
+async function loadTestData(identifiers) {
+  const objectURL = GitlabWiki.getObjectURL(identifiers);
   const fullURL = `${serverAddress}/data/${objectURL}`;
   return fetchTestData(fullURL);
 }

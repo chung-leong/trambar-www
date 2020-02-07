@@ -12,7 +12,7 @@ import {
   harvest,
   plant,
   useProgress,
-} from '../index.mjs';
+} from '../src/index.mjs';
 
 configure({ adapter: new Adapter });
 

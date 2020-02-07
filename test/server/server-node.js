@@ -233,10 +233,10 @@ async function findWiki(repoName) {
 async function findRestObjects(identifier, path) {
   if (path) {
     try {
-      const jsonPath = `${__dirname}/../assets/rest/${identifier}/${path}.json`;
+      const jsonPath = `${__dirname}/../assets/rest/${identifier}/${_.trimEnd(path, '/')}.json`;
       const jsonText = await readFile(jsonPath, 'utf8');
-      const rest = JSON.parse(jsonText);
-      return { identifier, rest };
+      const json = JSON.parse(jsonText);
+      return transformRestObject(json);
     } catch (err) {
       const folderPath = `${__dirname}/../assets/rest/${identifier}/${path}`;
       const names = await readdir(folderPath);
@@ -247,9 +247,27 @@ async function findRestObjects(identifier, path) {
   } else {
     const jsonPath = `${__dirname}/../assets/rest/${identifier}.json`;
     const jsonText = await readFile(jsonPath, 'utf8');
-    const rest = JSON.parse(jsonText);
-    return { identifier, rest };
+    const json = JSON.parse(jsonText);
+    return transformRestObject(json);
   }
+}
+
+function transformRestObject(json) {
+  const res = {};
+  for (let [ name, value ] of Object.entries(json)) {
+    if (value instanceof Object) {
+      const { rendered, ...others } = value;
+      if (typeof(rendered) === 'string') {
+        const parser = new MarkGor.Parser({ htmlOnly: true });
+        const tokens = parser.parse(rendered);
+        const renderer = new MarkGor.JsonRenderer;
+        const json = renderer.render(tokens);
+        value = { json, ...others };
+      }
+    }
+    res[name] = value;
+  }
+  return res;
 }
 
 async function findRestSources() {

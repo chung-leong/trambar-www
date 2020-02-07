@@ -19,9 +19,7 @@ module.exports = [
         plugins: [
         ]
       }),
-      Resolve({
-        only: [ 'marked' ],
-      }),
+      Resolve(),
       CommonJS(),
     ]
   };

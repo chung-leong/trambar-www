@@ -2,9 +2,11 @@ import React from 'react';
 import { getTagProperties } from 'mark-gor/src/html-tags.mjs';
 
 class HTMLText {
-  constructor(json, resources) {
-    this.json = json;
-    this.resources = resources;
+  constructor(data) {
+    if (data) {
+      this.json = data.json;
+      this.resources = data.resources;
+    }
   }
 
   getPlainText(options) {

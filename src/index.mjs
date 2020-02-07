@@ -1,7 +1,7 @@
-export * from './src/data-source.mjs';
-export * from './src/excel/excel.mjs';
-export * from './src/gitlab/gitlab.mjs';
-export * from './src/wordpress/wordpress.mjs';
+export * from './data-source.mjs';
+export * from './excel/excel.mjs';
+export * from './gitlab/gitlab.mjs';
+export * from './wordpress/wordpress.mjs';
 
 export * from 'relaks';
 export { default } from 'relaks';

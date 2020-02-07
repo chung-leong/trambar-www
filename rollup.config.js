@@ -10,7 +10,7 @@ module.exports = [
     output: {
       file: `./${name}.js`,
       format: 'umd',
-      name: 'markGor',
+      name: 'TrambarWWW',
       globals: {
         react: 'React',
         preact: 'Preact',
@@ -24,9 +24,7 @@ module.exports = [
         plugins: [
         ]
       }),
-      Resolve({
-        only: [ 'marked' ],
-      }),
+      Resolve(),
       CommonJS(),
     ]
   };

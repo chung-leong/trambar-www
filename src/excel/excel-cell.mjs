@@ -60,7 +60,7 @@ class ExcelCell extends ExcelObject {
 
     this.type = type;
     this.data = data;
-    this.content = new HTMLText(json, resources);
+    this.content = new HTMLText({ json, resources });
     this.languages = columnLanguages;
   }
 }
