@@ -122,8 +122,8 @@ function usePlainText(hookOpts) {
   const options = { ...env, ...hookOpts };
   useDebugValue(hookOpts);
   return useListener((object) => {
-    if (object && object.plainText instanceof Function) {
-      return object.plainText(options);
+    if (object && object.getPlainText instanceof Function) {
+      return object.getPlainText(options);
     } else if (object == null) {
       return '';
     } else {
@@ -137,8 +137,8 @@ function useRichText(hookOpts) {
   const options = { ...env, ...hookOpts };
   useDebugValue(hookOpts);
   return useListener((object) => {
-    if (object && object.richText instanceof Function) {
-      return object.richText(options);
+    if (object && object.getRichText instanceof Function) {
+      return object.getRichText(options);
     } else if (object == null) {
       return '';
     } else {
@@ -161,12 +161,12 @@ function useLanguage() {
   return language;
 }
 
-function useLanguageFilter(noFallback) {
+function useLanguageSpecific() {
   const language = useLanguage();
   useDebugValue(language);
   return useListener((object) => {
-    if (object && object.filter instanceof Function) {
-      return object.filter(language, noFallback);
+    if (object && object.getLanguageSpecific instanceof Function) {
+      return object.getLanguageSpecific(language);
     } else {
       return object;
     }
