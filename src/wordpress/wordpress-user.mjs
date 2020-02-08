@@ -7,7 +7,7 @@ class WordpressUser extends WordpressObject {
 
     if (json) {
       this.id = json.id;
-      this.profileURL = json.url;
+      this.url = json.url;
       this.name = new HTMLText(json.name);
       this.description = new HTMLText(json.description);
       this.link = json.link;

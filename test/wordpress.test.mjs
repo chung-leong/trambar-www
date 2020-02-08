@@ -168,90 +168,162 @@ Created: 9/27/12, Sal Cangeloso
       `.trim());
     })
   })
-  /*
   describe('WordpressUser', function() {
     it('should have the right properties', async function() {
-      const data = await loadTestData([ 'et', 762 ], WordpressUser);
       const user = await loadTestObject([ 'et', 762 ], WordpressUser);
 
-      expect(user.id).to.eql(data.rest.id);
-      expect(user.slug).to.eql(data.rest.slug);
-      expect(user.url).to.eql(data.rest.url);
-      expect(user.link).to.eql(data.rest.link);
-      expect(user.avatarURLs).to.eql(data.rest.avatar_urls);
-      expect(user.meta).to.eql(data.rest.meta);
-      expect(user.name).to.be.instanceOf(WordpressText);
-      expect(user.description).to.be.instanceOf(WordpressText);
+      expect(user.id).to.eql(762);
+      expect(user.slug).to.eql('scangeloso');
+      expect(user.url).to.eql('http://www.extremetech.com');
+      expect(user.link).to.eql('https://www.extremetech.com/author/scangeloso');
+      expect(user.avatarURLs).to.eql({
+        '24': 'https://secure.gravatar.com/avatar/6b450f3475e831b7b2bc9bc901d593ea?s=24&d=mm&r=g',
+        '48': 'https://secure.gravatar.com/avatar/6b450f3475e831b7b2bc9bc901d593ea?s=48&d=mm&r=g',
+        '96': 'https://secure.gravatar.com/avatar/6b450f3475e831b7b2bc9bc901d593ea?s=96&d=mm&r=g'
+      });
+      expect(user.meta).to.eql([]);
+      expect(user.name.getPlainText()).to.eql('Sal Cangeloso');
+      expect(user.description.getPlainText()).to.be.eql('');
     })
   })
   describe('WordpressTag', function() {
     it('should have the right properties', async function() {
-      const data = await loadTestData([ 'et', 148 ], WordpressTag);
       const tag = await loadTestObject([ 'et', 148 ], WordpressTag);
 
-      expect(tag.id).to.eql(data.rest.id);
-      expect(tag.slug).to.eql(data.rest.slug);
-      expect(tag.count).to.eql(data.rest.count);
-      expect(tag.link).to.eql(data.rest.link);
-      expect(tag.meta).to.eql(data.rest.meta);
-      expect(tag.taxonomy).to.eql(data.rest.taxonomy);
-      expect(tag.name).to.be.instanceOf(WordpressText);
-      expect(tag.description).to.be.instanceOf(WordpressText);
+      expect(tag.id).to.eql(148);
+      expect(tag.slug).to.eql('amd');
+      expect(tag.count).to.eql(1171);
+      expect(tag.link).to.eql('https://www.extremetech.com/tag/amd');
+      expect(tag.meta).to.eql([]);
+      expect(tag.taxonomy).to.eql('post_tag');
+      expect(tag.name.getPlainText()).to.eql('amd');
+      expect(tag.description.getPlainText()).to.eql('');
     })
   })
   describe('WordpressCategory', function() {
     it('should have the right properties', async function() {
-      const data = await loadTestData([ 'et', 8 ], WordpressCategory);
       const category = await loadTestObject([ 'et', 8 ], WordpressCategory);
 
-      expect(category.id).to.eql(data.rest.id);
-      expect(category.slug).to.eql(data.rest.slug);
-      expect(category.count).to.eql(data.rest.count);
-      expect(category.link).to.eql(data.rest.link);
-      expect(category.meta).to.eql(data.rest.meta);
-      expect(category.taxonomy).to.eql(data.rest.taxonomy);
-      expect(category.parent).to.eql(data.rest.parent);
-      expect(category.name).to.be.instanceOf(WordpressText);
-      expect(category.description).to.be.instanceOf(WordpressText);
+      expect(category.id).to.eql(8);
+      expect(category.slug).to.eql('computing');
+      expect(category.count).to.eql(9544);
+      expect(category.link).to.eql('https://www.extremetech.com/category/computing');
+      expect(category.meta).to.eql([]);
+      expect(category.taxonomy).to.eql('category');
+      expect(category.parent).to.eql(0);
+      expect(category.name.getPlainText()).to.eql('Computing');
+      expect(category.description.getPlainText()).to.eql('Computer Hardware & Software News');
     })
   })
   describe('WordpressMedia', function() {
     it('should have the right properties', async function() {
-      const data = await loadTestData([ 'et', 296377 ], WordpressMedia);
       const media = await loadTestObject([ 'et', 296377 ], WordpressMedia);
 
-      expect(media.id).to.eql(data.rest.id);
-      expect(media.slug).to.eql(data.rest.slug);
-      expect(media.status).to.eql(data.rest.status);
-      expect(media.type).to.eql(data.rest.type);
-      expect(media.link).to.eql(data.rest.link);
-      expect(media.author).to.eql(data.rest.author);
-      expect(media.altText).to.eql(data.rest.alt_text);
-      expect(media.mediaType).to.eql(data.rest.media_type);
-      expect(media.mimeType).to.eql(data.rest.mime_type);
-      expect(media.mediaDetails).to.eql(data.rest.media_details);
-      expect(media.post).to.eql(data.rest.post);
-      expect(media.sourceURL).to.eql(data.rest.source_url);
-      expect(media.meta).to.eql(data.rest.meta);
+      expect(media.id).to.eql(296377);
+      expect(media.slug).to.eql('707_mastcam_views__strathdon_');
+      expect(media.status).to.eql('inherit');
+      expect(media.type).to.eql('attachment');
+      expect(media.link).to.eql('https://www.extremetech.com/extreme/296375-curiosity-spots-unexpectedly-complex-martian-rock/attachment/707_mastcam_views__strathdon_');
+      expect(media.author).to.eql(784);
+      expect(media.altText).to.eql('');
+      expect(media.mediaType).to.eql('image');
+      expect(media.mimeType).to.eql('image/jpeg');
+      expect(media.mediaDetails).to.eql({
+        width: 1344,
+        height: 742,
+        file: '2019/08/707_Mastcam_Views__Strathdon_.jpg',
+        sizes: {
+          thumbnail: {
+            file: '707_Mastcam_Views__Strathdon_-150x150.jpg',
+            width: 150,
+            height: 150,
+            mime_type: 'image/jpeg',
+            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-150x150.jpg'
+          },
+          medium: {
+            file: '707_Mastcam_Views__Strathdon_-300x166.jpg',
+            width: 300,
+            height: 166,
+            mime_type: 'image/jpeg',
+            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-300x166.jpg'
+          },
+          medium_large: {
+            file: '707_Mastcam_Views__Strathdon_-768x424.jpg',
+            width: 768,
+            height: 424,
+            mime_type: 'image/jpeg',
+            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-768x424.jpg'
+          },
+          large: {
+            file: '707_Mastcam_Views__Strathdon_-640x353.jpg',
+            width: 640,
+            height: 353,
+            mime_type: 'image/jpeg',
+            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-640x353.jpg'
+          },
+          small: {
+            file: '707_Mastcam_Views__Strathdon_-223x126.jpg',
+            width: 223,
+            height: 126,
+            mime_type: 'image/jpeg',
+            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-223x126.jpg'
+          },
+          'news-small': {
+            file: '707_Mastcam_Views__Strathdon_-106x59.jpg',
+            width: 106,
+            height: 59,
+            mime_type: 'image/jpeg',
+            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-106x59.jpg'
+          },
+          'news-normal': {
+            file: '707_Mastcam_Views__Strathdon_-672x371.jpg',
+            width: 672,
+            height: 371,
+            mime_type: 'image/jpeg',
+            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-672x371.jpg'
+          },
+          single: {
+            file: '707_Mastcam_Views__Strathdon_-348x196.jpg',
+            width: 348,
+            height: 196,
+            mime_type: 'image/jpeg',
+            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-348x196.jpg'
+          },
+          full: {
+            file: '707_Mastcam_Views__Strathdon_-640x353.jpg',
+            width: 640,
+            height: 353,
+            mime_type: 'image/jpeg',
+            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-640x353.jpg'
+          },
+          deal: {
+            file: '707_Mastcam_Views__Strathdon_-150x200.jpg',
+            width: 150,
+            height: 200,
+            mime_type: 'image/jpeg',
+            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-150x200.jpg'
+          },
+          gallery: {
+            file: '707_Mastcam_Views__Strathdon_-652x382.jpg',
+            width: 652,
+            height: 382,
+            mime_type: 'image/jpeg',
+            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-652x382.jpg'
+          }
+        }
+      });
+      expect(media.post).to.eql(296375);
+      expect(media.sourceURL).to.eql('https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_.jpg');
+      expect(media.meta).to.eql([]);
       expect(media.date).to.be.instanceOf(Date);
-      expect(media.date.toISOString()).to.contain(data.rest.date_gmt);
+      expect(media.date.toISOString()).to.eql('2019-08-08T16:13:12.000Z');
       expect(media.modified).to.be.instanceOf(Date);
-      expect(media.modified.toISOString()).to.contain(data.rest.modified_gmt);
-      expect(media.title).to.be.instanceOf(WordpressText);
-      expect(media.description).to.be.instanceOf(WordpressText);
-      expect(media.caption).to.be.instanceOf(WordpressText);
+      expect(media.modified.toISOString()).to.eql('2019-08-08T16:13:12.000Z');
+      expect(media.title.getPlainText()).to.eql('707_Mastcam_Views__Strathdon_');
+      expect(media.description.getPlainText()).to.eql('');
+      expect(media.caption.getPlainText()).to.be.eql('');
     })
   })
-  describe('WordpressText', function() {
-    describe('#plainText()', function() {
-      it('should strip off tags and decode HTML entities', async function() {
-        const post = await loadTestObject([ 'et', 296453 ], WordpressPost);
-        const text = post.excerpt.plainText();
-        expect(text).to.eql('AMD is on the cusp of its second golden age. It’s about time.')
-      })
-    })
-  })
-  */
   after(() => {
     return Server.stop();
   })
