@@ -65,11 +65,11 @@ class DataSource extends EventEmitter {
     this.fetchGeoIP().catch((err) => {});
   }
 
-  async fetchProjectMeta() {
+  fetchProjectMeta() {
     return this.fetchObject(ProjectMetadata, []);
   }
 
-  async fetchVisitorGeolocation() {
+  fetchVisitorGeolocation() {
     return this.fetchObject(VisitorGeolocation, []);
   }
 
@@ -96,7 +96,7 @@ class DataSource extends EventEmitter {
     return url;
   }
 
-  async fetchObject(constructor, identifiers) {
+  fetchObject(constructor, identifiers) {
     const url = this.getDataURL(constructor, identifiers);
     let query = this.findQuery({ url, constructor });
     if (query) {
@@ -111,11 +111,12 @@ class DataSource extends EventEmitter {
       });
       query.promise = this.updateObject(query);
     }
-    await query.promise;
-    return query.result;
+    return query.promise.then(() => {
+      return query.result;
+    });
   }
 
-  async findObjects(constructor, identifiers, criteria) {
+  findObjects(constructor, identifiers, criteria) {
     const url = this.getDataURL(constructor, identifiers, criteria);
     let query = this.findQuery({ url, constructor: null });
     if (query) {
@@ -131,32 +132,34 @@ class DataSource extends EventEmitter {
       });
       query.promise = this.updateListing(query);
     }
-    await query.promise;
-    if (!(query.result instanceof Array)) {
-      throw new Error('Server did not return a list');
-    }
-    const promises = query.result.map((path) => {
-      const additional = path.split('/').filter(Boolean);
-      const combined = [ ...identifiers, ...additional ];
-      return this.fetchObject(constructor, combined);
-    });
-    const objects = await Promise.all(promises);
-    if (!compareArrays(objects, query.objects)) {
-      if (query.pageVariable) {
-        objects.more = this.requestMore.bind(this, query);
+    return query.promise.then(() => {
+      if (!(query.result instanceof Array)) {
+        throw new Error('Server did not return a list');
       }
-      query.objects = objects;
-    }
-    objects.total = query.result.total;
-    objects.pages = query.result.pages;
-    return query.objects;
+      const promises = query.result.map((path) => {
+        const additional = path.split('/').filter(Boolean);
+        const combined = [ ...identifiers, ...additional ];
+        return this.fetchObject(constructor, combined);
+      });
+      return Promise.all(promises).then((objects) => {
+        if (!compareArrays(objects, query.objects)) {
+          if (query.pageVariable) {
+            objects.more = this.requestMore.bind(this, query);
+          }
+          query.objects = objects;
+        }
+        objects.total = query.result.total;
+        objects.pages = query.result.pages;
+        return query.objects;
+      });
+    });
   }
 
-  async requestMore(query) {
+  requestMore(query) {
     if (query.result) {
       if (query.pageQueries.length < query.result.pages) {
         query.pageQueries.push({});
-        await this.checkListing(query);
+        this.checkListing(query);
       }
     }
   }
@@ -187,36 +190,13 @@ class DataSource extends EventEmitter {
     return query;
   }
 
-  async updateObject(query) {
-    try {
-      const response = await this.fetch(query.url, { method: 'GET' });
+  updateObject(query) {
+    return this.fetch(query.url, { method: 'GET' }).then((response) => {
       const etag = response.headers.get('etag');
       const mtime = response.headers.get('last-modified');
       const status = response.headers.get('x-cache-status');
       const total = response.headers.get('x-total');
       const pages = response.headers.get('x-total-pages');
-      let changed = true;
-      if (etag && query.etag === etag) {
-        changed = false;
-      } else if (mtime && query.mtime == mtime) {
-        changed = false;
-      }
-      if (changed) {
-        const { constructor, identifiers } = query;
-        const json = await response.json();
-        const result = (constructor) ? new constructor(identifiers, json) : json;
-        query.result = result;
-        query.etag = etag;
-        query.mtime = mtime;
-        if (result instanceof Array) {
-          if (total) {
-            result.total = parseInt(total);
-          }
-          if (pages) {
-            result.pages = parseInt(pages);
-          }
-        }
-      }
       const now = new Date;;
       if (status === 'STALE' || status === 'UPDATING') {
         query.stale = now;
@@ -227,14 +207,40 @@ class DataSource extends EventEmitter {
       }
       query.dirty = false;
       query.error = null;
-      return changed;
-    } catch (err) {
+
+      let changed = true;
+      if (etag && query.etag === etag) {
+        changed = false;
+      } else if (mtime && query.mtime == mtime) {
+        changed = false;
+      }
+      if (changed) {
+        return response.json().then((json) => {
+          const { constructor, identifiers } = query;
+          const result = (constructor) ? new constructor(identifiers, json) : json;
+          query.result = result;
+          query.etag = etag;
+          query.mtime = mtime;
+          if (result instanceof Array) {
+            if (total) {
+              result.total = parseInt(total);
+            }
+            if (pages) {
+              result.pages = parseInt(pages);
+            }
+          }
+          return true;
+        });
+      } else {
+        return false;
+      }
+    }).catch((err) => {
       query.error = err;
       throw err;
-    }
+    });
   }
 
-  async updateListing(query) {
+  updateListing(query) {
     const promises = [];
     for (let [ pageIndex, pageQuery ] of query.pageQueries.entries()) {
       let promise;
@@ -251,9 +257,26 @@ class DataSource extends EventEmitter {
         promises.push(false);
       }
     }
-    try {
-      const pageChanged = await Promise.all(promises);
-      let changed = some(pageChanged);
+    return Promise.all(promises).then((pageChanged) => {
+      let minStaleTime = null;
+      for (let pageQuery of query.pageQueries) {
+        if (pageQuery.stale) {
+          if (!minStaleTime || minStaleTime > pageQuery.stale) {
+            minStaleTime = pageQuery.stale;
+          }
+        }
+      }
+      if (minStaleTime) {
+        query.stale = minStaleTime;
+        query.fresh = null;
+      } else {
+        query.stale = null;
+        query.fresh = new Date;
+      }
+      query.dirty = false;
+      query.error = null;
+
+      const changed = some(pageChanged);
       if (changed) {
         const items = [];
         for (let [ pageIndex, pageQuery ] of query.pageQueries.entries()) {
@@ -277,61 +300,57 @@ class DataSource extends EventEmitter {
           }
         }
         query.result = items;
-      }
-      let minStaleTime = null;
-      for (let pageQuery of query.pageQueries) {
-        if (pageQuery.stale) {
-          if (!minStaleTime || minStaleTime > pageQuery.stale) {
-            minStaleTime = pageQuery.stale;
-          }
-        }
-      }
-      if (minStaleTime) {
-        query.stale = minStaleTime;
-        query.fresh = null;
+        return true;
       } else {
-        query.stale = null;
-        query.fresh = new Date;
+        return false;
       }
-      query.dirty = false;
-      query.error = null;
-      return changed;
-    } catch (err) {
+    }).catch((err) => {
       query.error = err;
       throw err;
-    }
+    });
   }
 
-  async checkObject(query) {
+  checkObject(query) {
     if (!query.checking) {
       query.checking = true;
-      const changed = await this.updateObject(query);
-      query.checking = false;
-      if (changed) {
-        this.triggerEvent(new DataSourceEvent('change', this));
-      }
-    }
-  }
-
-  async checkListing(query) {
-    if (!query.checking) {
-      query.checking = true;
-      const changed = await this.updateListing(query);
-      query.checking = false;
-      if (changed) {
-        const objectURLs = query.result;
-        for (let objectURL of objectURLs) {
-          const props = {
-            url: objectURL,
-            constructor: query.constructor
-          };
-          const objectQuery = this.findQuery(props);
-          if (objectQuery && objectQuery.dirty) {
-            await this.updateObject(objectQuery);
-          }
+      this.updateObject(query).then((changed) => {
+        query.checking = false;
+        if (changed) {
+          this.triggerEvent(new DataSourceEvent('change', this));
         }
-        this.triggerEvent(new DataSourceEvent('change', this));
-      }
+      }).catch((err) => {
+        query.checking = false;
+        throw err;
+      });
+    }
+  }
+
+  checkListing(query) {
+    if (!query.checking) {
+      query.checking = true;
+      this.updateListing(query).then((changed) => {
+        query.checking = false;
+        if (changed) {
+          const objectURLs = query.result;
+          const updates = [];
+          for (let objectURL of objectURLs) {
+            const props = {
+              url: objectURL,
+              constructor: query.constructor
+            };
+            const objectQuery = this.findQuery(props);
+            if (objectQuery && objectQuery.dirty) {
+              updates.push(this.updateObject(objectQuery));
+            }
+          }
+          Promise.all(updates).then(() => {
+            this.triggerEvent(new DataSourceEvent('change', this));
+          });
+        }
+      }).catch((err) => {
+        query.checking = false;
+        throw err;
+      });
     }
   }
 
@@ -384,39 +403,39 @@ class DataSource extends EventEmitter {
    *
    * @type {Promise<Response>}
    */
-  async fetch(url, options) {
-    await this.waitForActivation();
+  fetch(url, options) {
     if (!options) {
       options = {};
     }
-    const f = this.options.fetchFunc || fetch;
-    try {
-      const response = await f(url, options);
-      if (response.status >= 400) {
-        throw new DataSourceError(response.status, response.statusText);
-      }
-      return response;
-    } catch (err) {
-      // try again if the data source was deactivated in the middle of
-      // an operation--we'll wait once again for active to become true
-      if (!this.active && !err.status) {
-        return this.fetch(url, options);
-      } else {
-        throw err;
-      }
-    }
+    return this.waitForActivation().then(() => {
+      const f = this.options.fetchFunc || fetch;
+      return f(url, options).then((response) => {
+        if (response.status >= 400) {
+          throw new DataSourceError(response.status, response.statusText);
+        }
+        return response;
+      }).catch((err) => {
+        // try again if the data source was deactivated in the middle of
+        // an operation--we'll wait once again for active to become true
+        if (!this.active && !err.status) {
+          return this.fetch(url, options);
+        } else {
+          throw err;
+        }
+      });
+    });
   }
 
-  async waitForActivation() {
+  waitForActivation() {
     if (this.active) {
-      return;
+      return Promise.resolve();
     }
     if (!this.activationPromise) {
       let resolve;
       this.activationPromise = new Promise((r) => { resolve = r });
       this.activationPromise.resolve = resolve;
     }
-    await this.activationPromise;
+    return this.activationPromise;
   }
 }
 

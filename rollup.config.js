@@ -13,7 +13,6 @@ module.exports = [
       name: 'TrambarWWW',
       globals: {
         react: 'React',
-        preact: 'Preact',
       }
     },
     plugins: [
@@ -21,11 +20,10 @@ module.exports = [
         presets: [
           '@babel/env',
         ],
-        plugins: [
-        ]
       }),
       Resolve(),
       CommonJS(),
-    ]
+    ],
+    external: [ 'react' ]
   };
 });

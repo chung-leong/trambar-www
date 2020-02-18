@@ -16,11 +16,10 @@ module.exports = [
         presets: [
           '@babel/env',
         ],
-        plugins: [
-        ]
       }),
       Resolve(),
       CommonJS(),
-    ]
+    ],
+    external: [ 'react' ]
   };
 });

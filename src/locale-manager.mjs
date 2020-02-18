@@ -2,8 +2,8 @@ import { EventEmitter } from 'relaks-event-emitter';
 import { LocaleManagerEvent } from './locale-manager-event.mjs';
 
 const defaultOptions = {
-  loadFunc: async function() {
-    return {};
+  loadFunc: function() {
+    return Promise.resolve({});
   },
 };
 
@@ -29,18 +29,21 @@ class LocaleManager extends EventEmitter {
   deactivate() {
   }
 
-  async start(language) {
-    await this.set(language);
+  start(language) {
+    return this.set(language);
   }
 
-  async set(language) {
-    if (this.language !== language) {
-      language = language.toLowerCase();
-      const load = this.options.loadFunc;
-      this.table = await load(language);
+  set(language) {
+    language = language.toLowerCase();
+    if (this.language === language) {
+      return Promise.resolve();
+    }
+    const load = this.options.loadFunc;
+    return load(language).then((table) => {
+      this.table = table;
       this.language = language;
       this.triggerEvent(new LocaleManagerEvent('change'));
-    }
+    });
   }
 
   localize(phrase, params) {

@@ -9,71 +9,71 @@ import { WordpressTag } from './wordpress-tag.mjs';
 import { WordpressUser } from './wordpress-user.mjs';
 
 class Wordpress extends DataSource {
-  async fetchWPCategory(siteId, categoryId) {
+  fetchWPCategory(siteId, categoryId) {
     return this.fetchWPObject(WordpressCategory, siteId, categoryId);
   }
 
-  async fetchWPCategories(siteId, categoryIds) {
+  fetchWPCategories(siteId, categoryIds) {
     return this.fetchWPObjects(WordpressCategory, siteId, categoryIds);
   }
 
-  async fetchWPMedia(siteId, mediaId) {
+  fetchWPMedia(siteId, mediaId) {
     return this.fetchWPObject(WordpressMedia, siteId, mediaId);
   }
 
-  async fetchWPMedias(siteId, mediaIds) {
+  fetchWPMedias(siteId, mediaIds) {
     return this.fetchWPObjects(WordpressMedia, siteId, mediaIds);
   }
 
-  async fetchWPPage(siteId, pageId) {
+  fetchWPPage(siteId, pageId) {
     return this.fetchWPObject(WordpressPage, siteId, pageId);
   }
 
-  async fetchWPPages(siteId, pageIds) {
+  fetchWPPages(siteId, pageIds) {
     return this.fetchWPObjects(WordpressPage, siteId, pageIds);
   }
 
-  async fetchWPPost(siteId, postId) {
+  fetchWPPost(siteId, postId) {
     return this.fetchWPObject(WordpressPost, siteId, postId);
   }
 
-  async fetchWPPosts(siteId, postIds) {
+  fetchWPPosts(siteId, postIds) {
     return this.fetchWPObjects(WordpressPost, siteId, postIds);
   }
 
-  async findWPPosts(siteId, criteria) {
+  findWPPosts(siteId, criteria) {
     return this.findObjects(WordpressPost, [ siteId ], criteria);
   }
 
-  async fetchWPTag(siteId, tagId) {
+  fetchWPTag(siteId, tagId) {
     return this.fetchWPObject(WordpressTag, siteId, tagId);
   }
 
-  async fetchWPTags(siteId, tagIds) {
+  fetchWPTags(siteId, tagIds) {
     return this.fetchWPObjects(WordpressTag, siteId, tagIds);
   }
 
-  async fetchWPUser(siteId, userId) {
+  fetchWPUser(siteId, userId) {
     return this.fetchWPObject(WordpressUser, siteId, userId);
   }
 
-  async fetchWPUsers(siteId, userIds) {
+  fetchWPUsers(siteId, userIds) {
     return this.fetchWPObjects(WordpressUser, siteId, userIds);
   }
 
-  async findWPUsers(siteId, criteria) {
+  findWPUsers(siteId, criteria) {
     return this.findObjects(WordpressUser, [ siteId ], criteria);
   }
 
-  async fetchWPSite(siteId) {
+  fetchWPSite(siteId) {
     return this.fetchObject(WordpressSite, [ siteId ]);
   }
 
-  async findWPSites() {
+  findWPSites() {
     return this.findObjects(WordpressSite, [], {});
   }
 
-  async fetchWPObject(constructor, siteId, objectId) {
+  fetchWPObject(constructor, siteId, objectId) {
     if (typeof(objectId) === 'string') {
       const number = parseInt(objectId);
       if (!isNaN(number)) {
@@ -85,15 +85,16 @@ class Wordpress extends DataSource {
     return this.fetchObject(constructor, [ siteId, objectId ]);
   }
 
-  async fetchWPObjects(constructor, siteId, objectIds) {
+  fetchWPObjects(constructor, siteId, objectIds) {
     const promises = objectIds.map((objectId) => {
       return this.fetchWPObject(constructor, siteId, objectId);
     });
-    const objects = await Promise.all(promises);
-    return objects;
+    return Promise.all(promises).then((objects) => {
+      return objects;
+    });
   }
 
-  async fetchWPObjectBySlug(constructor, siteId, slug) {
+  fetchWPObjectBySlug(constructor, siteId, slug) {
     // look for it among cached queries
     for (let query of this.queries) {
       if (query.constructor === constructor) {
@@ -105,8 +106,9 @@ class Wordpress extends DataSource {
     }
 
     // retrieve id from server
-    const objects = await this.findObjects(constructor, [ siteId ], { slug });
-    return objects[0];
+    return this.findObjects(constructor, [ siteId ], { slug }).then((objects) => {
+      return objects[0];
+    });
   }
 }
 

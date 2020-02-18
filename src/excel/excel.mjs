@@ -7,11 +7,11 @@ import { ExcelRow } from './excel-row.mjs';
 import { ExcelSheet } from './excel-sheet.mjs';
 
 class Excel extends DataSource {
-  async fetchExcelFile(fileId) {
+  fetchExcelFile(fileId) {
     return this.fetchObject(ExcelFile, fileId);
   }
 
-  async findExcelFiles(criteria) {
+  findExcelFiles(criteria) {
     return this.findObjects(ExcelFile, criteria);
   }
 }
