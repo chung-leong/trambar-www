@@ -21,6 +21,18 @@ describe('HTMLText', function() {
     configure({ adapter: new Adapter });
   })
   describe('getPlainText()', function() {
+    it ('should correct handle inline elements', function() {
+      const html = `
+Hello, <b>world</b>!
+      `.trim();
+      const correct = `
+Hello, world!
+      `.trim();
+      const json = parseHTML(html);
+      const object = new HTMLText({ json });
+      const text = object.getPlainText();
+      expect(text).to.equal(correct);
+    })
     it ('should separate paragraphs with two newlines', function() {
       const html = `
 <p>Hello</p><p>World</p>
@@ -131,4 +143,16 @@ World
       expect(text).to.equal(correct);
     })
   })
+  describe('getRichText()', function() {
+    it ('should correct handle inline elements', function() {
+      const html = `
+<div>Hello, <span style="font-family: Arial;">world</span>!</div>
+      `.trim();
+      const json = parseHTML(html);
+      const object = new HTMLText({ json });
+      const element = object.getRichText();
+      const wrapper = mount(element);
+      expect(wrapper.html()).to.equal(html);
+    })
+  });
 })
