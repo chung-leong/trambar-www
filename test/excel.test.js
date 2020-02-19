@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { expect } from 'chai';
 import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import Server, { fetchTestData } from './server/server.mjs';
+import Server, { fetchTestData } from './server/server.js';
 
 import {
   ExcelFile,
@@ -12,14 +12,18 @@ import {
   ExcelCell,
 } from '../src/index.mjs';
 
-configure({ adapter: new Adapter });
-
 const serverPort = 7711;
 const serverAddress = `http://localhost:${serverPort}`;
 
 describe('Excel', function() {
-  before(() => {
+  before(function() {
     return Server.start(serverPort);
+  })
+  after(function() {
+    return Server.stop();
+  })
+  beforeEach(function() {
+    configure({ adapter: new Adapter });
   })
   it('should be able to retrieve test data', async function() {
     const data = await loadTestData([ 'test-1' ]);
@@ -227,9 +231,6 @@ describe('Excel', function() {
       expect(html).to.eql('<div><img src="http://localhost/srv/media/image/69b1510906ccacbb9363690cbb4bd257" width="1000" height="500"></div>');
     })
   })
-  after(() => {
-    return Server.stop();
-  });
 })
 
 async function loadTestFile(identifiers) {

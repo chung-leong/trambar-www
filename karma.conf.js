@@ -35,14 +35,12 @@ module.exports = function(config) {
             test: /\.(js|mjs)$/,
             loader: 'babel-loader',
             exclude: /node_modules/,
-            type: 'javascript/auto',
             query: {
               presets: [
                 '@babel/env',
                 '@babel/react',
               ],
               plugins: [
-                '@babel/transform-regenerator',
                 '@babel/transform-runtime',
               ],
             }

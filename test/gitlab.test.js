@@ -2,20 +2,24 @@ import React, { ReactElement } from 'react';
 import { expect } from 'chai';
 import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import Server, { fetchTestData } from './server/server.mjs';
+import Server, { fetchTestData } from './server/server.js';
 
 import {
   GitlabWiki,
 } from '../src/index.mjs';
 
-configure({ adapter: new Adapter });
-
 const serverPort = 7111;
 const serverAddress = `http://localhost:${serverPort}`;
 
 describe('Gitlab', function() {
-  before(() => {
+  before(function() {
     return Server.start(serverPort);
+  })
+  after(function() {
+    return Server.stop();
+  })
+  beforeEach(function() {
+    configure({ adapter: new Adapter });
   })
   it('should be able to retrieve test data', async function() {
     const data = await loadTestData([ 'repo2', 'test-2' ]);
@@ -115,9 +119,6 @@ Look at this one too: [external image]
       expect(data).to.be.undefined;
     })
   })
-  after(() => {
-    return Server.stop();
-  });
 })
 
 let testData = {};

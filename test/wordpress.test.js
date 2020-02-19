@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { expect } from 'chai';
 import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import Server, { fetchTestData } from './server/server.mjs';
+import Server, { fetchTestData } from './server/server.js';
 
 import {
   WordpressCategory,
@@ -14,14 +14,18 @@ import {
   WordpressUser,
 } from '../src/index.mjs';
 
-configure({ adapter: new Adapter });
-
 const serverPort = 8711;
 const serverAddress = `http://localhost:${serverPort}`;
 
 describe('Wordpress', function() {
-  before(() => {
+  before(function() {
     return Server.start(serverPort);
+  })
+  after(function() {
+    return Server.stop();
+  })
+  beforeEach(function() {
+    configure({ adapter: new Adapter });
   })
   it('should be able to retrieve site info', async function() {
     const data = await fetchTestData(`${serverAddress}/data/rest/et/`);
@@ -323,9 +327,6 @@ Created: 9/27/12, Sal Cangeloso
       expect(media.description.getPlainText()).to.eql('');
       expect(media.caption.getPlainText()).to.be.eql('');
     })
-  })
-  after(() => {
-    return Server.stop();
   })
 });
 

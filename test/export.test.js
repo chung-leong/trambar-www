@@ -1,8 +1,4 @@
-import React, { ReactElement } from 'react';
 import { expect } from 'chai';
-import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import Server from './server/server.mjs';
 
 import {
   RouteManager,
@@ -13,8 +9,6 @@ import {
   plant,
   useProgress,
 } from '../src/index.mjs';
-
-configure({ adapter: new Adapter });
 
 describe('exports', function() {
   describe('RouteManager', function() {
