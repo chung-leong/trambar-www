@@ -1,11 +1,14 @@
 import React from 'react';
+import { Resource, missing } from './resource.mjs';
 import { getTagProperties } from 'mark-gor/src/html-tags.mjs';
 
 class HTMLText {
   constructor(data) {
     if (data) {
       this.json = data.json;
-      this.resources = data.resources;
+      if (data.resources instanceof Array) {
+        this.resources = data.resources.map(resource => new Resource(resource));
+      }
     }
   }
 
@@ -13,6 +16,76 @@ class HTMLText {
     const node = { children: this.json };
     const text = this.getPlainTextFromNode(node, options || {});
     return text.trim();
+  }
+
+  getRichText(options) {
+    const node = { children: this.json };
+    return this.getRichTextFromNode(node, options || {});
+  }
+
+  getAvailableLanguages() {
+    const codes = [];
+    const choices = this.separateNodesByLanguages(this.json);
+    for (let choice of choices) {
+      if (choice.languages) {
+        for (let code of choice.languages) {
+          if (codes.indexOf(code) === -1) {
+            codes.push(code);
+          }
+        }
+      }
+    }
+    return codes;
+  }
+
+  getLanguageSpecific(lang) {
+    const choices = this.separateNodesByLanguages(this.json);
+    const chosen = chooseLanguageVersion(choices, lang);
+    const json = [];
+    for (let choice of chosen) {
+      for (let node of choice.nodes) {
+        json.push(node);
+      }
+    }
+    return new HTMLText(json, this.resources);
+  }
+
+  getJSON(title) {
+    let titleFound = false;
+    for (let node of this.json) {
+      if (node instanceof Object) {
+        if (/^h[1-6]$/.test(node.type)) {
+          const text = this.getPlainTextFromNode(node, {}).trim();
+          titleFound = (text === title);
+        } else if (node.type === 'pre') {
+          if (titleFound && node.children instanceof Array) {
+            for (let child of node.children) {
+              if (child.type === 'code') {
+                const text = this.getPlainTextFromNode(child, {});
+                try {
+                  return JSON.parse(text);
+                } catch (err) {
+                  console.error(err);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  getImage(url) {
+    if (this.resources) {
+      for (let resource of this.resources) {
+        if (resource.type === 'image') {
+          if (resource.matchURL(url)) {
+            return resource;
+          }
+        }
+      }
+    }
+    return missing;
   }
 
   getPlainTextFromNode(node, options) {
@@ -78,11 +151,6 @@ class HTMLText {
     }
   }
 
-  getRichText(options) {
-    const node = { children: this.json };
-    return this.getRichTextFromNode(node, options || {});
-  }
-
   getRichTextFromNode(node, options, key) {
     const { renderFunc } = options;
     if (renderFunc) {
@@ -110,57 +178,6 @@ class HTMLText {
     }
   }
 
-  getAvailableLanguages() {
-    const codes = [];
-    const choices = this.separateNodesByLanguages(this.json);
-    for (let choice of choices) {
-      if (choice.languages) {
-        for (let code of choice.languages) {
-          if (codes.indexOf(code) === -1) {
-            codes.push(code);
-          }
-        }
-      }
-    }
-    return codes;
-  }
-
-  getLanguageSpecific(lang) {
-    const choices = this.separateNodesByLanguages(this.json);
-    const chosen = chooseLanguageVersion(choices, lang);
-    const json = [];
-    for (let choice of chosen) {
-      for (let node of choice.nodes) {
-        json.push(node);
-      }
-    }
-    return new HTMLText(json, this.resources);
-  }
-
-  getJSON(title) {
-    let titleFound = false;
-    for (let node of this.json) {
-      if (node instanceof Object) {
-        if (/^h[1-6]$/.test(node.type)) {
-          const text = this.getPlainTextFromNode(node, {}).trim();
-          titleFound = (text === title);
-        } else if (node.type === 'pre') {
-          if (titleFound && node.children instanceof Array) {
-            for (let child of node.children) {
-              if (child.type === 'code') {
-                const text = this.getPlainTextFromNode(child, {});
-                try {
-                  return JSON.parse(text);
-                } catch (err) {
-                  console.error(err);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
 
   separateNodesByLanguages() {
     const choices = [];
