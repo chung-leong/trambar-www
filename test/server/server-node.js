@@ -30,6 +30,7 @@ async function start(port) {
   app.get('/data/rest/:identifier/*', handleRestRequest);
   app.get('/data/rest/:identifier/', handleRestRequest);
   app.get('/data/rest/', handleRestListRequest);
+  app.get('/data/meta/', handleMetaRequest);
   app.use(handleError);
 
   // start up server
@@ -139,6 +140,42 @@ async function handleRestListRequest(req, res, next) {
   }
 }
 
+async function handleMetaRequest(req, res, next) {
+  try {
+    const project = {
+      id: 2,
+      gn: 8,
+      deleted: false,
+      ctime: '2020-02-20T10:41:46.398Z',
+      mtime: '2020-02-21T10:41:46.398Z',
+      name: 'test',
+      details: {
+        title: {
+          en: 'Test',
+        },
+        description: {
+          en: 'This is a test',
+          pl: 'To jest test',
+        }
+      },
+      repo_ids: [ 3 ],
+      user_ids: [ 1, 2, 3, 4 ],
+      template_repo_id: 8,
+      archived: false,
+      settings: {},
+    };
+    const data = {
+      name: project.name,
+      title: convertMultilingualText(project.details.title),
+      description: convertMultilingualText(project.details.description),
+      archived: project.archived,
+    };
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
 function handleError(err, req, res, next) {
   console.log(err.stack);
   res.sendStatus(400);
@@ -179,23 +216,10 @@ async function findExcel() {
 async function loadWiki(repoName, slug) {
   const path = `${__dirname}/../assets/gitlab/${repoName}/${slug}.md`;
   const text = await readFile(path, 'utf8');
-  const data = {
-    slug: slug,
-    title: slug.replace(/-/g, ' '),
-    json: parseMarkdown(text),
-  };
-  try {
-    const jsonPath = `${__dirname}/../assets/gitlab/${repoName}/${slug}.json`;
-    const jsonText = await readFile(jsonPath, 'utf8');
-    const props = JSON.parse(jsonText);
-    for (let [ key, value ] of Object.entries(props)) {
-      data[key] = value;
-    }
-  } catch (err) {
-    if (err instanceof SyntaxError) {
-      throw err;
-    }
-  }
+  const json = await parseMarkdown(text);
+  const resources = await importImages(json);
+  const title = slug.replace(/-/g, ' ');
+  const data = { slug, title, json, resources };
   return data;
 }
 
@@ -291,7 +315,8 @@ async function transformWPData(data, url) {
         if (html !== undefined) {
           // parse the HTML
           const json = await parseHTML(html);
-          value = { json, ...additional };
+          const resources = await importImages(json);
+          value = { json, resources, ...additional };
         }
         res[key] = value;
       }
@@ -419,6 +444,50 @@ function findMediaImports(sheets) {
     }
   }
   return list;
+}
+
+function convertMultilingualText(langText) {
+  const json = [];
+  if (langText instanceof Object) {
+    const entries = Object.entries(langText);
+    for (let [ lang, text ] of entries) {
+      // add heading when there're multiple languages
+      if (entries.length > 1) {
+        const heading = `(${lang})`;
+        json.push({ type: 'h1', children: [ heading ] });
+      }
+      json.push(text);
+    }
+  }
+  return { json };
+}
+
+
+async function importImages(json) {
+  const list = [];
+  for (let token of json) {
+    if (typeof(token) === 'object') {
+      const { type, props, children } = token;
+      if (type === 'img') {
+        const type = 'image';
+        const src = props.src;
+        const hash = Crypto.createHash('md5').update(src).digest('hex');
+        const url = `/srv/media/images/${hash}/`;
+        const width = hash.charCodeAt(1) * 10;
+        const height = hash.charCodeAt(2) * 10;
+        list.push({ type, src, url, width, height });
+      }
+      if (children instanceof Array) {
+        const clist = await importImages(children);
+        if (clist) {
+          for (let res of clist) {
+            list.push(res);
+          }
+        }
+      }
+    }
+  }
+  return (list.length > 0) ? list : undefined;
 }
 
 async function parseMarkdown(text) {

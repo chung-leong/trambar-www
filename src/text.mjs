@@ -42,12 +42,13 @@ class Text {
     const choices = this.separateNodesByLanguages(this.json);
     const chosen = chooseLanguageVersion(choices, lang);
     const json = [];
+    const resources = this.resources;
     for (let choice of chosen) {
       for (let node of choice.nodes) {
         json.push(node);
       }
     }
-    return new Text(json, this.resources);
+    return new Text({ json, resources });
   }
 
   getJSON(title) {

@@ -32,9 +32,23 @@ describe('DataSource', function() {
     expect(dataSource.fetchExcelFile).to.be.a('function');
     expect(dataSource.fetchWikiPage).to.be.a('function');
   })
+  describe('#fetchProjectMeta', function() {
+    it('should retrieve project info', async function() {
+      const options = {
+        baseURL: serverAddress
+      };
+      const dataSource = new DataSource([ Excel ], options);
+      dataSource.activate();
+      const meta = await dataSource.fetchProjectMeta();
+      const metaEN = meta.getLanguageSpecific('en');
+      expect(metaEN.name).to.eql('test');
+      expect(metaEN.title + '').to.eql('Test');
+      expect(metaEN.description.getPlainText()).to.eql('This is a test');
+    })
+  })
   describe('#fetchExcelFile', function() {
     it('should retrieve an Excel file', async function() {
-      const data = await loadExcelData('test-1');
+      const data = await fetchTestData(`${serverAddress}/data/excel/test-1`);
       const options = {
         baseURL: serverAddress
       };
@@ -84,7 +98,7 @@ describe('DataSource', function() {
   })
   describe('#fetchWikiPage', function() {
     it('should retrieve a wiki page', async function() {
-      const data = await loadWikiData('repo1', 'test-1');
+      const data = await fetchTestData(`${serverAddress}/data/wiki/repo1/test-1`);
       const options = {
         baseURL: serverAddress
       };
@@ -141,11 +155,3 @@ describe('DataSource', function() {
     })
   })
 })
-
-async function loadExcelData(identifier) {
-  return fetchTestData(`${serverAddress}/data/excel/${identifier}`);
-}
-
-async function loadWikiData(identifier, slug) {
-  return fetchTestData(`${serverAddress}/data/wiki/${identifier}/${slug}`);
-}
