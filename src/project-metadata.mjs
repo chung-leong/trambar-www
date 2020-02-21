@@ -1,13 +1,13 @@
 import { DataSourceObject } from './data-source-object.mjs';
-import { HTMLText } from './html-text.mjs';
+import { Text } from './text.mjs';
 
 class ProjectMetadata extends DataSourceObject {
   constructor(identifiers, json) {
     super(identifiers, json);
 
     this.name = json.name || '';
-    this.title = createHTMLText(json.title);
-    this.description = createHTMLText(json.description);
+    this.title = createText(json.title);
+    this.description = createText(json.description);
     this.archived = json.archived || false;
   }
 
@@ -16,7 +16,7 @@ class ProjectMetadata extends DataSourceObject {
   }
 }
 
-function createHTMLText(langText) {
+function createText(langText) {
   const tokens = [];
   if (langText instanceof Object) {
     for (let [ lang, text ] of Object.entries(langText)) {
@@ -24,7 +24,7 @@ function createHTMLText(langText) {
       tokens.push(text);
     }
   }
-  return new HTMLText(tokens);
+  return new Text(tokens);
 }
 
 export {

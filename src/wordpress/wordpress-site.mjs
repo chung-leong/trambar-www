@@ -1,5 +1,5 @@
 import { WordpressObject } from './wordpress-object.mjs';
-import { HTMLText } from '../html-text.mjs';
+import { Text } from '../text.mjs';
 
 class WordpressSite extends WordpressObject {
   constructor(identifiers, json) {
@@ -8,8 +8,8 @@ class WordpressSite extends WordpressObject {
     if (json) {
       this.url = json.url;
       this.home = json.home;
-      this.name = new HTMLText(json.name);
-      this.description = new HTMLText(json.description);
+      this.name = new Text(json.name);
+      this.description = new Text(json.description);
       this.gmtOffset = json.gmt_offset;
       this.timezone = json.timezone_string;
     }

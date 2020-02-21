@@ -1,10 +1,39 @@
 {
   "id": 17934,
-  "count": 62,
+  "count": 69,
   "description": "",
   "link": "https://www.extremetech.com/tag/coffee-lake",
   "name": "Coffee Lake",
   "slug": "coffee-lake",
   "taxonomy": "post_tag",
-  "meta": []
+  "meta": [],
+  "_links": {
+    "self": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/tags/17934"
+      }
+    ],
+    "collection": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/tags"
+      }
+    ],
+    "about": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/taxonomies/post_tag"
+      }
+    ],
+    "wp:post_type": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/posts?tags=17934"
+      }
+    ],
+    "curies": [
+      {
+        "name": "wp",
+        "href": "https://api.w.org/{rel}",
+        "templated": true
+      }
+    ]
+  }
 }

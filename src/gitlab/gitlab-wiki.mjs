@@ -1,5 +1,5 @@
 import { GitlabObject } from './gitlab-object.mjs';
-import { HTMLText } from '../html-text.mjs';
+import { Text } from '../text.mjs';
 
 class GitlabWiki extends GitlabObject {
   constructor(identifiers, json) {
@@ -9,7 +9,7 @@ class GitlabWiki extends GitlabObject {
     if (json) {
       this.slug = json.slug;
       this.title = json.title;
-      this.content = new HTMLText(json);
+      this.content = new Text(json);
     }
   }
 

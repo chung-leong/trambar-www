@@ -11,11 +11,6 @@ const readFile = Util.promisify(FS.readFile);
 const readdir = Util.promisify(FS.readdir);
 const stat = Util.promisify(FS.stat);
 
-module.exports = {
-  start,
-  stop,
-};
-
 let server;
 let serverPort;
 
@@ -231,43 +226,78 @@ async function findWiki(repoName) {
 }
 
 async function findRestObjects(identifier, path) {
-  if (path) {
-    try {
-      const jsonPath = `${__dirname}/../assets/rest/${identifier}/${_.trimEnd(path, '/')}.json`;
-      const jsonText = await readFile(jsonPath, 'utf8');
-      const json = JSON.parse(jsonText);
-      return transformRestObject(json);
-    } catch (err) {
-      const folderPath = `${__dirname}/../assets/rest/${identifier}/${path}`;
-      const names = await readdir(folderPath);
-      return _.map(names, (name) => {
-        return parseInt(name);
-      });
-    }
-  } else {
-    const jsonPath = `${__dirname}/../assets/rest/${identifier}.json`;
+  const name = identifier + ((path) ? `/${_.trimEnd(path, '/')}` : ``);
+  try {
+    const jsonPath = `${__dirname}/../assets/rest/${name}.json`;
     const jsonText = await readFile(jsonPath, 'utf8');
     const json = JSON.parse(jsonText);
-    return transformRestObject(json);
+    const res = await transformData(json, { type: 'wordpress' });
+    return res;
+  } catch (err) {
+    const folderPath = `${__dirname}/../assets/rest/${name}`;
+    const names = await readdir(folderPath);
+    return _.map(names, name => parseInt(name));
   }
 }
 
-function transformRestObject(json) {
-  const res = {};
-  for (let [ name, value ] of Object.entries(json)) {
-    if (value instanceof Object) {
-      const { rendered, ...others } = value;
-      if (typeof(rendered) === 'string') {
-        const parser = new MarkGor.Parser({ htmlOnly: true });
-        const tokens = parser.parse(rendered);
-        const renderer = new MarkGor.JsonRenderer;
-        const json = renderer.render(tokens);
-        value = { json, ...others };
+async function transformData(data, rest) {
+  let transformed;
+  if (rest.type === 'wordpress') {
+    transformed = await transformWPData(data, rest);
+  } else {
+    return data;
+  }
+  if (transformed instanceof Array) {
+    transformed.total = data.total;
+    transformed.pages = data.pages;
+  }
+  return transformed;
+}
+
+const wpProps = {
+  _links: { omit: true },
+  authentication: { omit: true },
+  date: { omit: true },
+  description: { html: true },
+  comment_status: { omit: true },
+  guid: { omit: true },
+  modified: { omit: true },
+  name: { html: true },
+  namespaces: { omit: true },
+  routes: { omit: true },
+  ping_status: { omit: true },
+  template: { omit: true },
+};
+
+async function transformWPData(data, url) {
+  if (data instanceof Array) {
+    return _.map(data, 'id');
+  } else {
+    const res = {};
+    for (let [ key, value ] of Object.entries(data)) {
+      const prop = wpProps[key] || {};
+      if (!prop.omit) {
+        let html, additional;
+        if (value instanceof Object) {
+          const { rendered, ...others } = value;
+          if (typeof(rendered) === 'string') {
+            html = rendered;
+            additional = others;
+          }
+        } else if (prop.html) {
+          html = value;
+          additional = {};
+        }
+        if (html !== undefined) {
+          // parse the HTML
+          const json = await parseHTML(html);
+          value = { json, ...additional };
+        }
+        res[key] = value;
       }
     }
-    res[name] = value;
+    return res;
   }
-  return res;
 }
 
 async function findRestSources() {
@@ -391,10 +421,27 @@ function findMediaImports(sheets) {
   return list;
 }
 
-function parseMarkdown(text) {
-  const parser = new MarkGor.Parser;
+async function parseMarkdown(text) {
+  const parser = new MarkGor.AsyncParser;
   const renderer = new MarkGor.JSONRenderer;
-  const tokens = parser.parse(text);
+  const tokens = await parser.parse(text);
   const json = renderer.render(tokens);
   return json;
 }
+
+async function parseHTML(html) {
+  const parser = new MarkGor.AsyncParser({ htmlOnly: true });
+  const renderer = new MarkGor.JSONRenderer;
+  const tokens = await parser.parse(html);
+  const json = renderer.render(tokens);
+  return json;
+}
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.log(`Unhandled Rejection: ${reason}`);
+});
+
+module.exports = {
+  start,
+  stop,
+};

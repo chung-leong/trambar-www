@@ -1,11 +1,40 @@
 {
   "id": 16,
-  "count": 1091,
+  "count": 1312,
   "description": "Extreme Deals On Laptops, Desktops & Other Gadgets",
   "link": "https://www.extremetech.com/category/deals",
   "name": "Deals",
   "slug": "deals",
   "taxonomy": "category",
   "parent": 0,
-  "meta": []
+  "meta": [],
+  "_links": {
+    "self": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/categories/16"
+      }
+    ],
+    "collection": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/categories"
+      }
+    ],
+    "about": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/taxonomies/category"
+      }
+    ],
+    "wp:post_type": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/posts?categories=16"
+      }
+    ],
+    "curies": [
+      {
+        "name": "wp",
+        "href": "https://api.w.org/{rel}",
+        "templated": true
+      }
+    ]
+  }
 }

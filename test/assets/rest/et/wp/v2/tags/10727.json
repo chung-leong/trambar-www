@@ -1,10 +1,39 @@
 {
   "id": 10727,
-  "count": 133,
+  "count": 163,
   "description": "",
   "link": "https://www.extremetech.com/tag/7nm",
   "name": "7nm",
   "slug": "7nm",
   "taxonomy": "post_tag",
-  "meta": []
+  "meta": [],
+  "_links": {
+    "self": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/tags/10727"
+      }
+    ],
+    "collection": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/tags"
+      }
+    ],
+    "about": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/taxonomies/post_tag"
+      }
+    ],
+    "wp:post_type": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/posts?tags=10727"
+      }
+    ],
+    "curies": [
+      {
+        "name": "wp",
+        "href": "https://api.w.org/{rel}",
+        "templated": true
+      }
+    ]
+  }
 }

@@ -10,5 +10,17 @@
     "48": "https://secure.gravatar.com/avatar/efc7c225cdb73a41c74abc84051a8056?s=48&d=mm&r=g",
     "96": "https://secure.gravatar.com/avatar/efc7c225cdb73a41c74abc84051a8056?s=96&d=mm&r=g"
   },
-  "meta": []
+  "meta": [],
+  "_links": {
+    "self": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/users/784"
+      }
+    ],
+    "collection": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/users"
+      }
+    ]
+  }
 }

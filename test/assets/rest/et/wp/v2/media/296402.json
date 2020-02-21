@@ -1,6 +1,11 @@
 {
   "id": 296402,
+  "date": "2019-08-08T17:08:08",
   "date_gmt": "2019-08-08T21:08:08",
+  "guid": {
+    "rendered": "https://www.extremetech.com/wp-content/uploads/2019/08/lenovo-thinkpad-x1-carbon-3-on-the-go.jpg"
+  },
+  "modified": "2019-08-08T17:08:08",
   "modified_gmt": "2019-08-08T21:08:08",
   "slug": "lenovo-thinkpad-x1-carbon-3-on-the-go",
   "status": "inherit",
@@ -10,6 +15,9 @@
     "rendered": "lenovo-thinkpad-x1-carbon-3-on-the-go"
   },
   "author": 862,
+  "comment_status": "open",
+  "ping_status": "closed",
+  "template": "",
   "meta": [],
   "description": {
     "rendered": "<p class=\"attachment\"><a href='https://www.extremetech.com/wp-content/uploads/2019/08/lenovo-thinkpad-x1-carbon-3-on-the-go.jpg'><img width=\"300\" height=\"169\" src=\"https://www.extremetech.com/wp-content/uploads/2019/08/lenovo-thinkpad-x1-carbon-3-on-the-go-300x169.jpg\" class=\"attachment-medium size-medium\" alt=\"\" srcset=\"https://www.extremetech.com/wp-content/uploads/2019/08/lenovo-thinkpad-x1-carbon-3-on-the-go-300x169.jpg 300w, https://www.extremetech.com/wp-content/uploads/2019/08/lenovo-thinkpad-x1-carbon-3-on-the-go-768x432.jpg 768w, https://www.extremetech.com/wp-content/uploads/2019/08/lenovo-thinkpad-x1-carbon-3-on-the-go-640x360.jpg 640w, https://www.extremetech.com/wp-content/uploads/2019/08/lenovo-thinkpad-x1-carbon-3-on-the-go-223x126.jpg 223w, https://www.extremetech.com/wp-content/uploads/2019/08/lenovo-thinkpad-x1-carbon-3-on-the-go-106x59.jpg 106w, https://www.extremetech.com/wp-content/uploads/2019/08/lenovo-thinkpad-x1-carbon-3-on-the-go-348x196.jpg 348w, https://www.extremetech.com/wp-content/uploads/2019/08/lenovo-thinkpad-x1-carbon-3-on-the-go.jpg 1200w\" sizes=\"(max-width: 300px) 100vw, 300px\" /></a></p>"
@@ -119,5 +127,34 @@
     }
   },
   "post": 296399,
-  "source_url": "https://www.extremetech.com/wp-content/uploads/2019/08/lenovo-thinkpad-x1-carbon-3-on-the-go.jpg"
+  "source_url": "https://www.extremetech.com/wp-content/uploads/2019/08/lenovo-thinkpad-x1-carbon-3-on-the-go.jpg",
+  "_links": {
+    "self": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/media/296402"
+      }
+    ],
+    "collection": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/media"
+      }
+    ],
+    "about": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/types/attachment"
+      }
+    ],
+    "author": [
+      {
+        "embeddable": true,
+        "href": "https://www.extremetech.com/wp-json/wp/v2/users/862"
+      }
+    ],
+    "replies": [
+      {
+        "embeddable": true,
+        "href": "https://www.extremetech.com/wp-json/wp/v2/comments?post=296402"
+      }
+    ]
+  }
 }

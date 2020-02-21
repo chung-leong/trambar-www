@@ -5,8 +5,8 @@ import Adapter from 'enzyme-adapter-react-16';
 import { Parser, JSONRenderer } from 'mark-gor';
 
 import {
-  HTMLText,
-} from '../src/html-text.mjs';
+  Text,
+} from '../src/index.mjs';
 
 function parseHTML(html) {
   const parser = new Parser({ htmlOnly: true });
@@ -16,7 +16,7 @@ function parseHTML(html) {
   return json;
 }
 
-describe('HTMLText', function() {
+describe('Text', function() {
   beforeEach(function() {
     configure({ adapter: new Adapter });
   })
@@ -29,7 +29,7 @@ Hello, <b>world</b>!
 Hello, world!
       `.trim();
       const json = parseHTML(html);
-      const object = new HTMLText({ json });
+      const object = new Text({ json });
       const text = object.getPlainText();
       expect(text).to.equal(correct);
     })
@@ -43,7 +43,7 @@ Hello
 World
       `.trim();
       const json = parseHTML(html);
-      const object = new HTMLText({ json });
+      const object = new Text({ json });
       const text = object.getPlainText();
       expect(text).to.equal(correct);
     })
@@ -57,7 +57,7 @@ Hello
 World
       `.trim();
       const json = parseHTML(html);
-      const object = new HTMLText({ json });
+      const object = new Text({ json });
       const text = object.getPlainText();
       expect(text).to.equal(correct);
     })
@@ -75,7 +75,7 @@ World
 * Item 3
       `.trim();
       const json = parseHTML(html);
-      const object = new HTMLText({ json });
+      const object = new Text({ json });
       const text = object.getPlainText();
       expect(text).to.equal(correct);
     })
@@ -93,7 +93,7 @@ World
 3. Item 3
       `.trim();
       const json = parseHTML(html);
-      const object = new HTMLText({ json });
+      const object = new Text({ json });
       const text = object.getPlainText();
       expect(text).to.equal(correct);
     })
@@ -111,7 +111,7 @@ World
 6. Item 3
       `.trim();
       const json = parseHTML(html);
-      const object = new HTMLText({ json });
+      const object = new Text({ json });
       const text = object.getPlainText();
       expect(text).to.equal(correct);
     })
@@ -138,7 +138,7 @@ World
 3. Item 3
       `.trim();
       const json = parseHTML(html);
-      const object = new HTMLText({ json });
+      const object = new Text({ json });
       const text = object.getPlainText();
       expect(text).to.equal(correct);
     })
@@ -149,7 +149,7 @@ World
 <div>Hello, <span style="font-family: Arial;">world</span>!</div>
       `.trim();
       const json = parseHTML(html);
-      const object = new HTMLText({ json });
+      const object = new Text({ json });
       const element = object.getRichText();
       const wrapper = mount(element);
       expect(wrapper.html()).to.equal(html);

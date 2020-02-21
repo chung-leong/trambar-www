@@ -1,5 +1,5 @@
 import { WordpressObject } from './wordpress-object.mjs';
-import { HTMLText } from '../html-text.mjs';
+import { Text } from '../text.mjs';
 
 class WordpressUser extends WordpressObject {
   constructor(identifiers, json) {
@@ -8,8 +8,8 @@ class WordpressUser extends WordpressObject {
     if (json) {
       this.id = json.id;
       this.url = json.url;
-      this.name = new HTMLText(json.name);
-      this.description = new HTMLText(json.description);
+      this.name = new Text(json.name);
+      this.description = new Text(json.description);
       this.link = json.link;
       this.slug = json.slug;
       this.avatarURLs = json.avatar_urls;

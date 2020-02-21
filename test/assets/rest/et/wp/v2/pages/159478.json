@@ -1,6 +1,11 @@
 {
   "id": 159478,
+  "date": "2014-11-11T13:02:53",
   "date_gmt": "2014-11-11T18:02:53",
+  "guid": {
+    "rendered": "http://www.extremetech.com/?page_id=159478"
+  },
+  "modified": "2014-11-11T13:03:33",
   "modified_gmt": "2014-11-11T18:03:33",
   "slug": "auto",
   "status": "publish",
@@ -21,5 +26,67 @@
   "featured_media": 148430,
   "parent": 0,
   "menu_order": 0,
-  "meta": []
+  "comment_status": "open",
+  "ping_status": "open",
+  "template": "",
+  "meta": [],
+  "_links": {
+    "self": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/pages/159478"
+      }
+    ],
+    "collection": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/pages"
+      }
+    ],
+    "about": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/types/page"
+      }
+    ],
+    "author": [
+      {
+        "embeddable": true,
+        "href": "https://www.extremetech.com/wp-json/wp/v2/users/762"
+      }
+    ],
+    "replies": [
+      {
+        "embeddable": true,
+        "href": "https://www.extremetech.com/wp-json/wp/v2/comments?post=159478"
+      }
+    ],
+    "version-history": [
+      {
+        "count": 22,
+        "href": "https://www.extremetech.com/wp-json/wp/v2/pages/159478/revisions"
+      }
+    ],
+    "predecessor-version": [
+      {
+        "id": 193980,
+        "href": "https://www.extremetech.com/wp-json/wp/v2/pages/159478/revisions/193980"
+      }
+    ],
+    "wp:featuredmedia": [
+      {
+        "embeddable": true,
+        "href": "https://www.extremetech.com/wp-json/wp/v2/media/148430"
+      }
+    ],
+    "wp:attachment": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/media?parent=159478"
+      }
+    ],
+    "curies": [
+      {
+        "name": "wp",
+        "href": "https://api.w.org/{rel}",
+        "templated": true
+      }
+    ]
+  }
 }

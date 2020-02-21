@@ -1,5 +1,5 @@
 import { ExcelObject } from './excel-object.mjs';
-import { findLanguageCodes } from '../html-text.mjs';
+import { findLanguageCodes } from '../text.mjs';
 
 class ExcelColumn extends ExcelObject {
   constructor(identifiers, data, defaultLanguages) {

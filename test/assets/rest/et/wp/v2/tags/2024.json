@@ -1,10 +1,39 @@
 {
   "id": 2024,
-  "count": 21,
+  "count": 24,
   "description": "",
   "link": "https://www.extremetech.com/tag/workstation",
   "name": "workstation",
   "slug": "workstation",
   "taxonomy": "post_tag",
-  "meta": []
+  "meta": [],
+  "_links": {
+    "self": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/tags/2024"
+      }
+    ],
+    "collection": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/tags"
+      }
+    ],
+    "about": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/taxonomies/post_tag"
+      }
+    ],
+    "wp:post_type": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/posts?tags=2024"
+      }
+    ],
+    "curies": [
+      {
+        "name": "wp",
+        "href": "https://api.w.org/{rel}",
+        "templated": true
+      }
+    ]
+  }
 }

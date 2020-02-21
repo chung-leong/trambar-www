@@ -1,11 +1,40 @@
 {
   "id": 8,
-  "count": 9544,
+  "count": 9754,
   "description": "Computer Hardware & Software News",
   "link": "https://www.extremetech.com/category/computing",
   "name": "Computing",
   "slug": "computing",
   "taxonomy": "category",
   "parent": 0,
-  "meta": []
+  "meta": [],
+  "_links": {
+    "self": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/categories/8"
+      }
+    ],
+    "collection": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/categories"
+      }
+    ],
+    "about": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/taxonomies/category"
+      }
+    ],
+    "wp:post_type": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/posts?categories=8"
+      }
+    ],
+    "curies": [
+      {
+        "name": "wp",
+        "href": "https://api.w.org/{rel}",
+        "templated": true
+      }
+    ]
+  }
 }

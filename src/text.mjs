@@ -1,8 +1,8 @@
 import React from 'react';
-import { Resource, missing } from './resource.mjs';
+import { Resource } from './resource.mjs';
 import { getTagProperties } from 'mark-gor/src/html-tags.mjs';
 
-class HTMLText {
+class Text {
   constructor(data) {
     if (data) {
       this.json = data.json;
@@ -47,7 +47,7 @@ class HTMLText {
         json.push(node);
       }
     }
-    return new HTMLText(json, this.resources);
+    return new Text(json, this.resources);
   }
 
   getJSON(title) {
@@ -85,7 +85,7 @@ class HTMLText {
         }
       }
     }
-    return missing;
+    return new Resource({ type: 'image', src: url });
   }
 
   getPlainTextFromNode(node, options) {
@@ -95,7 +95,7 @@ class HTMLText {
         return '\n';
       } else if (type === 'hr') {
         return '――――――――――\n';
-      } else if (type === 'image') {
+      } else if (type === 'img') {
         return (props && props.alt) ? `[${props.alt}]` : ``;
       }
 
@@ -311,7 +311,7 @@ function findLanguageCodes(flags, defaultLanguages) {
 }
 
 export {
-  HTMLText,
+  Text,
   isLanguageCode,
   findLanguageCodes,
   getLanguageMatch,

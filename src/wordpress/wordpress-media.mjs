@@ -1,5 +1,5 @@
 import { WordpressObject } from './wordpress-object.mjs';
-import { HTMLText } from '../html-text.mjs';
+import { Text } from '../text.mjs';
 
 class WordpressMedia extends WordpressObject {
   constructor(identifiers, json) {
@@ -15,9 +15,9 @@ class WordpressMedia extends WordpressObject {
       this.link = json.link;
       this.mediaType = json.media_type;
       this.mimeType = json.mime_type;
-      this.title = new HTMLText(json.title);
-      this.description = new HTMLText(json.description);
-      this.caption = new HTMLText(json.caption);
+      this.title = new Text(json.title);
+      this.description = new Text(json.description);
+      this.caption = new Text(json.caption);
       this.author = json.author;
       this.altText = json.alt_text;
       this.mediaDetails = json.media_details;

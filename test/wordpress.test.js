@@ -30,7 +30,7 @@ describe('Wordpress', function() {
   it('should be able to retrieve site info', async function() {
     const data = await fetchTestData(`${serverAddress}/data/rest/et/`);
     expect(data.url).to.eql('https://www.extremetech.com');
-    expect(data.name).to.eql('ExtremeTech');
+    expect(data.name.json).to.eql([ 'ExtremeTech' ]);
   })
   it('should be able to retrieve test post', async function() {
     const data = await fetchTestData(`${serverAddress}/data/rest/et/wp/v2/posts/296375/`);
@@ -53,10 +53,12 @@ describe('Wordpress', function() {
       expect(site.siteId).to.eql('et');
       expect(site.url).to.eql('https://www.extremetech.com');
       expect(site.home).to.eql('https://www.extremetech.com');
-      expect(site.gmtOffset).to.eql(-4);
+      expect(site.gmtOffset).to.eql(-5);
       expect(site.timezone).to.eql('America/New_York');
       expect(site.name.getPlainText()).to.be.eq('ExtremeTech');
-      expect(site.description.getPlainText()).to.be.instanceOf('ExtremeTech is the Web&#039;s top destination for news and analysis of emerging science and technology trends, and important software, hardware, and gadgets.');
+      expect(site.description.getPlainText()).to.be.eq(`
+ExtremeTech is the Web's top destination for news and analysis of emerging science and technology trends, and important software, hardware, and gadgets.
+      `.trim());
     })
   })
   describe('WordpressPost', function() {
@@ -89,6 +91,7 @@ Curiosity landed on Mars in 2012, setting up shop in Gale Crater. Its goal was t
 While exploring the clay-bearing unit, Curiosity happened upon a strange boulder partially buried in the ground — the Strathdon. The rock formed from many layers of compressed sediment that had hardened into a brittle, wavy mass. It’s a stark contrast from the flat layers of lake sediment Curiosity has seen elsewhere on Mars.
 
 Strathdon as seen from 4 inches away.
+
 Curiosity approached the Strathdon, taking a close-up mosaic image for scientists back on Earth to examine. The team speculates that the structure of this boulder means the clay-bearing unit has a much more complex and dynamic geological history than anyone expected. A combination of flowing water and wind could be responsible for the existence of this formation. This region might have been quite hospitable to life many eons ago, but Curiosity can’t say for certain — that’s for the next rover to find out.
 
 NASA’s Mars 2020 rover is being assembled at JPL as we speak. It has a robotic arm, wheels, and some of its many, many cameras. The still-unnamed rover uses the same chassis as Curiosity, but it will carry instruments that are better able to search for signs of ancient life on the red planet. The launch is scheduled for next summer when Earth and Mars are lined up for an easy journey. Mars 2020 will join Curiosity on the surface in February 2021.
@@ -130,6 +133,7 @@ The goal of TiMR is to be a series of articles on ExtremeTech.com where people t
 * This is my rig: ExtremeTech’s Sebastian Anthony
 * This is my rig: ExtremeTech’s Sal Cangeloso
 * This is my rig: ExtremeTech reporter Ray Walters
+
 Rough outline
 
 * Introduction
@@ -144,6 +148,7 @@ Rough outline
 * Operating system (optional)
 * Conclusion
 * Byline (optional)
+
 Length
 
 There is no minimum or maximum length, but please take enough time to explain the parts (don’t suppose every reader knows the specs of every case and power supply) and why you chose it. If your reasoning was based on price or something similarly simple, don’t feel like you need to say too much.
@@ -187,7 +192,13 @@ Created: 9/27/12, Sal Cangeloso
       });
       expect(user.meta).to.eql([]);
       expect(user.name.getPlainText()).to.eql('Sal Cangeloso');
-      expect(user.description.getPlainText()).to.be.eql('');
+      expect(user.description.getPlainText()).to.be.eql(`
+Sal Cangeloso is the Managing Editor at ExtremeTech.com and Geek.com, and the author of LED Lighting: A Primer to Lighting the Future. He lives on Earth, a small but biologically diverse terrestrial planet.
+
+ Links...
+ Twitter
+ Google +
+      `.trim());
     })
   })
   describe('WordpressTag', function() {
@@ -196,7 +207,7 @@ Created: 9/27/12, Sal Cangeloso
 
       expect(tag.id).to.eql(148);
       expect(tag.slug).to.eql('amd');
-      expect(tag.count).to.eql(1171);
+      expect(tag.count).to.eql(1263);
       expect(tag.link).to.eql('https://www.extremetech.com/tag/amd');
       expect(tag.meta).to.eql([]);
       expect(tag.taxonomy).to.eql('post_tag');
@@ -210,7 +221,7 @@ Created: 9/27/12, Sal Cangeloso
 
       expect(category.id).to.eql(8);
       expect(category.slug).to.eql('computing');
-      expect(category.count).to.eql(9544);
+      expect(category.count).to.eql(9754);
       expect(category.link).to.eql('https://www.extremetech.com/category/computing');
       expect(category.meta).to.eql([]);
       expect(category.taxonomy).to.eql('category');
@@ -232,89 +243,12 @@ Created: 9/27/12, Sal Cangeloso
       expect(media.altText).to.eql('');
       expect(media.mediaType).to.eql('image');
       expect(media.mimeType).to.eql('image/jpeg');
-      expect(media.mediaDetails).to.eql({
-        width: 1344,
-        height: 742,
-        file: '2019/08/707_Mastcam_Views__Strathdon_.jpg',
-        sizes: {
-          thumbnail: {
-            file: '707_Mastcam_Views__Strathdon_-150x150.jpg',
-            width: 150,
-            height: 150,
-            mime_type: 'image/jpeg',
-            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-150x150.jpg'
-          },
-          medium: {
-            file: '707_Mastcam_Views__Strathdon_-300x166.jpg',
-            width: 300,
-            height: 166,
-            mime_type: 'image/jpeg',
-            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-300x166.jpg'
-          },
-          medium_large: {
-            file: '707_Mastcam_Views__Strathdon_-768x424.jpg',
-            width: 768,
-            height: 424,
-            mime_type: 'image/jpeg',
-            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-768x424.jpg'
-          },
-          large: {
-            file: '707_Mastcam_Views__Strathdon_-640x353.jpg',
-            width: 640,
-            height: 353,
-            mime_type: 'image/jpeg',
-            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-640x353.jpg'
-          },
-          small: {
-            file: '707_Mastcam_Views__Strathdon_-223x126.jpg',
-            width: 223,
-            height: 126,
-            mime_type: 'image/jpeg',
-            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-223x126.jpg'
-          },
-          'news-small': {
-            file: '707_Mastcam_Views__Strathdon_-106x59.jpg',
-            width: 106,
-            height: 59,
-            mime_type: 'image/jpeg',
-            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-106x59.jpg'
-          },
-          'news-normal': {
-            file: '707_Mastcam_Views__Strathdon_-672x371.jpg',
-            width: 672,
-            height: 371,
-            mime_type: 'image/jpeg',
-            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-672x371.jpg'
-          },
-          single: {
-            file: '707_Mastcam_Views__Strathdon_-348x196.jpg',
-            width: 348,
-            height: 196,
-            mime_type: 'image/jpeg',
-            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-348x196.jpg'
-          },
-          full: {
-            file: '707_Mastcam_Views__Strathdon_-640x353.jpg',
-            width: 640,
-            height: 353,
-            mime_type: 'image/jpeg',
-            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-640x353.jpg'
-          },
-          deal: {
-            file: '707_Mastcam_Views__Strathdon_-150x200.jpg',
-            width: 150,
-            height: 200,
-            mime_type: 'image/jpeg',
-            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-150x200.jpg'
-          },
-          gallery: {
-            file: '707_Mastcam_Views__Strathdon_-652x382.jpg',
-            width: 652,
-            height: 382,
-            mime_type: 'image/jpeg',
-            source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-652x382.jpg'
-          }
-        }
+      expect(media.mediaDetails.sizes.thumbnail).to.eql({
+        file: '707_Mastcam_Views__Strathdon_-150x150.jpg',
+        width: 150,
+        height: 150,
+        mime_type: 'image/jpeg',
+        source_url: 'https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-150x150.jpg'
       });
       expect(media.post).to.eql(296375);
       expect(media.sourceURL).to.eql('https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_.jpg');

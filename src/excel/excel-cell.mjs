@@ -1,5 +1,5 @@
 import { ExcelObject } from './excel-object.mjs';
-import { HTMLText } from '../html-text.mjs';
+import { Text } from '../text.mjs';
 
 class ExcelCell extends ExcelObject {
   constructor(identifiers, data, columnLanguages) {
@@ -60,7 +60,7 @@ class ExcelCell extends ExcelObject {
 
     this.type = type;
     this.data = data;
-    this.content = new HTMLText({ json, resources });
+    this.content = new Text({ json, resources });
     this.languages = columnLanguages;
   }
 }

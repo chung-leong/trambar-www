@@ -1,11 +1,40 @@
 {
   "id": 4,
-  "count": 13112,
+  "count": 13418,
   "description": "News & Updates For Hardcore Tech Fans",
   "link": "https://www.extremetech.com/category/extreme",
   "name": "Extreme",
   "slug": "extreme",
   "taxonomy": "category",
   "parent": 0,
-  "meta": []
+  "meta": [],
+  "_links": {
+    "self": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/categories/4"
+      }
+    ],
+    "collection": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/categories"
+      }
+    ],
+    "about": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/taxonomies/category"
+      }
+    ],
+    "wp:post_type": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/posts?categories=4"
+      }
+    ],
+    "curies": [
+      {
+        "name": "wp",
+        "href": "https://api.w.org/{rel}",
+        "templated": true
+      }
+    ]
+  }
 }

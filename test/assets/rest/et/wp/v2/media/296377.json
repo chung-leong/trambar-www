@@ -1,6 +1,11 @@
 {
   "id": 296377,
+  "date": "2019-08-08T12:13:12",
   "date_gmt": "2019-08-08T16:13:12",
+  "guid": {
+    "rendered": "https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_.jpg"
+  },
+  "modified": "2019-08-08T12:13:12",
   "modified_gmt": "2019-08-08T16:13:12",
   "slug": "707_mastcam_views__strathdon_",
   "status": "inherit",
@@ -10,6 +15,9 @@
     "rendered": "707_Mastcam_Views__Strathdon_"
   },
   "author": 784,
+  "comment_status": "open",
+  "ping_status": "closed",
+  "template": "",
   "meta": [],
   "description": {
     "rendered": "<p class=\"attachment\"><a href='https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_.jpg'><img width=\"300\" height=\"166\" src=\"https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-300x166.jpg\" class=\"attachment-medium size-medium\" alt=\"\" srcset=\"https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-300x166.jpg 300w, https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-768x424.jpg 768w, https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-640x353.jpg 640w, https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-106x59.jpg 106w, https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_-672x371.jpg 672w, https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_.jpg 1344w\" sizes=\"(max-width: 300px) 100vw, 300px\" /></a></p>"
@@ -119,5 +127,34 @@
     }
   },
   "post": 296375,
-  "source_url": "https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_.jpg"
+  "source_url": "https://www.extremetech.com/wp-content/uploads/2019/08/707_Mastcam_Views__Strathdon_.jpg",
+  "_links": {
+    "self": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/media/296377"
+      }
+    ],
+    "collection": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/media"
+      }
+    ],
+    "about": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/types/attachment"
+      }
+    ],
+    "author": [
+      {
+        "embeddable": true,
+        "href": "https://www.extremetech.com/wp-json/wp/v2/users/784"
+      }
+    ],
+    "replies": [
+      {
+        "embeddable": true,
+        "href": "https://www.extremetech.com/wp-json/wp/v2/comments?post=296377"
+      }
+    ]
+  }
 }

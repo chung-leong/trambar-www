@@ -1,6 +1,11 @@
 {
   "id": 296375,
+  "date": "2019-08-09T10:00:34",
   "date_gmt": "2019-08-09T14:00:34",
+  "guid": {
+    "rendered": "https://www.extremetech.com/?p=296375"
+  },
+  "modified": "2019-08-08T18:13:48",
   "modified_gmt": "2019-08-08T22:13:48",
   "slug": "curiosity-spots-unexpectedly-complex-martian-rock",
   "status": "publish",
@@ -19,7 +24,10 @@
   },
   "author": 784,
   "featured_media": 296377,
+  "comment_status": "open",
+  "ping_status": "open",
   "sticky": false,
+  "template": "",
   "format": "standard",
   "meta": [],
   "categories": [
@@ -35,5 +43,76 @@
     184,
     7678,
     26179
-  ]
+  ],
+  "_links": {
+    "self": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/posts/296375"
+      }
+    ],
+    "collection": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/posts"
+      }
+    ],
+    "about": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/types/post"
+      }
+    ],
+    "author": [
+      {
+        "embeddable": true,
+        "href": "https://www.extremetech.com/wp-json/wp/v2/users/784"
+      }
+    ],
+    "replies": [
+      {
+        "embeddable": true,
+        "href": "https://www.extremetech.com/wp-json/wp/v2/comments?post=296375"
+      }
+    ],
+    "version-history": [
+      {
+        "count": 2,
+        "href": "https://www.extremetech.com/wp-json/wp/v2/posts/296375/revisions"
+      }
+    ],
+    "predecessor-version": [
+      {
+        "id": 296415,
+        "href": "https://www.extremetech.com/wp-json/wp/v2/posts/296375/revisions/296415"
+      }
+    ],
+    "wp:featuredmedia": [
+      {
+        "embeddable": true,
+        "href": "https://www.extremetech.com/wp-json/wp/v2/media/296377"
+      }
+    ],
+    "wp:attachment": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/media?parent=296375"
+      }
+    ],
+    "wp:term": [
+      {
+        "taxonomy": "category",
+        "embeddable": true,
+        "href": "https://www.extremetech.com/wp-json/wp/v2/categories?post=296375"
+      },
+      {
+        "taxonomy": "post_tag",
+        "embeddable": true,
+        "href": "https://www.extremetech.com/wp-json/wp/v2/tags?post=296375"
+      }
+    ],
+    "curies": [
+      {
+        "name": "wp",
+        "href": "https://api.w.org/{rel}",
+        "templated": true
+      }
+    ]
+  }
 }

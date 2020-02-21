@@ -2,12 +2,15 @@ class Resource {
   constructor(data) {
     if (data) {
       this.type = data.type;
-      this.url = data.url;
       this.src = data.src;
+      this.url = data.url;
       this.width = data.width;
       this.height = data.height;
-    } else {
-      this.missing = true;
+      this.external = false;
+      if (!this.url) {
+        this.url = this.src;
+        this.external = true;
+      }
     }
   }
 
@@ -28,17 +31,13 @@ class Resource {
     return false;
   }
 
-  getImageURL() {
-    if (this.missing) {
-      return;
+  transform() {
+    if (this.external) {
+      return this;
     }
-    
   }
 }
 
-const missing = new Resouce;
-
 export {
   Resource,
-  missing,
 };

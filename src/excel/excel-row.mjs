@@ -1,5 +1,5 @@
 import { ExcelObject } from './excel-object.mjs';
-import { chooseLanguageVersion } from '../html-text.mjs';
+import { chooseLanguageVersion } from '../text.mjs';
 
 class ExcelRow extends ExcelObject {
   constructor(identifiers, data, sheetLanguageCodes) {

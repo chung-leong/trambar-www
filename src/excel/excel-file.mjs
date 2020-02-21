@@ -1,6 +1,6 @@
 import { ExcelObject } from './excel-object.mjs';
 import { ExcelSheet } from './excel-sheet.mjs';
-import { chooseLanguageVersion } from '../html-text.mjs';
+import { chooseLanguageVersion } from '../text.mjs';
 
 class ExcelFile extends ExcelObject {
   constructor(identifiers, json) {

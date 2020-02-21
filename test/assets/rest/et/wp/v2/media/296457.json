@@ -1,6 +1,11 @@
 {
   "id": 296457,
+  "date": "2019-08-09T17:42:11",
   "date_gmt": "2019-08-09T21:42:11",
+  "guid": {
+    "rendered": "https://www.extremetech.com/wp-content/uploads/2019/08/Golden-Age-AMD-Feature.jpg"
+  },
+  "modified": "2019-08-09T17:42:17",
   "modified_gmt": "2019-08-09T21:42:17",
   "slug": "golden-age-amd-feature",
   "status": "inherit",
@@ -10,6 +15,9 @@
     "rendered": "Golden-Age-AMD-Feature"
   },
   "author": 780,
+  "comment_status": "open",
+  "ping_status": "closed",
+  "template": "",
   "meta": [],
   "description": {
     "rendered": "<p class=\"attachment\"><a href='https://www.extremetech.com/wp-content/uploads/2019/08/Golden-Age-AMD-Feature.jpg'><img width=\"300\" height=\"166\" src=\"https://www.extremetech.com/wp-content/uploads/2019/08/Golden-Age-AMD-Feature-300x166.jpg\" class=\"attachment-medium size-medium\" alt=\"Golden-Age-AMD-Feature\" srcset=\"https://www.extremetech.com/wp-content/uploads/2019/08/Golden-Age-AMD-Feature-300x166.jpg 300w, https://www.extremetech.com/wp-content/uploads/2019/08/Golden-Age-AMD-Feature-768x424.jpg 768w, https://www.extremetech.com/wp-content/uploads/2019/08/Golden-Age-AMD-Feature-640x353.jpg 640w, https://www.extremetech.com/wp-content/uploads/2019/08/Golden-Age-AMD-Feature-106x59.jpg 106w, https://www.extremetech.com/wp-content/uploads/2019/08/Golden-Age-AMD-Feature-672x371.jpg 672w, https://www.extremetech.com/wp-content/uploads/2019/08/Golden-Age-AMD-Feature.jpg 1344w\" sizes=\"(max-width: 300px) 100vw, 300px\" /></a></p>"
@@ -119,5 +127,34 @@
     }
   },
   "post": 296453,
-  "source_url": "https://www.extremetech.com/wp-content/uploads/2019/08/Golden-Age-AMD-Feature.jpg"
+  "source_url": "https://www.extremetech.com/wp-content/uploads/2019/08/Golden-Age-AMD-Feature.jpg",
+  "_links": {
+    "self": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/media/296457"
+      }
+    ],
+    "collection": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/media"
+      }
+    ],
+    "about": [
+      {
+        "href": "https://www.extremetech.com/wp-json/wp/v2/types/attachment"
+      }
+    ],
+    "author": [
+      {
+        "embeddable": true,
+        "href": "https://www.extremetech.com/wp-json/wp/v2/users/780"
+      }
+    ],
+    "replies": [
+      {
+        "embeddable": true,
+        "href": "https://www.extremetech.com/wp-json/wp/v2/comments?post=296457"
+      }
+    ]
+  }
 }

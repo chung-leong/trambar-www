@@ -1,5 +1,5 @@
 import { WordpressObject } from './wordpress-object.mjs';
-import { HTMLText } from '../html-text.mjs';
+import { Text } from '../text.mjs';
 
 class WordpressPage extends WordpressObject {
   constructor(identifiers, json) {
@@ -13,9 +13,9 @@ class WordpressPage extends WordpressObject {
       this.status = json.status;
       this.type = json.type;
       this.link = json.link;
-      this.title = new HTMLText(json.title);
-      this.content = new HTMLText(json.content);
-      this.excerpt = new HTMLText(json.excerpt);
+      this.title = new Text(json.title);
+      this.content = new Text(json.content);
+      this.excerpt = new Text(json.excerpt);
       this.author = json.author;
       this.featuredMedia = json.featured_media;
       this.menuOrder = json.menu_order;

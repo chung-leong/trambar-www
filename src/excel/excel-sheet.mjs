@@ -2,7 +2,7 @@ import { ExcelObject } from './excel-object.mjs';
 import { ExcelColumn } from './excel-column.mjs';
 import { ExcelRow } from './excel-row.mjs';
 import { ExcelCell } from './excel-cell.mjs';
-import { findLanguageCodes, chooseLanguageVersion } from '../html-text.mjs';
+import { findLanguageCodes, chooseLanguageVersion } from '../text.mjs';
 
 class ExcelSheet extends ExcelObject {
   constructor(identifiers, data) {
