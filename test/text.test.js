@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { expect } from 'chai';
-import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 import { Parser, JSONRenderer } from 'mark-gor';
 
 import {
@@ -17,10 +16,7 @@ function parseHTML(html) {
 }
 
 describe('Text', function() {
-  beforeEach(function() {
-    configure({ adapter: new Adapter });
-  })
-  describe('getPlainText()', function() {
+  describe('#getPlainText()', function() {
     it ('should correct handle inline elements', function() {
       const html = `
 Hello, <b>world</b>!
@@ -157,16 +153,101 @@ World
       expect(text).to.equal(correct);
     })
   })
-  describe('getRichText()', function() {
+  describe('#getRichText()', function() {
     it ('should correct handle inline elements', function() {
       const html = `
-<div>Hello, <span style="font-family: Arial;">world</span>!</div>
+<div>Hello, <span style="font-family:Arial">world</span>!</div>
       `.trim();
       const json = parseHTML(html);
       const object = new Text({ json });
       const element = object.getRichText();
-      const wrapper = mount(element);
-      expect(wrapper.html()).to.equal(html);
+      const result = renderToStaticMarkup(element);
+      expect(result).to.equal(html);
     })
-  });
+  })
+  describe('#getDictionary()', function() {
+    it ('should return dictionary containing plain text by default', function() {
+      const html = `
+<p>Some text</p>
+<h1>hello</h1>
+<p>This is a <b>test</b></p>
+<h1>world</h1>
+<p>This is <u>another</u> test</p>
+      `;
+      const json = parseHTML(html);
+      const object = new Text({ json });
+      const dict = object.getDictionary();
+      expect(dict).to.eql({
+        hello: 'This is a test',
+        world: 'This is another test'
+      });
+    })
+    it ('should return rich text when option is specified', function() {
+      const html = `
+<p>Some text</p>
+<h1>hello</h1>
+<p>This is a <b>test</b></p>
+<h1>world</h1>
+<p>This is <u>another</u> test</p>
+      `;
+      const json = parseHTML(html);
+      const object = new Text({ json });
+      const dict = object.getDictionary({ richText: true });
+      const result1 = renderToStaticMarkup(dict.hello);
+      const result2 = renderToStaticMarkup(dict.world);
+      expect(result1).to.eql('This is a <b>test</b>');
+      expect(result2).to.eql('This is <u>another</u> test');
+    })
+    it ('should keep <p> container when section has multiple paragraphs', function() {
+      const html = `
+<p>Some text</p>
+<h1>hello</h1>
+<p>This is a <b>test</b></p>
+<h1>world</h1>
+<p>This is <u>another</u> test</p>
+<p>More...</p>
+      `;
+      const json = parseHTML(html);
+      const object = new Text({ json });
+      const dict = object.getDictionary({ richText: true });
+      const result1 = renderToStaticMarkup(dict.hello);
+      const result2 = renderToStaticMarkup(dict.world);
+      expect(result1).to.eql('This is a <b>test</b>');
+      expect(result2).to.eql('<p>This is <u>another</u> test</p> <p>More...</p>');
+    })
+    it ('should ignore blockquote by default', function() {
+      const html = `
+<p>Some text</p>
+<h1>hello</h1>
+<p>This is a <b>test</b></p>
+<h1>world</h1>
+<p>This is <u>another</u> test</p>
+<blockquote>Some comments</blockquote>
+      `;
+      const json = parseHTML(html);
+      const object = new Text({ json });
+      const dict = object.getDictionary();
+      expect(dict).to.eql({
+        hello: 'This is a test',
+        world: 'This is another test'
+      });
+    })
+    it ('should include text in blockquote when option is specified', function() {
+      const html = `
+<p>Some text</p>
+<h1>hello</h1>
+<p>This is a <b>test</b></p>
+<h1>world</h1>
+<p>This is <u>another</u> test</p>
+<blockquote>Some comments</blockquote>
+      `;
+      const json = parseHTML(html);
+      const object = new Text({ json });
+      const dict = object.getDictionary({ blockQuote: true });
+      expect(dict).to.eql({
+        hello: 'This is a test',
+        world: 'This is another test\n\nSome comments'
+      });
+    })
+  })
 })

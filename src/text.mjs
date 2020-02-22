@@ -51,6 +51,47 @@ class Text {
     return new Text({ json, resources });
   }
 
+  getDictionary(options) {
+    const richText = (options && options.richText);
+    const blockQuote = (options && options.blockQuote);
+    const sections = {};
+    let phrase;
+    let section;
+    for (let node of this.json) {
+      if (isHeading(node)) {
+        phrase = this.getPlainTextFromNode(node);
+        sections[phrase] = section = [];
+        continue;
+      }
+      if (!blockQuote) {
+        if (node.type === 'blockquote') {
+          continue;
+        }
+      }
+      if (section) {
+        section.push(node);
+      }
+    }
+    const dict = {};
+    for (let [ phrase, section ] of Object.entries(sections)) {
+      const children = trimNodes(section);
+      const node = { children };
+      let text;
+      if (richText) {
+        text = this.getRichTextFromNode(node, options || {});
+        if (typeof(text) === 'object' && text.type === 'p') {
+          // pull the text out of the <p> element
+          text = React.createElement(React.Fragment, text.props);
+        }
+      } else {
+        text = this.getPlainTextFromNode(node, options || {});
+        text = text.trim();
+      }
+      dict[phrase] = text;
+    }
+    return dict;
+  }
+
   getJSON(title) {
     let titleFound = false;
     for (let node of this.json) {
@@ -116,7 +157,7 @@ class Text {
         const blockLevels = children.map(isBlockLevel);
         for (let [ index, child ] of children.entries()) {
           if (typeof(child) === 'string') {
-            if (blockLevels[index - 1] && blockLevels[index + 1]) {
+            if (blockLevels[index - 1] !== false && blockLevels[index + 1] !== false) {
               if (!child.trim()) {
                 // ignore whitespaces between block level elements
                 continue;
@@ -171,7 +212,13 @@ class Text {
     if (typeof(node) === 'object') {
       let { type, props, children } = node;
       if (type === undefined) {
-        type = React.Fragment;
+        if (children && children.length === 1) {
+          // there's only one child so we just return that
+          return this.getRichTextFromNode(children[0], options, key);
+        } else {
+          // need to place them in a fragment
+          type = React.Fragment;
+        }
       }
       if (children instanceof Array) {
         children = children.map((child, index) => {
@@ -218,7 +265,7 @@ class Text {
   }
 
   getLanguageCodesFromNode(node) {
-    if (node instanceof Object && /^h[1-6]$/.test(node.type)) {
+    if (isHeading(node)) {
       const text = this.getPlainTextFromNode(node, {}).trim();
       const m = /^\((.*)\)$/.exec(text);
       if (m) {
@@ -251,7 +298,7 @@ function isBlockLevel(node) {
   if (typeof(node) === 'object') {
     const tag = getTagProperties(node.type);
     return !!tag.block;
-  } else {
+  } else if (typeof(node) === 'string') {
     return false;
   }
 }
@@ -315,6 +362,22 @@ function findLanguageCodes(flags, defaultLanguages) {
     }
   }
   return (codes.length > 0) ? codes : defaultLanguages || [];
+}
+
+function isHeading(node) {
+  return node instanceof Object && /^h[1-6]$/.test(node.type);
+}
+
+function trimNodes(nodes) {
+  let start = 0;
+  let last = nodes.length - 1;
+  while(typeof(nodes[start]) === 'string' && !nodes[start].trim()) {
+    start++;
+  }
+  while(typeof(nodes[last]) === 'string' && !nodes[last].trim()) {
+    last--;
+  }
+  return nodes.slice(start, last + 1);
 }
 
 export {
