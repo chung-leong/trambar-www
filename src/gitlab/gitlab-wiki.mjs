@@ -15,9 +15,12 @@ class GitlabWiki extends GitlabObject {
 
   static getObjectURL(identifiers) {
     const [ repoId, slug ] = identifiers;
-    let url = `wiki/${repoId}/`;
-    if (slug) {
-      url += `${slug}/`;
+    let url = `wiki/`;
+    if (repoId) {
+      url += `${repoId}/`;
+      if (slug) {
+        url += `${slug}/`;
+      }
     }
     return url;
   }

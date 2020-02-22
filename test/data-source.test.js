@@ -32,7 +32,7 @@ describe('DataSource', function() {
     expect(dataSource.fetchExcelFile).to.be.a('function');
     expect(dataSource.fetchWikiPage).to.be.a('function');
   })
-  describe('#fetchProjectMeta', function() {
+  describe('#fetchProjectMeta()', function() {
     it('should retrieve project info', async function() {
       const options = {
         baseURL: serverAddress
@@ -46,7 +46,7 @@ describe('DataSource', function() {
       expect(metaEN.description.getPlainText()).to.eql('This is a test');
     })
   })
-  describe('#fetchExcelFile', function() {
+  describe('#fetchExcelFile()', function() {
     it('should retrieve an Excel file', async function() {
       const data = await fetchTestData(`${serverAddress}/data/excel/test-1`);
       const options = {
@@ -73,14 +73,14 @@ describe('DataSource', function() {
       expect(file1).to.equal(file2);
     })
   })
-  describe('#fetchExcelFiles', function() {
+  describe('#findExcelFiles()', function() {
     it('should fetch multiple files', async function() {
       const options = {
         baseURL: serverAddress
       };
       const dataSource = new DataSource([ Excel ], options);
       dataSource.activate();
-      const files = await dataSource.fetchExcelFiles();
+      const files = await dataSource.findExcelFiles();
       expect(files).to.have.lengthOf(2);
       expect(files[0]).to.be.instanceOf(ExcelFile);
       expect(files[1]).to.be.instanceOf(ExcelFile);
@@ -92,11 +92,11 @@ describe('DataSource', function() {
       const dataSource = new DataSource([ Excel ], options);
       dataSource.activate();
       const file = await dataSource.fetchExcelFile('test-1');
-      const files = await dataSource.fetchExcelFiles();
+      const files = await dataSource.findExcelFiles();
       expect(files[0]).to.equal(file);
     })
   })
-  describe('#fetchWikiPage', function() {
+  describe('#fetchWikiPage()', function() {
     it('should retrieve a wiki page', async function() {
       const data = await fetchTestData(`${serverAddress}/data/wiki/repo1/test-1`);
       const options = {
@@ -120,14 +120,14 @@ describe('DataSource', function() {
       expect(page1).to.equal(page2);
     })
   })
-  describe('#fetchWikiPages', function() {
+  describe('#findWikiPages()', function() {
     it('should fetch multiple pages', async function() {
       const options = {
         baseURL: serverAddress
       };
       const dataSource = new DataSource([ Gitlab ], options);
       dataSource.activate();
-      const pages = await dataSource.fetchWikiPages();
+      const pages = await dataSource.findWikiPages();
       expect(pages).to.have.lengthOf(3);
       expect(pages[0]).to.be.instanceOf(GitlabWiki);
       expect(pages[1]).to.be.instanceOf(GitlabWiki);
@@ -139,7 +139,7 @@ describe('DataSource', function() {
       };
       const dataSource = new DataSource([ Gitlab ], options);
       dataSource.activate();
-      const pages = await dataSource.fetchWikiPages('repo2');
+      const pages = await dataSource.findWikiPages('repo2');
       expect(pages).to.have.lengthOf(1);
       expect(pages[0]).to.be.have.property('slug', 'test-2');
     })
@@ -150,7 +150,7 @@ describe('DataSource', function() {
       const dataSource = new DataSource([ Gitlab ], options);
       dataSource.activate();
       const page = await dataSource.fetchWikiPage('repo1', 'test-1');
-      const pages = await dataSource.fetchWikiPages('repo1');
+      const pages = await dataSource.findWikiPages('repo1');
       expect(pages[0]).to.equal(page);
     })
   })

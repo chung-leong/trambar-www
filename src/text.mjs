@@ -102,7 +102,7 @@ class Text {
 
       let text = '';
       if (children instanceof Array) {
-        const blockLevels = children.map(isBlockLevel);
+        // initialize marker of for ordered list
         let marker = 1;
         if (type === 'ol') {
           if (props && props.start !== undefined) {
@@ -112,6 +112,9 @@ class Text {
             }
           }
         }
+
+        // get text from each child
+        const blockLevels = children.map(isBlockLevel);
         for (let [ index, child ] of children.entries()) {
           if (typeof(child) === 'string') {
             if (blockLevels[index - 1] && blockLevels[index + 1]) {
@@ -123,17 +126,22 @@ class Text {
           }
 
           let ctext = this.getPlainTextFromNode(child, options);
-          if (typeof(node) === 'object') {
+          if (typeof(child) === 'object') {
             if (blockLevels[index]) {
+              // trim leading and trailing spaces (but not newline added by <BR>)
               ctext = ctext.replace(/^ +/, '').replace(/ +$/, '');
-              ctext += '\n';
+              if (!ctext.endsWith('\n')) {
+                ctext += '\n';
+              }
             }
 
-            if (/h[1-6]|p|pre|ol|ul/.test(child.type)) {
+            if (/^(h[1-6]|p|pre|ol|ul)$/.test(child.type)) {
+              // add extra newline to the end of these tags
               if (!ctext.endsWith('\n\n')) {
                 ctext += '\n';
               }
             } else if (child.type === 'li') {
+              // add bullet/marker
               if (type === 'ol') {
                 ctext = `${marker}. ${ctext}`;
                 marker++;
@@ -178,7 +186,6 @@ class Text {
       return text;
     }
   }
-
 
   separateNodesByLanguages() {
     const choices = [];

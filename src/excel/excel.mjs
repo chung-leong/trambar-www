@@ -8,11 +8,11 @@ import { ExcelSheet } from './excel-sheet.mjs';
 
 class Excel extends DataSource {
   fetchExcelFile(fileId) {
-    return this.fetchObject(ExcelFile, fileId);
+    return this.fetchObject(ExcelFile, [ fileId ]);
   }
 
   findExcelFiles(criteria) {
-    return this.findObjects(ExcelFile, criteria);
+    return this.findObjects(ExcelFile, [], criteria);
   }
 }
 

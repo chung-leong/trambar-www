@@ -61,6 +61,20 @@ World
       const text = object.getPlainText();
       expect(text).to.equal(correct);
     })
+    it ('should not add newline when there is one already', function() {
+      const html = `
+<div><p>Hello</p></div><p>World</p>
+      `.trim();
+      const correct = `
+Hello
+
+World
+      `.trim();
+      const json = parseHTML(html);
+      const object = new Text({ json });
+      const text = object.getPlainText();
+      expect(text).to.equal(correct);
+    })
     it ('should correctly format unordered list', function() {
       const html = `
 <ul>

@@ -56,7 +56,11 @@ class ExcelFile extends ExcelObject {
 
   static getObjectURL(identifiers) {
     const [ fileId ] = identifiers;
-    return `excel/${fileId}/`;
+    let url = `excel/`;
+    if (fileId) {
+      url += `${fileId}/`
+    }
+    return url;
   }
 }
 

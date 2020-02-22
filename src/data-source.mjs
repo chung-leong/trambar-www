@@ -73,13 +73,13 @@ class DataSource extends EventEmitter {
     return this.fetchObject(VisitorGeolocation, []);
   }
 
-  getDataURL(constructor, identifiers, criteria) {
+  getDataURL(objectClass, identifiers, criteria) {
     let url = this.options.baseURL || '';
     if (!url.endsWith('/')) {
       url += '/';
     }
     url += 'data/';
-    url += encodeURI(constructor.getObjectURL(identifiers));
+    url += encodeURI(objectClass.getObjectURL(identifiers));
     if (criteria instanceof Object) {
       const pairs = [];
       for (let [ key, value ] of Object.entries(criteria)) {
@@ -96,9 +96,9 @@ class DataSource extends EventEmitter {
     return url;
   }
 
-  fetchObject(constructor, identifiers) {
-    const url = this.getDataURL(constructor, identifiers);
-    let query = this.findQuery({ url, constructor });
+  fetchObject(objectClass, identifiers) {
+    const url = this.getDataURL(objectClass, identifiers);
+    let query = this.findQuery({ url, objectClass });
     if (query) {
       if (query.dirty) {
         this.checkObject(query);
@@ -106,7 +106,7 @@ class DataSource extends EventEmitter {
     } else {
       query = this.addQuery({
         url,
-        constructor,
+        objectClass,
         identifiers
       });
       query.promise = this.updateObject(query);
@@ -116,9 +116,9 @@ class DataSource extends EventEmitter {
     });
   }
 
-  findObjects(constructor, identifiers, criteria) {
-    const url = this.getDataURL(constructor, identifiers, criteria);
-    let query = this.findQuery({ url, constructor: null });
+  findObjects(objectClass, identifiers, criteria) {
+    const url = this.getDataURL(objectClass, identifiers, criteria);
+    let query = this.findQuery({ url, objectClass: null });
     if (query) {
       if (query.dirty) {
         this.checkListing(query);
@@ -126,8 +126,8 @@ class DataSource extends EventEmitter {
     } else {
       query = this.addQuery({
         url,
-        constructor: null,
-        pageVariable: constructor.getPageVariable(),
+        objectClass: null,
+        pageVariable: objectClass.getPageVariable(),
         pageQueries: [ {} ],
       });
       query.promise = this.updateListing(query);
@@ -139,7 +139,7 @@ class DataSource extends EventEmitter {
       const promises = query.result.map((path) => {
         const additional = path.split('/').filter(Boolean);
         const combined = [ ...identifiers, ...additional ];
-        return this.fetchObject(constructor, combined);
+        return this.fetchObject(objectClass, combined);
       });
       return Promise.all(promises).then((objects) => {
         if (!compareArrays(objects, query.objects)) {
@@ -148,8 +148,12 @@ class DataSource extends EventEmitter {
           }
           query.objects = objects;
         }
-        objects.total = query.result.total;
-        objects.pages = query.result.pages;
+        if (query.result.total !== undefined) {
+          objects.total = query.result.total;
+        }
+        if (query.result.pages !== undefined) {
+          objects.pages = query.result.pages;
+        }
         return query.objects;
       });
     });
@@ -216,8 +220,8 @@ class DataSource extends EventEmitter {
       }
       if (changed) {
         return response.json().then((json) => {
-          const { constructor, identifiers } = query;
-          const result = (constructor) ? new constructor(identifiers, json) : json;
+          const { objectClass, identifiers } = query;
+          const result = (objectClass) ? new objectClass(identifiers, json) : json;
           query.result = result;
           query.etag = etag;
           query.mtime = mtime;
@@ -290,10 +294,10 @@ class DataSource extends EventEmitter {
             }
 
             if (pageChanged[pageIndex]) {
-              if (pageQuery.result.total) {
+              if (pageQuery.result.total !== undefined) {
                 items.total = pageQuery.result.total;
               }
-              if (pageQuery.result.pages) {
+              if (pageQuery.result.pages !== undefined) {
                 items.pages = pageQuery.result.pages;
               }
             }
@@ -336,7 +340,7 @@ class DataSource extends EventEmitter {
           for (let objectURL of objectURLs) {
             const props = {
               url: objectURL,
-              constructor: query.constructor
+              objectClass: query.objectClass
             };
             const objectQuery = this.findQuery(props);
             if (objectQuery && objectQuery.dirty) {
