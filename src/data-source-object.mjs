@@ -32,6 +32,17 @@ class DataSourceObject {
     return object;
   }
 
+  getImage(url) {
+    for (let [ name, value ] of Object.entries(this)) {
+      if (value instanceof Text) {
+        const image = value.getImage(url);
+        if (image) {
+          return image;
+        }
+      }
+    }
+  }
+
   static getObjectURL(identifiers) {
     return '';
   }

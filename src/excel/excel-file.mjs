@@ -54,6 +54,15 @@ class ExcelFile extends ExcelObject {
     return file;
   }
 
+  getImage(url) {
+    for (let sheet of this.sheets) {
+      const image = sheet.getImage(url);
+      if (image) {
+        return image;
+      }
+    }
+  }
+
   static getObjectURL(identifiers) {
     const [ fileId ] = identifiers;
     let url = `excel/`;

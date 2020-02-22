@@ -100,23 +100,18 @@ describe('Excel', function() {
         expect(cellAU.content.getPlainText()).to.eql('Canberra');
       })
     })
-    /*
-    describe('#image()', function() {
-      it('should return an image element based on a derived URL', async function() {
+    describe('#getImage()', function() {
+      it('should return an image element based on a URL', async function() {
         const file = await loadTestFile([ 'test-1' ]);
-        const cell = file.filter('en').get([ 'Sheet1', 'image', 0 ]);
-        const options = {
-          imageHeight: 50,
-          imageWidth: 500,
-          imageServer: 'http://localhost',
-        };
-        const img = cell.richText(options);
-        const src = img.props.src;
-        const found = file.image(src);
-        expect(found).to.equal(cell);
+        const url = 'hello.png';
+        const image = file.getImage(url);
+        expect(image).to.have.property('src', url);
+        expect(image).to.have.property('url', 'http://localhost/srv/media/image/69b1510906ccacbb9363690cbb4bd257');
+        expect(image).to.have.property('width', 1000);
+        expect(image).to.have.property('height', 500);
+        expect(image).to.have.property('external', false);
       })
     })
-    */
   })
   describe('ExcelSheet', function() {
     return;

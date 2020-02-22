@@ -195,7 +195,7 @@ async function loadExcel(identifier) {
     mediaImport.format = (type === 'jpg') ? 'jpeg' : type;
     mediaImport.width = 1000;
     mediaImport.height = 500;
-    delete mediaImport.src;
+    mediaImport.src;
   }
   return workbook;
 }

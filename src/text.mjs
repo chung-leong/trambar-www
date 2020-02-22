@@ -86,7 +86,6 @@ class Text {
         }
       }
     }
-    return new Resource({ type: 'image', src: url });
   }
 
   getPlainTextFromNode(node, options) {

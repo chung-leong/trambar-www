@@ -15,7 +15,7 @@ class Resource {
   }
 
   matchURL(url) {
-    if (typeof(url) !== 'string') {
+    if (typeof(url) === 'string') {
       if (this.src === url) {
         return true;
       }

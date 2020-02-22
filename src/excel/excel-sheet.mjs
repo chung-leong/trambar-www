@@ -68,6 +68,15 @@ class ExcelSheet extends ExcelObject {
     }
     return sheet;
   }
+
+  getImage(url) {
+    for (let column of this.columns) {
+      const image = column.getImage(url);
+      if (image) {
+        return image;
+      }
+    }
+  }
 }
 
 export {

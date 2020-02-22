@@ -16,6 +16,15 @@ class ExcelColumn extends ExcelObject {
   getRow(index) {
     return this.cells[index];
   }
+
+  getImage(url) {
+    for (let cell of this.cells) {
+      const image = cell.getImage(url);
+      if (image) {
+        return image;
+      }
+    }
+  }
 }
 
 export {

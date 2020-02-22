@@ -26,6 +26,15 @@ class ExcelRow extends ExcelObject {
     }
     return row;
   }
+
+  getImage(url) {
+    for (let cell of this.cells) {
+      const image = cell.getImage(url);
+      if (image) {
+        return image;
+      }
+    }
+  }
 }
 
 export {
