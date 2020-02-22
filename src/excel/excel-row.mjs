@@ -2,16 +2,16 @@ import { ExcelObject } from './excel-object.mjs';
 import { chooseLanguageVersion } from '../text.mjs';
 
 class ExcelRow extends ExcelObject {
-  constructor(identifiers, data, sheetLanguageCodes) {
+  constructor(identifiers, data, names, sheetLanguageCodes) {
     super(identifiers, data);
     this.cells = [];
     this.languages = sheetLanguageCodes;
+    this.names = names;
   }
 
   getColumn(name) {
-    const columns = this.sheet.columns;
-    for (let [ index, column ] of columns.entries()) {
-      if (column.name === name) {
+    for (let [ index, columnName ] of this.names.entries()) {
+      if (columnName === name) {
         return this.cells[index];
       }
     }

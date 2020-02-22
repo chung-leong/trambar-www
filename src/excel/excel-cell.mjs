@@ -58,7 +58,6 @@ class ExcelCell extends ExcelObject {
       type = 'error';
     }
     this.type = type;
-    this.data = data;
     this.content = new Text({ json, resources });
     this.languages = columnLanguages;
   }

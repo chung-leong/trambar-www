@@ -114,7 +114,6 @@ describe('Excel', function() {
     })
   })
   describe('ExcelSheet', function() {
-    return;
     it('should have the right number of rows and columns', async function() {
       const file = await loadTestFile([ 'test-1' ]);
       const [ sheet1, sheet2 ] = file.sheets;
@@ -150,7 +149,6 @@ describe('Excel', function() {
     })
   })
   describe('ExcelColumn', function() {
-    return;
     it('should have the right number of cells', async function() {
       const file = await loadTestFile([ 'test-1' ]);
       const sheet2 = file.sheets[1];
@@ -176,7 +174,6 @@ describe('Excel', function() {
     })
   })
   describe('ExcelRow', function() {
-    return;
     it('should have the right number of cells', async function() {
       const file = await loadTestFile([ 'test-1' ]);
       const sheet1 = file.sheets[0];
@@ -194,7 +191,6 @@ describe('Excel', function() {
     })
   })
   describe('ExcelCell', function() {
-    return;
     it('should handle cell with plain text', async function() {
       const file = await loadTestFile([ 'test-1' ]);
       const sheet = file.getSheet('Sheet1');

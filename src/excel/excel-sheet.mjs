@@ -15,9 +15,11 @@ class ExcelSheet extends ExcelObject {
       this.flags = data.flags || [];
       this.languages = [];
       const defaultLanguages = findLanguageCodes(this.flags);
+      const columnNames = [];
       for (let columnData of data.columns || []) {
         const column = new ExcelColumn(identifiers, columnData, defaultLanguages);
         this.columns.push(column);
+        columnNames.push(column.name);
         for (let code of column.languages) {
           if (this.languages.indexOf(code) === -1) {
             this.languages.push(code);
@@ -25,7 +27,7 @@ class ExcelSheet extends ExcelObject {
         }
       }
       for (let rowData of data.rows || []) {
-        const row = new ExcelRow(identifiers, rowData, this.languages);
+        const row = new ExcelRow(identifiers, rowData, columnNames, this.languages);
         this.rows.push(row);
         for (let [ index, cellData ] of rowData.entries()) {
           const column = this.columns[index];
@@ -54,17 +56,30 @@ class ExcelSheet extends ExcelObject {
     sheet.name = this.name;
     sheet.flags = this.flags;
     sheet.language = lang.toLowerCase();
-    for (let i = 0; i < this.rows.length; i++) {
-      const row = new ExcelRow(this.identifiers);
-      sheet.rows.push(row);
-    }
     const chosen = chooseLanguageVersion(this.columns, sheet.language);
-    for (let column of chosen) {
-      sheet.columns.push(column);
-      for (let [ index, cell ] of column.cells.entries()) {
-        const row = sheet.rows[index];
-        row.cells.push(cell);
+    const columnNames = [];
+    for (let columnChosen of chosen) {
+      const column = new ExcelColumn(this.identifiers);
+      column.name = columnChosen.name;
+      column.flags = columnChosen.flags;
+      column.language = sheet.language;
+      for (let cellChosen of columnChosen.cells) {
+        const cell = new ExcelCell(this.identifiers);
+        cell.type = cellChosen.type;
+        cell.content = cellChosen.content;
+        cell.language = sheet.language;
+        column.cells.push(cell);
       }
+      sheet.columns.push(column);
+      columnNames.push(column.name);
+    }
+    for (let [ index, rowExisting ] of this.rows.entries()) {
+      const row = new ExcelRow(this.identifiers);
+      row.names = columnNames;
+      for (let column of sheet.columns) {
+        row.cells.push(column.cells[index]);
+      }
+      sheet.rows.push(row);
     }
     return sheet;
   }
