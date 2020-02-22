@@ -1,7 +1,5 @@
-import React, { ReactElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { expect } from 'chai';
-import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 import Server, { fetchTestData } from './server/server.js';
 
 import {
@@ -23,9 +21,6 @@ describe('Wordpress', function() {
   })
   after(function() {
     return Server.stop();
-  })
-  beforeEach(function() {
-    configure({ adapter: new Adapter });
   })
   it('should be able to retrieve site info', async function() {
     const data = await fetchTestData(`${serverAddress}/data/rest/et/`);

@@ -1,4 +1,3 @@
-import React, { ReactElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect } from 'chai';
 import { Parser, JSONRenderer } from 'mark-gor';

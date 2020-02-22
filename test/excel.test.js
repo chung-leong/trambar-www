@@ -1,7 +1,5 @@
-import React, { ReactElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { expect } from 'chai';
-import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 import Server, { fetchTestData } from './server/server.js';
 
 import {
@@ -21,9 +19,6 @@ describe('Excel', function() {
   })
   after(function() {
     return Server.stop();
-  })
-  beforeEach(function() {
-    configure({ adapter: new Adapter });
   })
   it('should be able to retrieve test data', async function() {
     const data = await loadTestData([ 'test-1' ]);
@@ -206,9 +201,8 @@ describe('Excel', function() {
       const cell = row.getColumn('rich text');
       expect(cell.type).to.eql('rich');
       const fragment = cell.content.getRichText();
-      const wrapper = mount(<div>{fragment}</div>);
-      const html = wrapper.html();
-      expect(html).to.eql('<div><span>This is </span><span style="font-weight: bold;">another</span><span> </span><span style="font-style: italic; text-decoration: underline;">test</span></div>');
+      const html = renderToStaticMarkup(fragment);
+      expect(html).to.eql('<span>This is </span><span style="font-weight:bold">another</span><span> </span><span style="font-style:italic;text-decoration:underline">test</span>');
     })
     it('should handle cell pointing to an image', async function() {
       const file = await loadTestFile([ 'test-1' ]);
@@ -217,9 +211,8 @@ describe('Excel', function() {
       const cell = row.getColumn('image');
       expect(cell.type).to.eql('image');
       const fragment = cell.content.getRichText();
-      const wrapper = mount(<div>{fragment}</div>);
-      const html = wrapper.html();
-      expect(html).to.eql('<div><img src="http://localhost/srv/media/image/69b1510906ccacbb9363690cbb4bd257" width="1000" height="500"></div>');
+      const html = renderToStaticMarkup(fragment);
+      expect(html).to.eql('<img src="http://localhost/srv/media/image/69b1510906ccacbb9363690cbb4bd257" width="1000" height="500"/>');
     })
   })
 })

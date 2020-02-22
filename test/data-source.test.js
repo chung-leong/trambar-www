@@ -1,7 +1,4 @@
-import React, { ReactElement } from 'react';
 import { expect } from 'chai';
-import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 import Server, { fetchTestData } from './server/server.js';
 
 import {
@@ -13,7 +10,6 @@ import {
   GitlabWiki,
 } from '../src/index.mjs';
 
-
 const serverPort = 7745;
 const serverAddress = `http://localhost:${serverPort}`;
 
@@ -23,9 +19,6 @@ describe('DataSource', function() {
   })
   after(function() {
     return Server.stop();
-  })
-  beforeEach(function() {
-    configure({ adapter: new Adapter });
   })
   it('should accept extensions', function() {
     const dataSource = new DataSource([ Excel, Gitlab ]);

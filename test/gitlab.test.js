@@ -1,7 +1,5 @@
-import React, { ReactElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { expect } from 'chai';
-import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 import Server, { fetchTestData } from './server/server.js';
 
 import {
@@ -17,9 +15,6 @@ describe('Gitlab', function() {
   })
   after(function() {
     return Server.stop();
-  })
-  beforeEach(function() {
-    configure({ adapter: new Adapter });
   })
   it('should be able to retrieve test data', async function() {
     const data = await loadTestData([ 'repo2', 'test-2' ]);
@@ -57,21 +52,18 @@ Look at this one too: [external image]
     it('should have the right HTML content', async function() {
       const page = await loadTestPage([ 'repo2', 'test-2' ]);
       const fragment = page.content.getRichText();
-      const wrapper = mount(<div>{fragment}</div>);
-      const html = wrapper.html();
+      const html = renderToStaticMarkup(fragment);
       const expected = `
-<div>
-  <h1 id="hello">Hello</h1>
-  <h2 id="world">World</h2>
-  <p>This is a test and this is only a test.</p>
-  <p>Look at this picture: <img src="/srv/media/1234567890" alt="internal image">.</p>
-  <p>Look at this one too: <img src="https://via.placeholder.com/350x150" alt="external image"></p>
-  <ul>
-    <li><a href="home">Internal link</a></li>
-    <li>Another <a href="elsewhere">internal link</a></li>
-    <li><a href="http://www.bbc.co.uk">External link</a></li>
-  </ul>
-</div>
+<h1 id="hello">Hello</h1>
+<h2 id="world">World</h2>
+<p>This is a test and this is only a test.</p>
+<p>Look at this picture: <img src="/srv/media/1234567890" alt="internal image"/>.</p>
+<p>Look at this one too: <img src="https://via.placeholder.com/350x150" alt="external image"/></p>
+<ul>
+  <li><a href="home">Internal link</a></li>
+  <li>Another <a href="elsewhere">internal link</a></li>
+  <li><a href="http://www.bbc.co.uk">External link</a></li>
+</ul>
       `;
       expect(html).to.equal(expected.trim().replace(/>\s+</g, '><'));
     })
