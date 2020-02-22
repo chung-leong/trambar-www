@@ -92,6 +92,25 @@ class ExcelSheet extends ExcelObject {
       }
     }
   }
+
+  getDictionary(options) {
+    const dict = {};
+    if (this.columns.length >= 2) {
+      const richText = (options && options.richText);
+      for (let row of this.rows) {
+        const [ cell1, cell2 ] = row.cells;
+        const phrase = cell1.content.getPlainText();
+        let text;
+        if (richText) {
+          text = cell2.content.getRichText(options);
+        } else {
+          text = cell2.content.getPlainText(options);
+        }
+        dict[phrase] = text;
+      }
+    }
+    return dict;
+  }
 }
 
 export {

@@ -100,7 +100,13 @@ class Text {
           const text = this.getPlainTextFromNode(node, {}).trim();
           titleFound = (text === title);
         } else if (node.type === 'pre') {
-          if (titleFound && node.children instanceof Array) {
+          let children = node.children;
+          if (children !== undefined) {
+            if (!(children instanceof Array)) {
+              children = [ children ];
+            }
+          }
+          if (titleFound && children) {
             for (let child of node.children) {
               if (child.type === 'code') {
                 const text = this.getPlainTextFromNode(child, {});
@@ -131,7 +137,7 @@ class Text {
 
   getPlainTextFromNode(node, options) {
     if (typeof(node) === 'object') {
-      const { type, props, children } = node;
+      const { type, props } = node;
       if (type === 'br') {
         return '\n';
       } else if (type === 'hr') {
@@ -140,6 +146,12 @@ class Text {
         return (props && props.alt) ? `[${props.alt}]` : ``;
       }
 
+      let { children } = node;
+      if (children !== undefined) {
+        if (!(children instanceof Array)) {
+          children = [ children ];
+        }
+      }
       let text = '';
       if (children instanceof Array) {
         // initialize marker of for ordered list
@@ -211,6 +223,11 @@ class Text {
 
     if (typeof(node) === 'object') {
       let { type, props, children } = node;
+      if (children !== undefined) {
+        if (!(children instanceof Array)) {
+          children = [ children ];
+        }
+      }
       if (type === undefined) {
         if (children && children.length === 1) {
           // there's only one child so we just return that

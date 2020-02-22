@@ -107,6 +107,36 @@ describe('Excel', function() {
         expect(image).to.have.property('external', false);
       })
     })
+    describe('#getDictionary()', function() {
+      it('should return dictionary with plain text by default', async function() {
+        const file = await loadTestFile([ 'test-3' ]);
+        const filePL = file.getLanguageSpecific('pl');
+        const dictPL = filePL.getDictionary();
+        expect(dictPL).to.eql({
+          hello: 'Cześć',
+          world: 'Świat',
+          macbeth: 'Głośną, wrzaskliwą, a nic nie znaczącą.',
+        })
+        const fileEN = file.getLanguageSpecific('en');
+        const dictEN = fileEN.getDictionary();
+        expect(dictEN).to.eql({
+          hello: 'Hello',
+          world: 'World',
+          macbeth: 'Full of sound and fury, signifying nothing.',
+        })
+      })
+      it('should return dictionary with rich text when asked', async function() {
+        const file = await loadTestFile([ 'test-3' ]);
+        const filePL = file.getLanguageSpecific('pl');
+        const dictPL = filePL.getDictionary({ richText: true });
+        const htmlPL = renderToStaticMarkup(dictPL.macbeth);
+        expect(htmlPL).to.eql('<span>Głośną, </span><span style="font-weight:bold">wrzaskliwą</span><span>, a </span><span style="font-style:italic">nic</span><span> nie znaczącą.</span>');
+        const fileEN = file.getLanguageSpecific('en');
+        const dictEN = fileEN.getDictionary({ richText: true });
+        const htmlEN = renderToStaticMarkup(dictEN.macbeth);
+        expect(htmlEN).to.eql('<span>Full of sound and </span><span style="font-weight:bold">fury</span><span>, signifying </span><span style="font-style:italic">nothing</span><span>.</span>');
+      })
+    })
   })
   describe('ExcelSheet', function() {
     it('should have the right number of rows and columns', async function() {

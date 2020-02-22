@@ -63,6 +63,17 @@ class ExcelFile extends ExcelObject {
     }
   }
 
+  getDictionary(options) {
+    const dict = {};
+    for (let sheet of this.sheets) {
+      const sdict = sheet.getDictionary(options);
+      for (let [ phrase, text ] of Object.entries(sdict)) {
+        dict[phrase] = text;
+      }
+    }
+    return dict;
+  }
+
   static getObjectURL(identifiers) {
     const [ fileId ] = identifiers;
     let url = `excel/`;
