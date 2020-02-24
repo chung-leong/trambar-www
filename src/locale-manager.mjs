@@ -48,7 +48,7 @@ class LocaleManager extends EventEmitter {
 
   localize(phrase, params) {
     if (phrase instanceof Date) {
-      return phrase.toLocaleString(phrase, params);
+      return phrase.toLocaleString(this.language, params);
     }
 
     const translated = this.table[phrase];
