@@ -1,6 +1,8 @@
-import React, { useMemo, useContext, useEffect, useDebugValue } from 'react';
+import React from 'react';
 import { useListener, useEventTime } from 'relaks';
 import { harvesting } from 'relaks-harvest';
+
+const { useMemo, useContext, useEffect, useDebugValue } = React;
 
 const Env = React.createContext();
 const defEnv = {};
@@ -176,12 +178,12 @@ function useLanguageSpecific() {
 function useLocalized() {
   const env = useEnv();
   useDebugValue(!!(env.locale && env.locale.localize instanceof Function));
-  return useListener((data, params) => {
+  return useListener((phrase, params) => {
     const { locale } = env;
     if (locale && locale.localize instanceof Function) {
-      return locale.localize(data, params);
+      return locale.localize(phrase, params);
     } else {
-      return data;
+      return phrase;
     }
   });
 }
@@ -190,7 +192,7 @@ export {
   useEnv,
   useEnvMonitor,
   useLanguage,
-  useLanguageFilter,
+  useLanguageSpecific,
   usePlainText,
   useRichText,
   useLocalized,

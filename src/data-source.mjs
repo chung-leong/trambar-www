@@ -62,7 +62,7 @@ class DataSource extends EventEmitter {
   }
 
   log() {
-    this.fetchGeoIP().catch((err) => {});
+    this.fetchVisitorGeolocation().catch((err) => {});
   }
 
   fetchProjectMeta() {
@@ -477,9 +477,4 @@ function some(array) {
 
 export {
   DataSource,
-  DataSourceError,
-  DataSourceEvent,
-  DataSourceObject,
-  ProjectMetadata,
-  VisitorGeolocation,
 };

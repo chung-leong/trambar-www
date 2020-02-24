@@ -1,7 +1,6 @@
 import { DataSource } from '../data-source.mjs';
 import { WordpressCategory } from './wordpress-category.mjs';
 import { WordpressMedia } from './wordpress-media.mjs';
-import { WordpressObject } from './wordpress-object.mjs';
 import { WordpressPage } from './wordpress-page.mjs';
 import { WordpressPost } from './wordpress-post.mjs';
 import { WordpressSite } from './wordpress-site.mjs';
@@ -114,12 +113,4 @@ class Wordpress extends DataSource {
 
 export {
   Wordpress,
-  WordpressCategory,
-  WordpressMedia,
-  WordpressObject,
-  WordpressPage,
-  WordpressPost,
-  WordpressSite,
-  WordpressTag,
-  WordpressUser,
 };

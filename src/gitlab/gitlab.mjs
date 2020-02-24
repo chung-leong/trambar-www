@@ -1,5 +1,4 @@
 import { DataSource } from '../data-source.mjs';
-import { GitlabObject } from './gitlab-object.mjs';
 import { GitlabWiki } from './gitlab-wiki.mjs';
 
 class Gitlab extends DataSource {
@@ -14,6 +13,4 @@ class Gitlab extends DataSource {
 
 export {
   Gitlab,
-  GitlabObject,
-  GitlabWiki,
 };
