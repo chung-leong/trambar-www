@@ -61,7 +61,7 @@ class LocaleManager extends EventEmitter {
         return `[${err.message}]`;
       }
     } else {
-      return translated + '';
+      return translated;
     }
   }
 }

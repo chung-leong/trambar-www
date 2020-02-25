@@ -46,8 +46,8 @@ Look at this one too: [external image]
 * Internal link
 * Another internal link
 * External link
-      `;
-      expect(text).to.equal(expected.trim());
+      `.trim();
+      expect(text).to.equal(expected);
     })
     it('should have the right HTML content', async function() {
       const page = await loadTestPage([ 'repo2', 'test-2' ]);
@@ -64,8 +64,8 @@ Look at this one too: [external image]
   <li>Another <a href="elsewhere">internal link</a></li>
   <li><a href="http://www.bbc.co.uk">External link</a></li>
 </ul>
-      `;
-      expect(html).to.equal(expected.trim().replace(/>\s+</g, '><'));
+      `.trim().replace(/>\s+</g, '><');
+      expect(html).to.equal(expected);
     })
     it('should handle text in multiple languages', async function() {
       const page = await loadTestPage([ 'repo1', 'test-1' ]);

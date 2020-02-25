@@ -26,8 +26,8 @@ describe('LocaleManager', function() {
       const fullURL = `${serverAddress}/data/${objectURL}`;
       const data = await fetchTestData(fullURL);
       const file = new ExcelFile(identifiers, data);
-      const fileLang = file.getLanguageSpecific(language);
-      const dict = fileLang.getDictionary();
+      const fileLS = file.getLanguageSpecific(language);
+      const dict = fileLS.getDictionary();
       return dict;
     };
     const options = { loadFunc };
