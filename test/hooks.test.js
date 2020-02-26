@@ -87,7 +87,7 @@ describe('Hooks', function() {
       const dataSource = new DataSource([ Gitlab ], options);
       dataSource.activate();
       const wrapper = mount(<Test db={dataSource} />);
-      await delay(25);
+      await delay(100);
       wrapper.update();
       const text = wrapper.text();
       const expected = `
@@ -121,7 +121,7 @@ Look at this one too: [external image]
       const dataSource = new DataSource([ Gitlab ], options);
       dataSource.activate();
       const wrapper = mount(<Test db={dataSource} />);
-      await delay(25);
+      await delay(100);
       wrapper.update();
       const text = wrapper.text();
       expect(text).to.equal('test 2');
@@ -142,7 +142,7 @@ Look at this one too: [external image]
       const dataSource = new DataSource([ Gitlab ], options);
       dataSource.activate();
       const wrapper = mount(<Test db={dataSource} />);
-      await delay(25);
+      await delay(100);
       wrapper.update();
       const html = wrapper.html();
       const expected = `
@@ -175,7 +175,7 @@ Look at this one too: [external image]
       const dataSource = new DataSource([ Gitlab ], options);
       dataSource.activate();
       const wrapper = mount(<Test db={dataSource} />);
-      await delay(25);
+      await delay(100);
       wrapper.update();
       const html = wrapper.html();
       expect(html).to.equal('<div>test 2</div>');
@@ -201,7 +201,7 @@ Look at this one too: [external image]
       const dataSource = new DataSource([ Gitlab ], options);
       dataSource.activate();
       const wrapper = mount(<Test db={dataSource} />);
-      await delay(25);
+      await delay(100);
       wrapper.update();
       const html = wrapper.html();
       const expected = `
@@ -255,7 +255,7 @@ Look at this one too: [external image]
           <Test db={dataSource} />
         </Env.Provider>
       );
-      await delay(25);
+      await delay(100);
       wrapper.update();
       const text = wrapper.text();
       const expected = `

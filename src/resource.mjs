@@ -6,6 +6,8 @@ class Resource {
       this.url = data.url;
       this.width = data.width;
       this.height = data.height;
+      this.naturalWidth = this.width;
+      this.naturalHeight = this.height;
       this.derived = false;
     }
   }
@@ -18,8 +20,8 @@ class Resource {
       if (this.url === url) {
         return true;
       }
-      if (url && url.startWith(this.url)) {
-        if (url.charAt(this.url.length) === '/') {
+      if (url && url.startsWith(this.url)) {
+        if (this.url.endsWith('/') || url.charAt(this.url.length) === '/') {
           return true;
         }
       }
@@ -35,16 +37,22 @@ class Resource {
     const filters = [];
     const remaining = {};
     let cropping = true;
-    let finalWidth, finalHeight;
+    let enlarging = false;
+    let pixelRatio = 1;
+    let newWidth, newHeight;
     let rotation, format;
     for (let [ name, value ] of Object.entries(styles)) {
-      switch (name) {
-        case 'crop': cropping = value; break;
-        case 'width': finalWidth = value; break;
-        case 'height': finalHeight = value; break;
-        case 'rotate': rotation = value; break;
-        case 'format': format = value; break;
-        default: remaining[name] = value;
+      if (value !== undefined) {
+        switch (name) {
+          case 'crop': cropping = value; break;
+          case 'enlarge': enlarging = value; break;
+          case 'width': newWidth = value; break;
+          case 'height': newHeight = value; break;
+          case 'rotate': rotation = value; break;
+          case 'ratio': pixelRatio = value; break;
+          case 'format': format = value; break;
+          default: remaining[name] = value;
+        }
       }
     }
     let originalWidth = this.width;
@@ -64,34 +72,46 @@ class Resource {
         filters.push(filterEncoders.rotate(rotation));
       }
     }
-    if (!finalWidth) {
-      if (finalHeight) {
-        finalWidth = Math.ceil(originalWidth * finalHeight / originalHeight);
+    const originalAspectRatio = originalWidth / originalHeight;
+    if (!newWidth) {
+      if (newHeight) {
+        newWidth = Math.ceil(newHeight * originalAspectRatio);
       } else {
-        finalWidth = originalWidth;
-        finalHeight = originalHeight;
+        newWidth = originalWidth;
+        newHeight = originalHeight;
       }
     } else {
-      if (!finalHeight) {
-        finalHeight = Math.ceil(originalHeight * finalWidth / originalWidth)
+      if (!newHeight) {
+        newHeight = Math.ceil(newWidth / originalAspectRatio);
+      }
+    }
+    const newAspectRatio = newWidth / newHeight;
+    let finalWidth = newWidth * pixelRatio;
+    let finalHeight = newHeight * pixelRatio;
+    if (!enlarging) {
+      if (finalWidth > originalWidth) {
+        finalWidth = originalWidth;
+        finalHeight = Math.ceil(finalWidth / newAspectRatio);
+      }
+      if (finalHeight > originalHeight) {
+        finalHeight = originalHeight;
+        finalWidth = Math.ceil(finalWidth * newAspectRatio);
       }
     }
     if (finalWidth !== originalWidth || finalHeight !== originalHeight) {
       let cropWidth = originalWidth;
       let cropHeight = originalHeight;
       if (cropping) {
-        const originalAspectRatio = originalWidth / originalHeight;
-        const finalAspectRatio = finalWidth / finalHeight;
-        if (Math.abs(originalAspectRatio - finalAspectRatio) > 0.01) {
+        if (Math.abs(originalAspectRatio - newAspectRatio) > 0.01) {
           let left, top, width, height;
-          if (originalAspectRatio > finalAspectRatio) {
-            width = Math.round(originalHeight * finalAspectRatio);
+          if (originalAspectRatio > newAspectRatio) {
+            width = Math.round(originalHeight * newAspectRatio);
             height = originalHeight;
             top = 0;
             left = Math.floor((originalWidth - width) / 2);
           } else {
             width = originalWidth;
-            height = Math.round(originalWidth / finalAspectRatio);
+            height = Math.round(originalWidth / newAspectRatio);
             top = Math.floor((originalHeight - height) / 2);
             left = 0;
           }
@@ -107,7 +127,7 @@ class Resource {
 
     // add remaining filters
     for (let [ name, value ] of Object.entries(remaining)) {
-      if (value) {
+      if (value !== undefined) {
         const filterEncoder = filterEncoders[name];
         if (filterEncoder) {
           const filter = filterEncoder(value);
@@ -119,6 +139,14 @@ class Resource {
         }
       }
     }
+
+    if (filters.length === 0 && !format) {
+      if (originalWidth === newWidth && originalHeight === newHeight) {
+        // no change
+        return this;
+      }
+    }
+
     let filename = filters.join('-');
     if (format) {
       if (/^jpeg$/.test(format)) {
@@ -137,8 +165,10 @@ class Resource {
     resource.type = this.type;
     resource.src = this.src;
     resource.url = url;
-    resource.width = finalWidth;
-    resource.height = finalHeight;
+    resource.width = newWidth;
+    resource.height = newHeight;
+    resource.naturalWidth = finalWidth;
+    resource.naturalHeight = finalHeight;
     resource.derived = true;
     return resource;
   }
@@ -169,11 +199,13 @@ const filterEncoders = {
     return `ba${r}_${g}_${b}_${a}`;
   },
   blur: (value) => {
-    if (value === true) {
-      value = 0.3;
+    if (!(value <= 0)) {
+      if (value === true) {
+        value = 0.3;
+      }
+      const sigma = Math.round(value * 10);
+      return `bl${sigma}`;
     }
-    const sigma = Math.round(value * 10);
-    return `bl${sigma}`;
   },
   crop: (value) => {
     const { left, top, width, height } = value;
@@ -190,8 +222,10 @@ const filterEncoders = {
     return `flo`;
   },
   gamma: function(value) {
-    const gamma = (typeof(value) === 'number') ? Math.round(value * 10) : 22;
-    return `ga${gamma}`;
+    if (!(value <= 0)) {
+      const gamma = (typeof(value) === 'number') ? Math.round(value * 10) : 22;
+      return `ga${gamma}`;
+    }
   },
   grayscale: function() {
     return `gr`;
@@ -208,7 +242,7 @@ const filterEncoders = {
     }
   },
   quality: function(value) {
-    if (value) {
+    if (!(value <= 0)) {
       return `q${value}`;
     }
   },
@@ -217,8 +251,10 @@ const filterEncoders = {
     return `re${width}_${height}`;
   },
   rotate: (value) => {
-    const degrees = value;
-    return `ro${degrees}`;
+    if (!(value <= 0)) {
+      const degrees = value;
+      return `ro${degrees}`;
+    }
   },
   sharpen: function(value) {
     if (value) {

@@ -236,6 +236,23 @@ class Text {
           // need to place them in a fragment
           type = React.Fragment;
         }
+      } else if (type === 'img') {
+        const image = this.getImage(props.src);
+        if (image) {
+          const { imageWidth, imageHeight, imageFormat, devicePixelRatio } = options;
+          const resized = image.transform({
+            width: imageWidth,
+            height: imageHeight,
+            format: imageFormat,
+            ratio: devicePixelRatio,
+          });
+          props = {
+            ...props,
+            src: resized.url,
+            width: resized.width,
+            height: resized.height,
+          };
+        }
       }
       if (children instanceof Array) {
         children = children.map((child, index) => {
