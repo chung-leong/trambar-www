@@ -4,7 +4,7 @@ import { Parser, JSONRenderer } from 'mark-gor';
 
 import {
   Text,
-} from '../src/index.mjs';
+} from '../index.mjs';
 
 function parseHTML(html) {
   const parser = new Parser({ htmlOnly: true });

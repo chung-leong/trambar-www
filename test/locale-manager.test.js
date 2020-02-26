@@ -7,7 +7,7 @@ import {
   LocaleManager,
   ExcelFile,
   Text,
-} from '../src/index.mjs';
+} from '../index.mjs';
 
 const serverPort = 7721;
 const serverAddress = `http://localhost:${serverPort}`;

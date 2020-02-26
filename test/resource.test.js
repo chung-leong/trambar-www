@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import {
   Resource,
-} from '../src/index.mjs';
+} from '../index.mjs';
 
 describe('Resource', function() {
   describe('#matchURL()', function() {

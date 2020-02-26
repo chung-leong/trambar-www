@@ -8,7 +8,7 @@ import {
 
   ExcelFile,
   GitlabWiki,
-} from '../src/index.mjs';
+} from '../index.mjs';
 
 const serverPort = 7745;
 const serverAddress = `http://localhost:${serverPort}`;

@@ -4,7 +4,7 @@ import Server, { fetchTestData } from './server/server.js';
 
 import {
   GitlabWiki,
-} from '../src/index.mjs';
+} from '../index.mjs';
 
 const serverPort = 7111;
 const serverAddress = `http://localhost:${serverPort}`;
@@ -57,8 +57,8 @@ Look at this one too: [external image]
 <h1 id="hello">Hello</h1>
 <h2 id="world">World</h2>
 <p>This is a test and this is only a test.</p>
-<p>Look at this picture: <img src="/srv/media/1234567890" alt="internal image"/>.</p>
-<p>Look at this one too: <img src="https://via.placeholder.com/350x150" alt="external image"/></p>
+<p>Look at this picture: <img src="/srv/media/images/7762c77f10818cc748253f0aeeb883a5/" alt="internal image" width="550" height="540"/>.</p>
+<p>Look at this one too: <img src="/srv/media/images/4245748bde70ff10dc497d1ef59f0a25/" alt="external image" width="500" height="520"/></p>
 <ul>
   <li><a href="home">Internal link</a></li>
   <li>Another <a href="elsewhere">internal link</a></li>

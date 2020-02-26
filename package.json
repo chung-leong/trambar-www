@@ -2,7 +2,7 @@
   "name": "trambar-www",
   "description": "Client library for Trambar websites",
   "author": "Chung Leong",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "main": "./index",
   "preferGlobal": false,
   "sideEffects": false,
@@ -22,6 +22,11 @@
     "relaks",
     "react"
   ],
+  "files": [
+    "src/",
+    "index.js",
+    "index.mjs"
+  ],
   "scripts": {
     "test": "./node_modules/karma/bin/karma start --single-run --",
     "test:watch": "./node_modules/karma/bin/karma start --",
@@ -30,7 +35,7 @@
     "rollup:esm": "rollup -c rollup.config.esm.js"
   },
   "dependencies": {
-    "relaks": "trambarhq/relaks.git#development",
+    "relaks": "^2.1.3",
     "relaks-event-emitter": "^2.0.7",
     "relaks-harvest": "^2.1.3",
     "relaks-route-manager": "^2.0.7"
@@ -44,7 +49,6 @@
     "@babel/preset-env": "^7.8.4",
     "@babel/preset-react": "^7.8.3",
     "@babel/runtime": "^7.8.4",
-    "@rollup/plugin-commonjs": "^11.0.2",
     "@rollup/plugin-node-resolve": "^7.1.1",
     "babel-loader": "^8.0.6",
     "chai": "^4.2.0",
@@ -64,7 +68,7 @@
     "karma-webpack": "^4.0.2",
     "lodash": "^4.17.15",
     "mark-gor": "^2.1.0",
-    "mocha": "^7.0.1",
+    "mocha": "^7.1.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "rollup": "^1.31.1",

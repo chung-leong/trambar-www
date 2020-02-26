@@ -8,7 +8,7 @@ import {
   ExcelColumn,
   ExcelRow,
   ExcelCell,
-} from '../src/index.mjs';
+} from '../index.mjs';
 
 const serverPort = 7711;
 const serverAddress = `http://localhost:${serverPort}`;
@@ -104,7 +104,6 @@ describe('Excel', function() {
         expect(image).to.have.property('url', 'http://localhost/srv/media/image/69b1510906ccacbb9363690cbb4bd257');
         expect(image).to.have.property('width', 1000);
         expect(image).to.have.property('height', 500);
-        expect(image).to.have.property('external', false);
       })
     })
     describe('#getDictionary()', function() {

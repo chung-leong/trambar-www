@@ -8,7 +8,7 @@ import {
   harvest,
   plant,
   useProgress,
-} from '../src/index.mjs';
+} from '../index.mjs';
 
 describe('exports', function() {
   describe('RouteManager', function() {

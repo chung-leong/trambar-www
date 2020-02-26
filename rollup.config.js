@@ -1,6 +1,5 @@
 const Babel = require('rollup-plugin-babel');
 const Resolve = require('@rollup/plugin-node-resolve');
-const CommonJS = require('@rollup/plugin-commonjs');
 
 module.exports = [
   'index',
@@ -11,6 +10,7 @@ module.exports = [
       file: `./${name}.js`,
       format: 'umd',
       name: 'TrambarWWW',
+      exports: 'named',
       globals: {
         react: 'React',
       }
@@ -22,7 +22,6 @@ module.exports = [
         ],
       }),
       Resolve(),
-      CommonJS(),
     ],
     external: [ 'react' ]
   };

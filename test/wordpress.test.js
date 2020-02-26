@@ -10,7 +10,7 @@ import {
   WordpressSite,
   WordpressTag,
   WordpressUser,
-} from '../src/index.mjs';
+} from '../index.mjs';
 
 const serverPort = 8711;
 const serverAddress = `http://localhost:${serverPort}`;
