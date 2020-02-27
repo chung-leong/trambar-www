@@ -165,7 +165,7 @@ async function handleMetaRequest(req, res, next) {
       settings: {},
     };
     const data = {
-      name: project.name,
+      identifier: project.name,
       title: convertMultilingualText(project.details.title),
       description: convertMultilingualText(project.details.description),
       archived: project.archived,

@@ -32,7 +32,7 @@ describe('DataSource', function() {
       dataSource.activate();
       const meta = await dataSource.fetchProjectMeta();
       const metaEN = meta.getLanguageSpecific('en');
-      expect(metaEN.name).to.eql('test');
+      expect(metaEN.identifier).to.eql('test');
       expect(metaEN.title + '').to.eql('Test');
       expect(metaEN.description.getPlainText()).to.eql('This is a test');
     })

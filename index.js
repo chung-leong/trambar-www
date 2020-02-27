@@ -4956,7 +4956,7 @@
       _this = _possibleConstructorReturn(this, _getPrototypeOf(ProjectMetadata).call(this, identifiers, json));
 
       if (json) {
-        _this.name = json.name || '';
+        _this.identifier = json.identifier || '';
         _this.title = new Text(json.title);
         _this.description = new Text(json.description);
         _this.archived = json.archived || false;

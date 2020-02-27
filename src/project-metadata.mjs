@@ -6,7 +6,7 @@ class ProjectMetadata extends DataSourceObject {
     super(identifiers, json);
 
     if (json) {
-      this.name = json.name || '';
+      this.identifier = json.identifier || '';
       this.title = new Text(json.title);
       this.description = new Text(json.description);
       this.archived = json.archived || false;
