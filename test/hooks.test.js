@@ -123,7 +123,7 @@ Look at this one too: [external image]
       await delay(100);
       wrapper.update();
       const text = wrapper.text();
-      expect(text).to.equal('test 2');
+      expect(text).to.equal('Test 2');
     })
   })
   describe('#useRichText()', function() {
@@ -177,7 +177,7 @@ Look at this one too: [external image]
       await delay(100);
       wrapper.update();
       const html = wrapper.html();
-      expect(html).to.equal('<div>test 2</div>');
+      expect(html).to.equal('<div>Test 2</div>');
     })
     it('should make use of renderFunc', async function() {
       const Test = Relaks.memo(async (props) => {

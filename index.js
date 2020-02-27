@@ -6924,8 +6924,8 @@
 
       if (json) {
         _this.slug = json.slug;
-        _this.title = json.title;
-        _this.content = new Text(json);
+        _this.title = new Text(json.title);
+        _this.content = new Text(json.content);
       }
 
       return _this;

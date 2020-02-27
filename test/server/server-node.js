@@ -218,8 +218,12 @@ async function loadWiki(repoName, slug) {
   const text = await readFile(path, 'utf8');
   const json = await parseMarkdown(text);
   const resources = await importImages(json);
-  const title = slug.replace(/-/g, ' ');
-  const data = { slug, title, json, resources };
+  const title = createTitle(slug);
+  const data = {
+    slug,
+    title: { json: [ title ] },
+    content: { json, resources },
+  };
   return data;
 }
 
@@ -462,6 +466,11 @@ function convertMultilingualText(langText) {
   return { json };
 }
 
+function createTitle(slug) {
+  let title = slug.replace(/-/g, ' ');
+  title = title.substr(0, 1).toUpperCase() + title.substr(1);
+  return title;
+}
 
 async function importImages(json) {
   const list = [];

@@ -18,16 +18,16 @@ describe('Gitlab', function() {
   })
   it('should be able to retrieve test data', async function() {
     const data = await loadTestData([ 'repo2', 'test-2' ]);
-    expect(data.slug).to.eql('test-2');
-    expect(data.json).to.be.instanceOf(Array);
-    expect(data.resources).to.be.instanceOf(Array);
+    expect(data.slug).to.equal('test-2');
+    expect(data.title.json).to.be.instanceOf(Array);
+    expect(data.content.json).to.be.instanceOf(Array);
+    expect(data.content.resources).to.be.instanceOf(Array);
   })
   describe('GitlabWiki', function() {
     it('should include metadata from file', async function() {
-      const data = await loadTestData([ 'repo1', 'test-1' ]);
       const page = await loadTestPage([ 'repo1', 'test-1' ]);
-      expect(page.slug).to.eql(data.slug);
-      expect(page.title).to.eql(data.title);
+      expect(page.slug).to.equal('test-1');
+      expect(page.title + '').to.equal('Test 1');
     })
     it('should have the right plain text content', async function() {
         const page = await loadTestPage([ 'repo2', 'test-2' ]);

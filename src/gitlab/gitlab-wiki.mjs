@@ -8,8 +8,8 @@ class GitlabWiki extends GitlabObject {
     this.repoId = identifiers[0];
     if (json) {
       this.slug = json.slug;
-      this.title = json.title;
-      this.content = new Text(json);
+      this.title = new Text(json.title);
+      this.content = new Text(json.content);
     }
   }
 
