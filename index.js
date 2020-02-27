@@ -4466,10 +4466,11 @@
       value: function getRichTextFromNode(node, options, key) {
         var _this = this;
 
-        var renderFunc = options.renderFunc;
+        var renderFunc = options.renderFunc,
+            redirectFunc = options.redirectFunc;
 
         if (renderFunc) {
-          var result = renderFunc.call(this, node, key);
+          var result = renderFunc.call(this, node, key, options);
 
           if (result !== undefined) {
             return result;
@@ -4514,6 +4515,21 @@
                 width: resized.width,
                 height: resized.height
               });
+            }
+          } else if (type === 'a' && props && props.href !== undefined) {
+            if (redirectFunc) {
+              var redirection = redirectFunc.call(this, props.href, props.target);
+
+              if (redirection !== undefined) {
+                if (!(redirection instanceof Array)) {
+                  redirection = [redirection];
+                }
+
+                props = _objectSpread2({}, props, {
+                  href: redirection[0],
+                  target: redirection[1]
+                });
+              }
             }
           }
 

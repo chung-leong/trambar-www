@@ -218,6 +218,46 @@ Look at this one too: [external image]
       `.trim().replace(/>\s+</g, '><');
       expect(html).to.equal(expected);
     })
+    it('should make use of redirectFunc', async function() {
+      const Test = Relaks.memo(async (props) => {
+        const { db } = props;
+        const [ show ] = useProgress();
+        const redirectFunc = (href, target) => {
+          if (href === 'home') {
+            return 'world';
+          } else if (href.startsWith('http:')) {
+            return [ href, '_blank' ];
+          }
+        };
+        const rt = useRichText({ redirectFunc });
+
+        show(<div />)
+        const page = await db.fetchWikiPage('repo2', 'test-2');
+        show(<div>{rt(page.content)}</div>);
+      });
+      const options = { baseURL: serverAddress };
+      const dataSource = new DataSource([ Gitlab ], options);
+      dataSource.activate();
+      const wrapper = mount(<Test db={dataSource} />);
+      await delay(100);
+      wrapper.update();
+      const html = wrapper.html();
+      const expected = `
+<div>
+  <h1 id="hello">Hello</h1>
+  <h2 id="world">World</h2>
+  <p>This is a test and this is only a test.</p>
+  <p>Look at this picture: <img src="/srv/media/images/7762c77f10818cc748253f0aeeb883a5/" alt="internal image" width="550" height="540">.</p>
+  <p>Look at this one too: <img src="/srv/media/images/4245748bde70ff10dc497d1ef59f0a25/" alt="external image" width="500" height="520"></p>
+  <ul>
+    <li><a href="world">Internal link</a></li>
+    <li>Another <a href="elsewhere">internal link</a></li>
+    <li><a href="http://www.bbc.co.uk" target="_blank">External link</a></li>
+  </ul>
+</div>
+      `.trim().replace(/>\s+</g, '><');
+      expect(html).to.equal(expected);
+    })
   })
   describe('#useLanguage()', function() {
     it('should return from locale object stored in context', async function() {

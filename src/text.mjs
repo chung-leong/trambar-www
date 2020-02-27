@@ -213,9 +213,9 @@ class Text {
   }
 
   getRichTextFromNode(node, options, key) {
-    const { renderFunc } = options;
+    const { renderFunc, redirectFunc } = options;
     if (renderFunc) {
-      const result = renderFunc.call(this, node, key);
+      const result = renderFunc.call(this, node, key, options);
       if (result !== undefined) {
         return result;
       }
@@ -252,6 +252,20 @@ class Text {
             width: resized.width,
             height: resized.height,
           };
+        }
+      } else if (type === 'a' && props && props.href !== undefined) {
+        if (redirectFunc) {
+          let redirection = redirectFunc.call(this, props.href, props.target);
+          if (redirection !== undefined) {
+            if (!(redirection instanceof Array)) {
+              redirection = [ redirection ];
+            }
+            props = {
+              ...props,
+              href: redirection[0],
+              target: redirection[1],
+            };
+          }
         }
       }
       if (children instanceof Array) {
