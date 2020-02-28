@@ -59,7 +59,7 @@ class Text {
     let section;
     for (let node of this.json) {
       if (isHeading(node)) {
-        phrase = this.getPlainTextFromNode(node);
+        phrase = this.getPlainTextFromNode(node, {});
         sections[phrase] = section = [];
         continue;
       }
@@ -165,6 +165,10 @@ class Text {
           }
         }
 
+        if (type === 'pre') {
+          options = { ...options, preserveWhiteSpace: true };
+        }
+
         // get text from each child
         const blockLevels = children.map(isBlockLevel);
         for (let [ index, child ] of children.entries()) {
@@ -201,14 +205,17 @@ class Text {
                 ctext = `* ${ctext}`;
               }
             }
+          } else if (typeof(child) === 'string') {
+            if (!options.preserveWhiteSpace) {
+              ctext = normalizeWhitespaces(ctext);
+            }
           }
           text += ctext;
         }
       }
       return text;
     } else if (typeof(node) === 'string') {
-      const text = normalizeWhitespaces(node);
-      return text;
+      return node;
     }
   }
 
@@ -276,8 +283,7 @@ class Text {
       props = { key, ...props };
       return React.createElement(type, props, children);
     } else if (typeof(node) === 'string') {
-      const text = normalizeWhitespaces(node);
-      return text;
+      return node;
     }
   }
 

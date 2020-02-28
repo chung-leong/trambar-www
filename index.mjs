@@ -4171,7 +4171,7 @@ function () {
           var node = _step5.value;
 
           if (isHeading(node)) {
-            phrase = this.getPlainTextFromNode(node);
+            phrase = this.getPlainTextFromNode(node, {});
             sections[phrase] = section = [];
             continue;
           }
@@ -4379,6 +4379,12 @@ function () {
                 marker = start;
               }
             }
+          }
+
+          if (type === 'pre') {
+            options = _objectSpread2({}, options, {
+              preserveWhiteSpace: true
+            });
           } // get text from each child
 
 
@@ -4428,6 +4434,10 @@ function () {
                     ctext = "* ".concat(ctext);
                   }
                 }
+              } else if (typeof child === 'string') {
+                if (!options.preserveWhiteSpace) {
+                  ctext = normalizeWhitespaces(ctext);
+                }
               }
 
               text += ctext;
@@ -4450,9 +4460,7 @@ function () {
 
         return text;
       } else if (typeof node === 'string') {
-        var _text2 = normalizeWhitespaces(node);
-
-        return _text2;
+        return node;
       }
     }
   }, {
@@ -4538,8 +4546,7 @@ function () {
         }, props);
         return React.createElement(type, props, children);
       } else if (typeof node === 'string') {
-        var text = normalizeWhitespaces(node);
-        return text;
+        return node;
       }
     }
   }, {

@@ -14,6 +14,14 @@ function parseHTML(html) {
   return json;
 }
 
+function parseMarkdown(markdown) {
+  const parser = new Parser;
+  const renderer = new JSONRenderer;
+  const tokens = parser.parse(markdown);
+  const json = renderer.render(tokens);
+  return json;
+}
+
 describe('Text', function() {
   describe('#getPlainText()', function() {
     it('should correct handle inline elements', function() {
@@ -151,9 +159,41 @@ World
       const text = object.getPlainText();
       expect(text).to.equal(correct);
     })
+    it('should correctly handle code section', function() {
+      const markdown = `
+A standard-conforming "hello, world" program is:
+
+\`\`\`C
+#include <stdio.h>
+
+int main(void)
+{
+    printf("hello, world\n");
+}
+\`\`\`
+
+The first line of the program contains a preprocessing directive, indicated by \`#include\`. This causes the compiler to replace that line with the entire text of the *stdio.h* standard header, which contains declarations for standard input and output functions such as \`printf\` and \`scanf\`. The angle brackets surrounding *stdio.h* indicate that *stdio.h* is located using a search strategy that prefers headers provided with the compiler to other headers having the same name, as opposed to double quotes which typically include local or project-specific header files.
+      `.trim();
+      const json = parseMarkdown(markdown);
+      const object = new Text({ json });
+      const text = object.getPlainText();
+      const expected = `
+A standard-conforming "hello, world" program is:
+
+#include <stdio.h>
+
+int main(void)
+{
+    printf("hello, world\n");
+}
+
+The first line of the program contains a preprocessing directive, indicated by #include. This causes the compiler to replace that line with the entire text of the stdio.h standard header, which contains declarations for standard input and output functions such as printf and scanf. The angle brackets surrounding stdio.h indicate that stdio.h is located using a search strategy that prefers headers provided with the compiler to other headers having the same name, as opposed to double quotes which typically include local or project-specific header files.
+      `.trim();
+      expect(text).to.equal(expected);
+    })
   })
   describe('#getRichText()', function() {
-    it('should correct handle inline elements', function() {
+    it('should correctly handle inline elements', function() {
       const html = `
 <div>Hello, <span style="font-family:Arial">world</span>!</div>
       `.trim();
@@ -189,6 +229,32 @@ World
       const expected = `
 <h1>Image</h1><p><img src="/media/images/69b1510906ccacbb9363690cbb4bd257/cr100_0_300_300-re100_100.jpg" alt="Hello" width="50" height="50"/></p>
       `.trim();
+      expect(result).to.equal(expected);
+    })
+    it('should correctly handle code section', function() {
+      const markdown = `
+A standard-conforming "hello, world" program is:
+
+\`\`\`C
+#include <stdio.h>
+
+int main(void)
+{
+    printf("hello, world\n");
+}
+\`\`\`
+
+The first line of the program contains a preprocessing directive, indicated by \`#include\`. This causes the compiler to replace that line with the entire text of the *stdio.h* standard header, which contains declarations for standard input and output functions such as \`printf\` and \`scanf\`. The angle brackets surrounding *stdio.h* indicate that *stdio.h* is located using a search strategy that prefers headers provided with the compiler to other headers having the same name, as opposed to double quotes which typically include local or project-specific header files.
+      `.trim();
+      const json = parseMarkdown(markdown);
+      const object = new Text({ json });
+      const element = object.getRichText();
+      const result = renderToStaticMarkup(element);
+      const expected = `
+<p>A standard-conforming &quot;hello, world&quot; program is:</p>
+<pre><code class="language-C">#include &lt;stdio.h&gt;\n\nint main(void)\n{\n    printf(&quot;hello, world\n&quot;);\n}</code></pre>
+<p>The first line of the program contains a preprocessing directive, indicated by <code>#include</code>. This causes the compiler to replace that line with the entire text of the <em>stdio.h</em> standard header, which contains declarations for standard input and output functions such as <code>printf</code> and <code>scanf</code>. The angle brackets surrounding <em>stdio.h</em> indicate that <em>stdio.h</em> is located using a search strategy that prefers headers provided with the compiler to other headers having the same name, as opposed to double quotes which typically include local or project-specific header files.</p>
+      `.trim().replace(/>\s+</g, '><');
       expect(result).to.equal(expected);
     })
   })
@@ -240,7 +306,7 @@ World
       const result1 = renderToStaticMarkup(dict.hello);
       const result2 = renderToStaticMarkup(dict.world);
       expect(result1).to.eql('This is a <b>test</b>');
-      expect(result2).to.eql('<p>This is <u>another</u> test</p> <p>More...</p>');
+      expect(result2).to.eql('<p>This is <u>another</u> test</p>\n<p>More...</p>');
     })
     it('should ignore blockquote by default', function() {
       const html = `
