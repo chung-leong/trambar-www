@@ -51,6 +51,19 @@ class Text {
     return new Text({ json, resources });
   }
 
+  getLanguageSpecificSections(lang) {
+    const choices = this.separateNodesByLanguages(this.json);
+    const chosen = chooseLanguageVersion(choices, lang);
+    const sections = [];
+    for (let choice of choices) {
+      const { languages, nodes } = choice;
+      const match = (chosen.indexOf(choice) !== -1);
+      const content = new Text({ json: nodes, resources: this.resources });
+      sections.push({ languages, content, match });
+    }
+    return sections;
+  }
+
   getDictionary(options) {
     const richText = (options && options.richText);
     const blockQuote = (options && options.blockQuote);
@@ -220,11 +233,17 @@ class Text {
   }
 
   getRichTextFromNode(node, options, key) {
-    const { renderFunc, redirectFunc } = options;
+    const { renderFunc, adjustFunc } = options;
     if (renderFunc) {
-      const result = renderFunc.call(this, node, key, options);
+      const result = renderFunc.call(this, node, key);
       if (result !== undefined) {
         return result;
+      }
+    }
+    if (adjustFunc) {
+      const result = adjustFunc.call(this, node, key);
+      if (result !== undefined) {
+        node = result;
       }
     }
 
@@ -260,20 +279,6 @@ class Text {
             height: resized.height,
           };
         }
-      } else if (type === 'a' && props && props.href !== undefined) {
-        if (redirectFunc) {
-          let redirection = redirectFunc.call(this, props.href, props.target);
-          if (redirection !== undefined) {
-            if (!(redirection instanceof Array)) {
-              redirection = [ redirection ];
-            }
-            props = {
-              ...props,
-              href: redirection[0],
-              target: redirection[1],
-            };
-          }
-        }
       }
       if (children instanceof Array) {
         children = children.map((child, index) => {
@@ -284,6 +289,8 @@ class Text {
       return React.createElement(type, props, children);
     } else if (typeof(node) === 'string') {
       return node;
+    } else {
+      return node + '';
     }
   }
 

@@ -218,18 +218,22 @@ Look at this one too: [external image]
       `.trim().replace(/>\s+</g, '><');
       expect(html).to.equal(expected);
     })
-    it('should make use of redirectFunc', async function() {
+    it('should make use of adjustFunc', async function() {
       const Test = Relaks.memo(async (props) => {
         const { db } = props;
         const [ show ] = useProgress();
-        const redirectFunc = (href, target) => {
-          if (href === 'home') {
-            return 'world';
-          } else if (href.startsWith('http:')) {
-            return [ href, '_blank' ];
+        const adjustFunc = (node) => {
+          let { type, props, children } = node;
+          if (type === 'a' && props.href) {
+            if (props.href === 'home') {
+              props = { ...props, href: 'world' };
+            } else if (props.href.startsWith('http:')) {
+              props = { ...props, target: '_blank' };
+            }
+            return { type, props, children };
           }
         };
-        const rt = useRichText({ redirectFunc });
+        const rt = useRichText({ adjustFunc });
 
         show(<div />)
         const page = await db.fetchWikiPage('repo2', 'test-2');

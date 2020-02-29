@@ -383,4 +383,40 @@ The first line of the program contains a preprocessing directive, indicated by \
       expect(image).to.be.undefined;
     })
   })
+  describe('#getLanguageSpecificSections()', function() {
+    it('should separate text by language, marking the ones matching the given language code', function() {
+      const markdown = `
+# My Dear Dingo Donuts
+
+# (pl)
+
+Odwiedź nas w naszym sklepie w Krakowie
+
+# (en-US)
+
+Visit our store in New York.
+
+# (en-GB)
+
+Visit our store in London.
+
+# (zz)
+
+Copyright
+      `.trim();
+      const json = parseMarkdown(markdown);
+      const object = new Text({ json });
+      const sections = object.getLanguageSpecificSections('en-us');
+      expect(sections).to.have.length(5);
+      expect(sections[0].languages).to.be.undefined;
+      expect(sections[0].content.getPlainText()).to.equal('My Dear Dingo Donuts')
+      expect(sections[2].languages).to.eql([ 'en-us' ]);
+      expect(sections[2].content.getPlainText()).to.equal('Visit our store in New York.')
+      expect(sections[0].match).to.be.true;
+      expect(sections[1].match).to.be.false;
+      expect(sections[2].match).to.be.true;
+      expect(sections[3].match).to.be.false;
+      expect(sections[4].match).to.be.true;
+    })
+  })
 })
