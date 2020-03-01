@@ -58,28 +58,61 @@ class ExcelSheet extends ExcelObject {
     sheet.language = lang.toLowerCase();
     const chosen = chooseLanguageVersion(this.columns, sheet.language);
     const columnNames = [];
-    for (let columnChosen of chosen) {
-      const column = new ExcelColumn(this.identifiers);
-      column.name = columnChosen.name;
-      column.flags = columnChosen.flags;
-      column.language = sheet.language;
-      for (let cellChosen of columnChosen.cells) {
-        const cell = new ExcelCell(this.identifiers);
-        cell.type = cellChosen.type;
-        cell.content = cellChosen.content;
-        cell.language = sheet.language;
-        column.cells.push(cell);
+    for (let column of chosen) {
+      const newColumn = new ExcelColumn(this.identifiers);
+      newColumn.name = column.name;
+      newColumn.flags = column.flags;
+      newColumn.language = sheet.language;
+      for (let cell of column.cells) {
+        const newCell = new ExcelCell(this.identifiers);
+        newCell.type = cell.type;
+        newCell.content = cell.content;
+        newCell.language = sheet.language;
+        newColumn.cells.push(newCell);
       }
-      sheet.columns.push(column);
-      columnNames.push(column.name);
+      sheet.columns.push(newColumn);
+      columnNames.push(newColumn.name);
     }
-    for (let [ index, rowExisting ] of this.rows.entries()) {
-      const row = new ExcelRow(this.identifiers);
-      row.names = columnNames;
-      for (let column of sheet.columns) {
-        row.cells.push(column.cells[index]);
+    for (let [ index, row ] of this.rows.entries()) {
+      const newRow = new ExcelRow(this.identifiers);
+      newRow.names = columnNames;
+      for (let newColumn of sheet.columns) {
+        newRow.cells.push(newColumn.cells[index]);
       }
-      sheet.rows.push(row);
+      sheet.rows.push(newRow);
+    }
+    return sheet;
+  }
+
+  getLanguageSpecificSections(lang) {
+    const sheet = new ExcelSheet(this.identifiers);
+    sheet.name = this.name;
+    sheet.flags = this.flags;
+    sheet.languages = this.languages;
+    const chosen = chooseLanguageVersion(this.columns, lang.toLowerCase());
+    for (let column of this.columns) {
+      const newColumn = new ExcelColumn(this.identifiers);
+      newColumn.name = column.name;
+      newColumn.flags = column.flags;
+      newColumn.languages = column.languages;
+      newColumn.match = (chosen.indexOf(column) !== -1);
+      for (let cell of column.cells) {
+        const newCell = new ExcelCell(this.identifiers);
+        newCell.type = cell.type;
+        newCell.content = cell.content;
+        newCell.languages = cell.languages;
+        newCell.match = newColumn.match;
+        newColumn.cells.push(newCell);
+      }
+      sheet.columns.push(newColumn);
+    }
+    for (let [ index, row ] of this.rows.entries()) {
+      const newRow = new ExcelRow(this.identifiers);
+      newRow.names = row.names;
+      for (let newColumn of sheet.columns) {
+        newRow.cells.push(newColumn.cells[index]);
+      }
+      sheet.rows.push(newRow);
     }
     return sheet;
   }

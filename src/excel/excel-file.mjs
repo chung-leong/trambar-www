@@ -54,6 +54,25 @@ class ExcelFile extends ExcelObject {
     return file;
   }
 
+  getLanguageSpecificSections(lang) {
+    const file = new ExcelFile(this.identifiers);
+    file.title = this.title;
+    file.type = this.type;
+    file.filename = this.filename;
+    file.keywords = this.keywords;
+    file.subject = this.subject;
+    file.description = this.description;
+    file.languages = this.languages;
+    file.sheets = [];
+    const chosen = chooseLanguageVersion(this.sheets, lang.toLowerCase());
+    for (let sheet of this.sheets) {
+      const newSheet = sheet.getLanguageSpecificSections(lang);
+      newSheet.match = (chosen.indexOf(sheet) !== -1);
+      file.sheets.push(newSheet);
+    }
+    return file;
+  }
+
   getImage(url) {
     for (let sheet of this.sheets) {
       const image = sheet.getImage(url);

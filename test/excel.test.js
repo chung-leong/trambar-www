@@ -95,6 +95,27 @@ describe('Excel', function() {
         expect(cellAU.content.getPlainText()).to.eql('Canberra');
       })
     })
+    describe('#getLanguageSpecificSections()', function() {
+      it('should mark objects with matching language', async function() {
+        const file = await loadTestFile([ 'test-1' ]);
+        const fileLS = file.getLanguageSpecificSections('pl');
+        expect(fileLS.sheets[0]).to.have.property('match', true);
+        expect(fileLS.sheets[1]).to.have.property('match', true);
+        expect(fileLS.sheets[2]).to.have.property('match', false);
+        expect(fileLS.sheets[3]).to.have.property('match', true);
+        expect(fileLS.sheets[4]).to.have.property('match', false);
+
+        const sheet2 = fileLS.sheets[1];
+        expect(sheet2.columns[0]).to.have.property('match', false);
+        expect(sheet2.columns[1]).to.have.property('match', true);
+        expect(sheet2.columns[2]).to.have.property('match', false);
+        expect(sheet2.columns[3]).to.have.property('match', false);
+        expect(sheet2.columns[4]).to.have.property('match', true);
+        expect(sheet2.columns[5]).to.have.property('match', false);
+        expect(sheet2.columns[0].cells[0]).to.have.property('match', false);
+        expect(sheet2.columns[1].cells[0]).to.have.property('match', true);
+      })
+    })
     describe('#getImage()', function() {
       it('should return an image element based on a URL', async function() {
         const file = await loadTestFile([ 'test-1' ]);

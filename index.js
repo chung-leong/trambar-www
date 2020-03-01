@@ -4561,15 +4561,16 @@
 
             if (image) {
               var imageWidth = options.imageWidth,
-                  imageHeight = options.imageHeight,
-                  imageFormat = options.imageFormat,
-                  devicePixelRatio = options.devicePixelRatio;
-              var resized = image.transform({
+                  imageHeight = options.imageHeight;
+              var imageFormat = options.imageFormat,
+                  imageFilters = options.imageFilters;
+              var devicePixelRatio = options.devicePixelRatio;
+              var resized = image.transform(_objectSpread2({
                 width: imageWidth,
                 height: imageHeight,
                 format: imageFormat,
                 ratio: devicePixelRatio
-              });
+              }, imageFilters));
               props = _objectSpread2({}, props, {
                 src: resized.url,
                 width: resized.width,
@@ -6488,23 +6489,23 @@
 
         try {
           for (var _iterator6 = chosen[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-            var columnChosen = _step6.value;
-            var column = new ExcelColumn(this.identifiers);
-            column.name = columnChosen.name;
-            column.flags = columnChosen.flags;
-            column.language = sheet.language;
+            var column = _step6.value;
+            var newColumn = new ExcelColumn(this.identifiers);
+            newColumn.name = column.name;
+            newColumn.flags = column.flags;
+            newColumn.language = sheet.language;
             var _iteratorNormalCompletion8 = true;
             var _didIteratorError8 = false;
             var _iteratorError8 = undefined;
 
             try {
-              for (var _iterator8 = columnChosen.cells[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-                var cellChosen = _step8.value;
-                var cell = new ExcelCell(this.identifiers);
-                cell.type = cellChosen.type;
-                cell.content = cellChosen.content;
-                cell.language = sheet.language;
-                column.cells.push(cell);
+              for (var _iterator8 = column.cells[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+                var cell = _step8.value;
+                var newCell = new ExcelCell(this.identifiers);
+                newCell.type = cell.type;
+                newCell.content = cell.content;
+                newCell.language = sheet.language;
+                newColumn.cells.push(newCell);
               }
             } catch (err) {
               _didIteratorError8 = true;
@@ -6521,8 +6522,8 @@
               }
             }
 
-            sheet.columns.push(column);
-            columnNames.push(column.name);
+            sheet.columns.push(newColumn);
+            columnNames.push(newColumn.name);
           }
         } catch (err) {
           _didIteratorError6 = true;
@@ -6547,18 +6548,18 @@
           for (var _iterator7 = this.rows.entries()[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
             var _step7$value = _slicedToArray(_step7.value, 2),
                 index = _step7$value[0],
-                rowExisting = _step7$value[1];
+                row = _step7$value[1];
 
-            var row = new ExcelRow(this.identifiers);
-            row.names = columnNames;
+            var newRow = new ExcelRow(this.identifiers);
+            newRow.names = columnNames;
             var _iteratorNormalCompletion9 = true;
             var _didIteratorError9 = false;
             var _iteratorError9 = undefined;
 
             try {
               for (var _iterator9 = sheet.columns[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-                var _column2 = _step9.value;
-                row.cells.push(_column2.cells[index]);
+                var _newColumn = _step9.value;
+                newRow.cells.push(_newColumn.cells[index]);
               }
             } catch (err) {
               _didIteratorError9 = true;
@@ -6575,7 +6576,7 @@
               }
             }
 
-            sheet.rows.push(row);
+            sheet.rows.push(newRow);
           }
         } catch (err) {
           _didIteratorError7 = true;
@@ -6595,8 +6596,13 @@
         return sheet;
       }
     }, {
-      key: "getImage",
-      value: function getImage(url) {
+      key: "getLanguageSpecificSections",
+      value: function getLanguageSpecificSections(lang) {
+        var sheet = new ExcelSheet(this.identifiers);
+        sheet.name = this.name;
+        sheet.flags = this.flags;
+        sheet.languages = this.languages;
+        var chosen = chooseLanguageVersion(this.columns, lang.toLowerCase());
         var _iteratorNormalCompletion10 = true;
         var _didIteratorError10 = false;
         var _iteratorError10 = undefined;
@@ -6604,11 +6610,41 @@
         try {
           for (var _iterator10 = this.columns[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
             var column = _step10.value;
-            var image = column.getImage(url);
+            var newColumn = new ExcelColumn(this.identifiers);
+            newColumn.name = column.name;
+            newColumn.flags = column.flags;
+            newColumn.languages = column.languages;
+            newColumn.match = chosen.indexOf(column) !== -1;
+            var _iteratorNormalCompletion12 = true;
+            var _didIteratorError12 = false;
+            var _iteratorError12 = undefined;
 
-            if (image) {
-              return image;
+            try {
+              for (var _iterator12 = column.cells[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+                var cell = _step12.value;
+                var newCell = new ExcelCell(this.identifiers);
+                newCell.type = cell.type;
+                newCell.content = cell.content;
+                newCell.languages = cell.languages;
+                newCell.match = newColumn.match;
+                newColumn.cells.push(newCell);
+              }
+            } catch (err) {
+              _didIteratorError12 = true;
+              _iteratorError12 = err;
+            } finally {
+              try {
+                if (!_iteratorNormalCompletion12 && _iterator12["return"] != null) {
+                  _iterator12["return"]();
+                }
+              } finally {
+                if (_didIteratorError12) {
+                  throw _iteratorError12;
+                }
+              }
             }
+
+            sheet.columns.push(newColumn);
           }
         } catch (err) {
           _didIteratorError10 = true;
@@ -6624,6 +6660,92 @@
             }
           }
         }
+
+        var _iteratorNormalCompletion11 = true;
+        var _didIteratorError11 = false;
+        var _iteratorError11 = undefined;
+
+        try {
+          for (var _iterator11 = this.rows.entries()[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
+            var _step11$value = _slicedToArray(_step11.value, 2),
+                index = _step11$value[0],
+                row = _step11$value[1];
+
+            var newRow = new ExcelRow(this.identifiers);
+            newRow.names = row.names;
+            var _iteratorNormalCompletion13 = true;
+            var _didIteratorError13 = false;
+            var _iteratorError13 = undefined;
+
+            try {
+              for (var _iterator13 = sheet.columns[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
+                var _newColumn2 = _step13.value;
+                newRow.cells.push(_newColumn2.cells[index]);
+              }
+            } catch (err) {
+              _didIteratorError13 = true;
+              _iteratorError13 = err;
+            } finally {
+              try {
+                if (!_iteratorNormalCompletion13 && _iterator13["return"] != null) {
+                  _iterator13["return"]();
+                }
+              } finally {
+                if (_didIteratorError13) {
+                  throw _iteratorError13;
+                }
+              }
+            }
+
+            sheet.rows.push(newRow);
+          }
+        } catch (err) {
+          _didIteratorError11 = true;
+          _iteratorError11 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion11 && _iterator11["return"] != null) {
+              _iterator11["return"]();
+            }
+          } finally {
+            if (_didIteratorError11) {
+              throw _iteratorError11;
+            }
+          }
+        }
+
+        return sheet;
+      }
+    }, {
+      key: "getImage",
+      value: function getImage(url) {
+        var _iteratorNormalCompletion14 = true;
+        var _didIteratorError14 = false;
+        var _iteratorError14 = undefined;
+
+        try {
+          for (var _iterator14 = this.columns[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
+            var column = _step14.value;
+            var image = column.getImage(url);
+
+            if (image) {
+              return image;
+            }
+          }
+        } catch (err) {
+          _didIteratorError14 = true;
+          _iteratorError14 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion14 && _iterator14["return"] != null) {
+              _iterator14["return"]();
+            }
+          } finally {
+            if (_didIteratorError14) {
+              throw _iteratorError14;
+            }
+          }
+        }
       }
     }, {
       key: "getDictionary",
@@ -6632,13 +6754,13 @@
 
         if (this.columns.length >= 2) {
           var richText = options && options.richText;
-          var _iteratorNormalCompletion11 = true;
-          var _didIteratorError11 = false;
-          var _iteratorError11 = undefined;
+          var _iteratorNormalCompletion15 = true;
+          var _didIteratorError15 = false;
+          var _iteratorError15 = undefined;
 
           try {
-            for (var _iterator11 = this.rows[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
-              var row = _step11.value;
+            for (var _iterator15 = this.rows[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
+              var row = _step15.value;
 
               var _row$cells = _slicedToArray(row.cells, 2),
                   cell1 = _row$cells[0],
@@ -6656,16 +6778,16 @@
               dict[phrase] = text;
             }
           } catch (err) {
-            _didIteratorError11 = true;
-            _iteratorError11 = err;
+            _didIteratorError15 = true;
+            _iteratorError15 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion11 && _iterator11["return"] != null) {
-                _iterator11["return"]();
+              if (!_iteratorNormalCompletion15 && _iterator15["return"] != null) {
+                _iterator15["return"]();
               }
             } finally {
-              if (_didIteratorError11) {
-                throw _iteratorError11;
+              if (_didIteratorError15) {
+                throw _iteratorError15;
               }
             }
           }
@@ -6828,8 +6950,18 @@
         return file;
       }
     }, {
-      key: "getImage",
-      value: function getImage(url) {
+      key: "getLanguageSpecificSections",
+      value: function getLanguageSpecificSections(lang) {
+        var file = new ExcelFile(this.identifiers);
+        file.title = this.title;
+        file.type = this.type;
+        file.filename = this.filename;
+        file.keywords = this.keywords;
+        file.subject = this.subject;
+        file.description = this.description;
+        file.languages = this.languages;
+        file.sheets = [];
+        var chosen = chooseLanguageVersion(this.sheets, lang.toLowerCase());
         var _iteratorNormalCompletion5 = true;
         var _didIteratorError5 = false;
         var _iteratorError5 = undefined;
@@ -6837,11 +6969,9 @@
         try {
           for (var _iterator5 = this.sheets[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
             var sheet = _step5.value;
-            var image = sheet.getImage(url);
-
-            if (image) {
-              return image;
-            }
+            var newSheet = sheet.getLanguageSpecificSections(lang);
+            newSheet.match = chosen.indexOf(sheet) !== -1;
+            file.sheets.push(newSheet);
           }
         } catch (err) {
           _didIteratorError5 = true;
@@ -6857,11 +6987,12 @@
             }
           }
         }
+
+        return file;
       }
     }, {
-      key: "getDictionary",
-      value: function getDictionary(options) {
-        var dict = {};
+      key: "getImage",
+      value: function getImage(url) {
         var _iteratorNormalCompletion6 = true;
         var _didIteratorError6 = false;
         var _iteratorError6 = undefined;
@@ -6869,14 +7000,10 @@
         try {
           for (var _iterator6 = this.sheets[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
             var sheet = _step6.value;
-            var sdict = sheet.getDictionary(options);
+            var image = sheet.getImage(url);
 
-            for (var _i = 0, _Object$entries = Object.entries(sdict); _i < _Object$entries.length; _i++) {
-              var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
-                  phrase = _Object$entries$_i[0],
-                  text = _Object$entries$_i[1];
-
-              dict[phrase] = text;
+            if (image) {
+              return image;
             }
           }
         } catch (err) {
@@ -6890,6 +7017,42 @@
           } finally {
             if (_didIteratorError6) {
               throw _iteratorError6;
+            }
+          }
+        }
+      }
+    }, {
+      key: "getDictionary",
+      value: function getDictionary(options) {
+        var dict = {};
+        var _iteratorNormalCompletion7 = true;
+        var _didIteratorError7 = false;
+        var _iteratorError7 = undefined;
+
+        try {
+          for (var _iterator7 = this.sheets[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+            var sheet = _step7.value;
+            var sdict = sheet.getDictionary(options);
+
+            for (var _i = 0, _Object$entries = Object.entries(sdict); _i < _Object$entries.length; _i++) {
+              var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
+                  phrase = _Object$entries$_i[0],
+                  text = _Object$entries$_i[1];
+
+              dict[phrase] = text;
+            }
+          }
+        } catch (err) {
+          _didIteratorError7 = true;
+          _iteratorError7 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion7 && _iterator7["return"] != null) {
+              _iterator7["return"]();
+            }
+          } finally {
+            if (_didIteratorError7) {
+              throw _iteratorError7;
             }
           }
         }

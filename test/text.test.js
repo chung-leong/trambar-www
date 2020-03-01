@@ -222,12 +222,13 @@ The first line of the program contains a preprocessing directive, indicated by #
         imageWidth: 50,
         imageHeight: 50,
         imageFormat: 'jpeg',
+        imageFilters: { sharpen: true },
         devicePixelRatio: 2,
       };
       const element = object.getRichText(options);
       const result = renderToStaticMarkup(element);
       const expected = `
-<h1>Image</h1><p><img src="/media/images/69b1510906ccacbb9363690cbb4bd257/cr100_0_300_300-re100_100.jpg" alt="Hello" width="50" height="50"/></p>
+<h1>Image</h1><p><img src="/media/images/69b1510906ccacbb9363690cbb4bd257/cr100_0_300_300-re100_100-sh.jpg" alt="Hello" width="50" height="50"/></p>
       `.trim();
       expect(result).to.equal(expected);
     })

@@ -265,12 +265,15 @@ class Text {
       } else if (type === 'img') {
         const image = this.getImage(props.src);
         if (image) {
-          const { imageWidth, imageHeight, imageFormat, devicePixelRatio } = options;
+          const { imageWidth, imageHeight } = options;
+          const { imageFormat, imageFilters } = options;
+          const { devicePixelRatio } = options;
           const resized = image.transform({
             width: imageWidth,
             height: imageHeight,
             format: imageFormat,
             ratio: devicePixelRatio,
+            ...imageFilters,
           });
           props = {
             ...props,
