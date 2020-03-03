@@ -443,9 +443,7 @@ function _nonIterableRest$1() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance");
 }
 
-var AsyncRenderingInterrupted =
-/*#__PURE__*/
-function (_Error) {
+var AsyncRenderingInterrupted = /*#__PURE__*/function (_Error) {
   _inherits$1(AsyncRenderingInterrupted, _Error);
 
   function AsyncRenderingInterrupted() {
@@ -470,9 +468,7 @@ var errorHandler = function errorHandler(err) {
   console.error(err);
 };
 
-var AsyncRenderingCycle =
-/*#__PURE__*/
-function () {
+var AsyncRenderingCycle = /*#__PURE__*/function () {
   function AsyncRenderingCycle(target, prev, options) {
     _classCallCheck$1(this, AsyncRenderingCycle);
 
@@ -1354,9 +1350,7 @@ function plant(list) {
   AsyncRenderingCycle.plantSeeds(list);
 }
 
-var functions =
-/*#__PURE__*/
-Object.freeze({
+var functions = /*#__PURE__*/Object.freeze({
   __proto__: null,
   use: use,
   memo: memo,
@@ -1367,9 +1361,7 @@ Object.freeze({
 });
 var PureComponent = React.PureComponent;
 
-var AsyncComponent =
-/*#__PURE__*/
-function (_PureComponent) {
+var AsyncComponent = /*#__PURE__*/function (_PureComponent) {
   _inherits$1(AsyncComponent, _PureComponent);
 
   function AsyncComponent(props) {
@@ -1498,9 +1490,7 @@ function useRenderEvent(name, f) {
   }
 }
 
-var AsyncSaveBuffer =
-/*#__PURE__*/
-function () {
+var AsyncSaveBuffer = /*#__PURE__*/function () {
   function AsyncSaveBuffer() {
     _classCallCheck$1(this, AsyncSaveBuffer);
 
@@ -3051,9 +3041,7 @@ function _createClass$2(Constructor, protoProps, staticProps) {
   return Constructor;
 }
 
-var RelaksEventEmitter =
-/*#__PURE__*/
-function () {
+var RelaksEventEmitter = /*#__PURE__*/function () {
   function RelaksEventEmitter() {
     _classCallCheck$2(this, RelaksEventEmitter);
 
@@ -3230,9 +3218,7 @@ function () {
   return RelaksEventEmitter;
 }();
 
-var RelaksGenericEvent =
-/*#__PURE__*/
-function () {
+var RelaksGenericEvent = /*#__PURE__*/function () {
   function RelaksGenericEvent(type, target, props) {
     _classCallCheck$2(this, RelaksGenericEvent);
 
@@ -3282,9 +3268,7 @@ function () {
   return RelaksGenericEvent;
 }();
 
-var LocaleManagerEvent =
-/*#__PURE__*/
-function (_GenericEvent) {
+var LocaleManagerEvent = /*#__PURE__*/function (_GenericEvent) {
   _inherits(LocaleManagerEvent, _GenericEvent);
 
   function LocaleManagerEvent() {
@@ -3302,9 +3286,7 @@ var defaultOptions = {
   }
 };
 
-var LocaleManager =
-/*#__PURE__*/
-function (_EventEmitter) {
+var LocaleManager = /*#__PURE__*/function (_EventEmitter) {
   _inherits(LocaleManager, _EventEmitter);
 
   function LocaleManager(options) {
@@ -3385,9 +3367,7 @@ function (_EventEmitter) {
   return LocaleManager;
 }(RelaksEventEmitter);
 
-var LocaleManagerProxy =
-/*#__PURE__*/
-function () {
+var LocaleManagerProxy = /*#__PURE__*/function () {
   function LocaleManagerProxy(localeManager) {
     _classCallCheck(this, LocaleManagerProxy);
 
@@ -3410,9 +3390,7 @@ function () {
   return LocaleManagerProxy;
 }();
 
-var DataSourceError =
-/*#__PURE__*/
-function (_Error) {
+var DataSourceError = /*#__PURE__*/function (_Error) {
   _inherits(DataSourceError, _Error);
 
   function DataSourceError(status, message) {
@@ -3426,11 +3404,9 @@ function (_Error) {
   }
 
   return DataSourceError;
-}(_wrapNativeSuper(Error));
+}( /*#__PURE__*/_wrapNativeSuper(Error));
 
-var DataSourceEvent =
-/*#__PURE__*/
-function (_GenericEvent) {
+var DataSourceEvent = /*#__PURE__*/function (_GenericEvent) {
   _inherits(DataSourceEvent, _GenericEvent);
 
   function DataSourceEvent() {
@@ -3442,9 +3418,7 @@ function (_GenericEvent) {
   return DataSourceEvent;
 }(RelaksGenericEvent);
 
-var Resource =
-/*#__PURE__*/
-function () {
+var Resource = /*#__PURE__*/function () {
   function Resource(data) {
     _classCallCheck(this, Resource);
 
@@ -4003,9 +3977,7 @@ function getTagProperties(tagName) {
   return tagProperties[tagName] || unknown;
 }
 
-var Text =
-/*#__PURE__*/
-function () {
+var Text = /*#__PURE__*/function () {
   function Text(data) {
     _classCallCheck(this, Text);
 
@@ -4882,9 +4854,7 @@ function trimNodes(nodes) {
   return nodes.slice(start, last + 1);
 }
 
-var DataSourceObject =
-/*#__PURE__*/
-function () {
+var DataSourceObject = /*#__PURE__*/function () {
   function DataSourceObject(identifiers, json) {
     _classCallCheck(this, DataSourceObject);
 
@@ -4984,9 +4954,7 @@ function () {
   return DataSourceObject;
 }();
 
-var ProjectMetadata =
-/*#__PURE__*/
-function (_DataSourceObject) {
+var ProjectMetadata = /*#__PURE__*/function (_DataSourceObject) {
   _inherits(ProjectMetadata, _DataSourceObject);
 
   function ProjectMetadata(identifiers, json) {
@@ -5016,9 +4984,7 @@ function (_DataSourceObject) {
   return ProjectMetadata;
 }(DataSourceObject);
 
-var VisitorGeolocation =
-/*#__PURE__*/
-function (_DataSourceObject) {
+var VisitorGeolocation = /*#__PURE__*/function (_DataSourceObject) {
   _inherits(VisitorGeolocation, _DataSourceObject);
 
   function VisitorGeolocation(identifiers, json) {
@@ -5048,9 +5014,7 @@ var defaultOptions$1 = {
   refreshInterval: Infinity
 };
 
-var DataSource =
-/*#__PURE__*/
-function (_EventEmitter) {
+var DataSource = /*#__PURE__*/function (_EventEmitter) {
   _inherits(DataSource, _EventEmitter);
 
   function DataSource(extensions, options) {
@@ -5890,9 +5854,7 @@ function some$1(array) {
   return false;
 }
 
-var DataSourceProxy =
-/*#__PURE__*/
-function () {
+var DataSourceProxy = /*#__PURE__*/function () {
   function DataSourceProxy(dataSource) {
     _classCallCheck(this, DataSourceProxy);
 
@@ -6009,9 +5971,7 @@ function () {
   return DataSourceProxy;
 }();
 
-var ExcelObject =
-/*#__PURE__*/
-function (_DataSourceObject) {
+var ExcelObject = /*#__PURE__*/function (_DataSourceObject) {
   _inherits(ExcelObject, _DataSourceObject);
 
   function ExcelObject() {
@@ -6030,9 +5990,7 @@ function (_DataSourceObject) {
   return ExcelObject;
 }(DataSourceObject);
 
-var ExcelColumn =
-/*#__PURE__*/
-function (_ExcelObject) {
+var ExcelColumn = /*#__PURE__*/function (_ExcelObject) {
   _inherits(ExcelColumn, _ExcelObject);
 
   function ExcelColumn(identifiers, data, defaultLanguages) {
@@ -6093,9 +6051,7 @@ function (_ExcelObject) {
   return ExcelColumn;
 }(ExcelObject);
 
-var ExcelRow =
-/*#__PURE__*/
-function (_ExcelObject) {
+var ExcelRow = /*#__PURE__*/function (_ExcelObject) {
   _inherits(ExcelRow, _ExcelObject);
 
   function ExcelRow(identifiers, data, names, sheetLanguageCodes) {
@@ -6210,9 +6166,7 @@ function (_ExcelObject) {
   return ExcelRow;
 }(ExcelObject);
 
-var ExcelCell =
-/*#__PURE__*/
-function (_ExcelObject) {
+var ExcelCell = /*#__PURE__*/function (_ExcelObject) {
   _inherits(ExcelCell, _ExcelObject);
 
   function ExcelCell(identifiers, data, columnLanguages) {
@@ -6298,9 +6252,7 @@ function (_ExcelObject) {
   return ExcelCell;
 }(ExcelObject);
 
-var ExcelSheet =
-/*#__PURE__*/
-function (_ExcelObject) {
+var ExcelSheet = /*#__PURE__*/function (_ExcelObject) {
   _inherits(ExcelSheet, _ExcelObject);
 
   function ExcelSheet(identifiers, data) {
@@ -6794,9 +6746,7 @@ function (_ExcelObject) {
   return ExcelSheet;
 }(ExcelObject);
 
-var ExcelFile =
-/*#__PURE__*/
-function (_ExcelObject) {
+var ExcelFile = /*#__PURE__*/function (_ExcelObject) {
   _inherits(ExcelFile, _ExcelObject);
 
   function ExcelFile(identifiers, json) {
@@ -7072,9 +7022,7 @@ function (_ExcelObject) {
   return ExcelFile;
 }(ExcelObject);
 
-var Excel =
-/*#__PURE__*/
-function (_DataSource) {
+var Excel = /*#__PURE__*/function (_DataSource) {
   _inherits(Excel, _DataSource);
 
   function Excel() {
@@ -7098,9 +7046,7 @@ function (_DataSource) {
   return Excel;
 }(DataSource);
 
-var GitlabObject =
-/*#__PURE__*/
-function (_DataSourceObject) {
+var GitlabObject = /*#__PURE__*/function (_DataSourceObject) {
   _inherits(GitlabObject, _DataSourceObject);
 
   function GitlabObject() {
@@ -7112,9 +7058,7 @@ function (_DataSourceObject) {
   return GitlabObject;
 }(DataSourceObject);
 
-var GitlabWiki =
-/*#__PURE__*/
-function (_GitlabObject) {
+var GitlabWiki = /*#__PURE__*/function (_GitlabObject) {
   _inherits(GitlabWiki, _GitlabObject);
 
   function GitlabWiki(identifiers, json) {
@@ -7158,9 +7102,7 @@ function (_GitlabObject) {
   return GitlabWiki;
 }(GitlabObject);
 
-var Gitlab =
-/*#__PURE__*/
-function (_DataSource) {
+var Gitlab = /*#__PURE__*/function (_DataSource) {
   _inherits(Gitlab, _DataSource);
 
   function Gitlab() {
@@ -7184,9 +7126,7 @@ function (_DataSource) {
   return Gitlab;
 }(DataSource);
 
-var WordpressObject =
-/*#__PURE__*/
-function (_DataSourceObject) {
+var WordpressObject = /*#__PURE__*/function (_DataSourceObject) {
   _inherits(WordpressObject, _DataSourceObject);
 
   function WordpressObject(identifiers, json) {
@@ -7234,9 +7174,7 @@ function (_DataSourceObject) {
   return WordpressObject;
 }(DataSourceObject);
 
-var WordpressCategory =
-/*#__PURE__*/
-function (_WordpressObject) {
+var WordpressCategory = /*#__PURE__*/function (_WordpressObject) {
   _inherits(WordpressCategory, _WordpressObject);
 
   function WordpressCategory(identifiers, json) {
@@ -7271,9 +7209,7 @@ function (_WordpressObject) {
   return WordpressCategory;
 }(WordpressObject);
 
-var WordpressMedia =
-/*#__PURE__*/
-function (_WordpressObject) {
+var WordpressMedia = /*#__PURE__*/function (_WordpressObject) {
   _inherits(WordpressMedia, _WordpressObject);
 
   function WordpressMedia(identifiers, json) {
@@ -7317,9 +7253,7 @@ function (_WordpressObject) {
   return WordpressMedia;
 }(WordpressObject);
 
-var WordpressPage =
-/*#__PURE__*/
-function (_WordpressObject) {
+var WordpressPage = /*#__PURE__*/function (_WordpressObject) {
   _inherits(WordpressPage, _WordpressObject);
 
   function WordpressPage(identifiers, json) {
@@ -7361,9 +7295,7 @@ function (_WordpressObject) {
   return WordpressPage;
 }(WordpressObject);
 
-var WordpressPost =
-/*#__PURE__*/
-function (_WordpressObject) {
+var WordpressPost = /*#__PURE__*/function (_WordpressObject) {
   _inherits(WordpressPost, _WordpressObject);
 
   function WordpressPost(identifiers, json) {
@@ -7406,9 +7338,7 @@ function (_WordpressObject) {
   return WordpressPost;
 }(WordpressObject);
 
-var WordpressSite =
-/*#__PURE__*/
-function (_WordpressObject) {
+var WordpressSite = /*#__PURE__*/function (_WordpressObject) {
   _inherits(WordpressSite, _WordpressObject);
 
   function WordpressSite(identifiers, json) {
@@ -7433,9 +7363,7 @@ function (_WordpressObject) {
   return WordpressSite;
 }(WordpressObject);
 
-var WordpressTag =
-/*#__PURE__*/
-function (_WordpressObject) {
+var WordpressTag = /*#__PURE__*/function (_WordpressObject) {
   _inherits(WordpressTag, _WordpressObject);
 
   function WordpressTag(identifiers, json) {
@@ -7469,9 +7397,7 @@ function (_WordpressObject) {
   return WordpressTag;
 }(WordpressObject);
 
-var WordpressUser =
-/*#__PURE__*/
-function (_WordpressObject) {
+var WordpressUser = /*#__PURE__*/function (_WordpressObject) {
   _inherits(WordpressUser, _WordpressObject);
 
   function WordpressUser(identifiers, json) {
@@ -7505,9 +7431,7 @@ function (_WordpressObject) {
   return WordpressUser;
 }(WordpressObject);
 
-var Wordpress =
-/*#__PURE__*/
-function (_DataSource) {
+var Wordpress = /*#__PURE__*/function (_DataSource) {
   _inherits(Wordpress, _DataSource);
 
   function Wordpress() {
@@ -7864,9 +7788,7 @@ function _nonIterableRest$2() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance");
 }
 
-var RelaksRouteManagerEvent =
-/*#__PURE__*/
-function (_GenericEvent) {
+var RelaksRouteManagerEvent = /*#__PURE__*/function (_GenericEvent) {
   _inherits$2(RelaksRouteManagerEvent, _GenericEvent);
 
   function RelaksRouteManagerEvent() {
@@ -7878,9 +7800,7 @@ function (_GenericEvent) {
   return RelaksRouteManagerEvent;
 }(RelaksGenericEvent);
 
-var RelaksRouteManagerError =
-/*#__PURE__*/
-function (_Error) {
+var RelaksRouteManagerError = /*#__PURE__*/function (_Error) {
   _inherits$2(RelaksRouteManagerError, _Error);
 
   function RelaksRouteManagerError(status, message) {
@@ -7906,9 +7826,7 @@ var defaultOptions$2 = {
   basePath: ''
 };
 
-var RelaksRouteManager =
-/*#__PURE__*/
-function (_EventEmitter) {
+var RelaksRouteManager = /*#__PURE__*/function (_EventEmitter) {
   _inherits$2(RelaksRouteManager, _EventEmitter);
 
   function RelaksRouteManager(options) {
@@ -9332,9 +9250,7 @@ function getTimeStamp() {
   return s.substr(0, 23) + c + 'Z';
 }
 
-var RelaksRouteManagerProxy =
-/*#__PURE__*/
-function () {
+var RelaksRouteManagerProxy = /*#__PURE__*/function () {
   function RelaksRouteManagerProxy(routeManager) {
     _classCallCheck$3(this, RelaksRouteManagerProxy);
 

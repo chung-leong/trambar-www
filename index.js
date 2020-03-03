@@ -449,9 +449,7 @@
     throw new TypeError("Invalid attempt to destructure non-iterable instance");
   }
 
-  var AsyncRenderingInterrupted =
-  /*#__PURE__*/
-  function (_Error) {
+  var AsyncRenderingInterrupted = /*#__PURE__*/function (_Error) {
     _inherits$1(AsyncRenderingInterrupted, _Error);
 
     function AsyncRenderingInterrupted() {
@@ -476,9 +474,7 @@
     console.error(err);
   };
 
-  var AsyncRenderingCycle =
-  /*#__PURE__*/
-  function () {
+  var AsyncRenderingCycle = /*#__PURE__*/function () {
     function AsyncRenderingCycle(target, prev, options) {
       _classCallCheck$1(this, AsyncRenderingCycle);
 
@@ -1360,9 +1356,7 @@
     AsyncRenderingCycle.plantSeeds(list);
   }
 
-  var functions =
-  /*#__PURE__*/
-  Object.freeze({
+  var functions = /*#__PURE__*/Object.freeze({
     __proto__: null,
     use: use,
     memo: memo,
@@ -1373,9 +1367,7 @@
   });
   var PureComponent = React.PureComponent;
 
-  var AsyncComponent =
-  /*#__PURE__*/
-  function (_PureComponent) {
+  var AsyncComponent = /*#__PURE__*/function (_PureComponent) {
     _inherits$1(AsyncComponent, _PureComponent);
 
     function AsyncComponent(props) {
@@ -1504,9 +1496,7 @@
     }
   }
 
-  var AsyncSaveBuffer =
-  /*#__PURE__*/
-  function () {
+  var AsyncSaveBuffer = /*#__PURE__*/function () {
     function AsyncSaveBuffer() {
       _classCallCheck$1(this, AsyncSaveBuffer);
 
@@ -3057,9 +3047,7 @@
     return Constructor;
   }
 
-  var RelaksEventEmitter =
-  /*#__PURE__*/
-  function () {
+  var RelaksEventEmitter = /*#__PURE__*/function () {
     function RelaksEventEmitter() {
       _classCallCheck$2(this, RelaksEventEmitter);
 
@@ -3236,9 +3224,7 @@
     return RelaksEventEmitter;
   }();
 
-  var RelaksGenericEvent =
-  /*#__PURE__*/
-  function () {
+  var RelaksGenericEvent = /*#__PURE__*/function () {
     function RelaksGenericEvent(type, target, props) {
       _classCallCheck$2(this, RelaksGenericEvent);
 
@@ -3288,9 +3274,7 @@
     return RelaksGenericEvent;
   }();
 
-  var LocaleManagerEvent =
-  /*#__PURE__*/
-  function (_GenericEvent) {
+  var LocaleManagerEvent = /*#__PURE__*/function (_GenericEvent) {
     _inherits(LocaleManagerEvent, _GenericEvent);
 
     function LocaleManagerEvent() {
@@ -3308,9 +3292,7 @@
     }
   };
 
-  var LocaleManager =
-  /*#__PURE__*/
-  function (_EventEmitter) {
+  var LocaleManager = /*#__PURE__*/function (_EventEmitter) {
     _inherits(LocaleManager, _EventEmitter);
 
     function LocaleManager(options) {
@@ -3391,9 +3373,7 @@
     return LocaleManager;
   }(RelaksEventEmitter);
 
-  var LocaleManagerProxy =
-  /*#__PURE__*/
-  function () {
+  var LocaleManagerProxy = /*#__PURE__*/function () {
     function LocaleManagerProxy(localeManager) {
       _classCallCheck(this, LocaleManagerProxy);
 
@@ -3416,9 +3396,7 @@
     return LocaleManagerProxy;
   }();
 
-  var DataSourceError =
-  /*#__PURE__*/
-  function (_Error) {
+  var DataSourceError = /*#__PURE__*/function (_Error) {
     _inherits(DataSourceError, _Error);
 
     function DataSourceError(status, message) {
@@ -3432,11 +3410,9 @@
     }
 
     return DataSourceError;
-  }(_wrapNativeSuper(Error));
+  }( /*#__PURE__*/_wrapNativeSuper(Error));
 
-  var DataSourceEvent =
-  /*#__PURE__*/
-  function (_GenericEvent) {
+  var DataSourceEvent = /*#__PURE__*/function (_GenericEvent) {
     _inherits(DataSourceEvent, _GenericEvent);
 
     function DataSourceEvent() {
@@ -3448,9 +3424,7 @@
     return DataSourceEvent;
   }(RelaksGenericEvent);
 
-  var Resource =
-  /*#__PURE__*/
-  function () {
+  var Resource = /*#__PURE__*/function () {
     function Resource(data) {
       _classCallCheck(this, Resource);
 
@@ -4009,9 +3983,7 @@
     return tagProperties[tagName] || unknown;
   }
 
-  var Text =
-  /*#__PURE__*/
-  function () {
+  var Text = /*#__PURE__*/function () {
     function Text(data) {
       _classCallCheck(this, Text);
 
@@ -4888,9 +4860,7 @@
     return nodes.slice(start, last + 1);
   }
 
-  var DataSourceObject =
-  /*#__PURE__*/
-  function () {
+  var DataSourceObject = /*#__PURE__*/function () {
     function DataSourceObject(identifiers, json) {
       _classCallCheck(this, DataSourceObject);
 
@@ -4990,9 +4960,7 @@
     return DataSourceObject;
   }();
 
-  var ProjectMetadata =
-  /*#__PURE__*/
-  function (_DataSourceObject) {
+  var ProjectMetadata = /*#__PURE__*/function (_DataSourceObject) {
     _inherits(ProjectMetadata, _DataSourceObject);
 
     function ProjectMetadata(identifiers, json) {
@@ -5022,9 +4990,7 @@
     return ProjectMetadata;
   }(DataSourceObject);
 
-  var VisitorGeolocation =
-  /*#__PURE__*/
-  function (_DataSourceObject) {
+  var VisitorGeolocation = /*#__PURE__*/function (_DataSourceObject) {
     _inherits(VisitorGeolocation, _DataSourceObject);
 
     function VisitorGeolocation(identifiers, json) {
@@ -5054,9 +5020,7 @@
     refreshInterval: Infinity
   };
 
-  var DataSource =
-  /*#__PURE__*/
-  function (_EventEmitter) {
+  var DataSource = /*#__PURE__*/function (_EventEmitter) {
     _inherits(DataSource, _EventEmitter);
 
     function DataSource(extensions, options) {
@@ -5896,9 +5860,7 @@
     return false;
   }
 
-  var DataSourceProxy =
-  /*#__PURE__*/
-  function () {
+  var DataSourceProxy = /*#__PURE__*/function () {
     function DataSourceProxy(dataSource) {
       _classCallCheck(this, DataSourceProxy);
 
@@ -6015,9 +5977,7 @@
     return DataSourceProxy;
   }();
 
-  var ExcelObject =
-  /*#__PURE__*/
-  function (_DataSourceObject) {
+  var ExcelObject = /*#__PURE__*/function (_DataSourceObject) {
     _inherits(ExcelObject, _DataSourceObject);
 
     function ExcelObject() {
@@ -6036,9 +5996,7 @@
     return ExcelObject;
   }(DataSourceObject);
 
-  var ExcelColumn =
-  /*#__PURE__*/
-  function (_ExcelObject) {
+  var ExcelColumn = /*#__PURE__*/function (_ExcelObject) {
     _inherits(ExcelColumn, _ExcelObject);
 
     function ExcelColumn(identifiers, data, defaultLanguages) {
@@ -6099,9 +6057,7 @@
     return ExcelColumn;
   }(ExcelObject);
 
-  var ExcelRow =
-  /*#__PURE__*/
-  function (_ExcelObject) {
+  var ExcelRow = /*#__PURE__*/function (_ExcelObject) {
     _inherits(ExcelRow, _ExcelObject);
 
     function ExcelRow(identifiers, data, names, sheetLanguageCodes) {
@@ -6216,9 +6172,7 @@
     return ExcelRow;
   }(ExcelObject);
 
-  var ExcelCell =
-  /*#__PURE__*/
-  function (_ExcelObject) {
+  var ExcelCell = /*#__PURE__*/function (_ExcelObject) {
     _inherits(ExcelCell, _ExcelObject);
 
     function ExcelCell(identifiers, data, columnLanguages) {
@@ -6304,9 +6258,7 @@
     return ExcelCell;
   }(ExcelObject);
 
-  var ExcelSheet =
-  /*#__PURE__*/
-  function (_ExcelObject) {
+  var ExcelSheet = /*#__PURE__*/function (_ExcelObject) {
     _inherits(ExcelSheet, _ExcelObject);
 
     function ExcelSheet(identifiers, data) {
@@ -6800,9 +6752,7 @@
     return ExcelSheet;
   }(ExcelObject);
 
-  var ExcelFile =
-  /*#__PURE__*/
-  function (_ExcelObject) {
+  var ExcelFile = /*#__PURE__*/function (_ExcelObject) {
     _inherits(ExcelFile, _ExcelObject);
 
     function ExcelFile(identifiers, json) {
@@ -7078,9 +7028,7 @@
     return ExcelFile;
   }(ExcelObject);
 
-  var Excel =
-  /*#__PURE__*/
-  function (_DataSource) {
+  var Excel = /*#__PURE__*/function (_DataSource) {
     _inherits(Excel, _DataSource);
 
     function Excel() {
@@ -7104,9 +7052,7 @@
     return Excel;
   }(DataSource);
 
-  var GitlabObject =
-  /*#__PURE__*/
-  function (_DataSourceObject) {
+  var GitlabObject = /*#__PURE__*/function (_DataSourceObject) {
     _inherits(GitlabObject, _DataSourceObject);
 
     function GitlabObject() {
@@ -7118,9 +7064,7 @@
     return GitlabObject;
   }(DataSourceObject);
 
-  var GitlabWiki =
-  /*#__PURE__*/
-  function (_GitlabObject) {
+  var GitlabWiki = /*#__PURE__*/function (_GitlabObject) {
     _inherits(GitlabWiki, _GitlabObject);
 
     function GitlabWiki(identifiers, json) {
@@ -7164,9 +7108,7 @@
     return GitlabWiki;
   }(GitlabObject);
 
-  var Gitlab =
-  /*#__PURE__*/
-  function (_DataSource) {
+  var Gitlab = /*#__PURE__*/function (_DataSource) {
     _inherits(Gitlab, _DataSource);
 
     function Gitlab() {
@@ -7190,9 +7132,7 @@
     return Gitlab;
   }(DataSource);
 
-  var WordpressObject =
-  /*#__PURE__*/
-  function (_DataSourceObject) {
+  var WordpressObject = /*#__PURE__*/function (_DataSourceObject) {
     _inherits(WordpressObject, _DataSourceObject);
 
     function WordpressObject(identifiers, json) {
@@ -7240,9 +7180,7 @@
     return WordpressObject;
   }(DataSourceObject);
 
-  var WordpressCategory =
-  /*#__PURE__*/
-  function (_WordpressObject) {
+  var WordpressCategory = /*#__PURE__*/function (_WordpressObject) {
     _inherits(WordpressCategory, _WordpressObject);
 
     function WordpressCategory(identifiers, json) {
@@ -7277,9 +7215,7 @@
     return WordpressCategory;
   }(WordpressObject);
 
-  var WordpressMedia =
-  /*#__PURE__*/
-  function (_WordpressObject) {
+  var WordpressMedia = /*#__PURE__*/function (_WordpressObject) {
     _inherits(WordpressMedia, _WordpressObject);
 
     function WordpressMedia(identifiers, json) {
@@ -7323,9 +7259,7 @@
     return WordpressMedia;
   }(WordpressObject);
 
-  var WordpressPage =
-  /*#__PURE__*/
-  function (_WordpressObject) {
+  var WordpressPage = /*#__PURE__*/function (_WordpressObject) {
     _inherits(WordpressPage, _WordpressObject);
 
     function WordpressPage(identifiers, json) {
@@ -7367,9 +7301,7 @@
     return WordpressPage;
   }(WordpressObject);
 
-  var WordpressPost =
-  /*#__PURE__*/
-  function (_WordpressObject) {
+  var WordpressPost = /*#__PURE__*/function (_WordpressObject) {
     _inherits(WordpressPost, _WordpressObject);
 
     function WordpressPost(identifiers, json) {
@@ -7412,9 +7344,7 @@
     return WordpressPost;
   }(WordpressObject);
 
-  var WordpressSite =
-  /*#__PURE__*/
-  function (_WordpressObject) {
+  var WordpressSite = /*#__PURE__*/function (_WordpressObject) {
     _inherits(WordpressSite, _WordpressObject);
 
     function WordpressSite(identifiers, json) {
@@ -7439,9 +7369,7 @@
     return WordpressSite;
   }(WordpressObject);
 
-  var WordpressTag =
-  /*#__PURE__*/
-  function (_WordpressObject) {
+  var WordpressTag = /*#__PURE__*/function (_WordpressObject) {
     _inherits(WordpressTag, _WordpressObject);
 
     function WordpressTag(identifiers, json) {
@@ -7475,9 +7403,7 @@
     return WordpressTag;
   }(WordpressObject);
 
-  var WordpressUser =
-  /*#__PURE__*/
-  function (_WordpressObject) {
+  var WordpressUser = /*#__PURE__*/function (_WordpressObject) {
     _inherits(WordpressUser, _WordpressObject);
 
     function WordpressUser(identifiers, json) {
@@ -7511,9 +7437,7 @@
     return WordpressUser;
   }(WordpressObject);
 
-  var Wordpress =
-  /*#__PURE__*/
-  function (_DataSource) {
+  var Wordpress = /*#__PURE__*/function (_DataSource) {
     _inherits(Wordpress, _DataSource);
 
     function Wordpress() {
@@ -7870,9 +7794,7 @@
     throw new TypeError("Invalid attempt to destructure non-iterable instance");
   }
 
-  var RelaksRouteManagerEvent =
-  /*#__PURE__*/
-  function (_GenericEvent) {
+  var RelaksRouteManagerEvent = /*#__PURE__*/function (_GenericEvent) {
     _inherits$2(RelaksRouteManagerEvent, _GenericEvent);
 
     function RelaksRouteManagerEvent() {
@@ -7884,9 +7806,7 @@
     return RelaksRouteManagerEvent;
   }(RelaksGenericEvent);
 
-  var RelaksRouteManagerError =
-  /*#__PURE__*/
-  function (_Error) {
+  var RelaksRouteManagerError = /*#__PURE__*/function (_Error) {
     _inherits$2(RelaksRouteManagerError, _Error);
 
     function RelaksRouteManagerError(status, message) {
@@ -7912,9 +7832,7 @@
     basePath: ''
   };
 
-  var RelaksRouteManager =
-  /*#__PURE__*/
-  function (_EventEmitter) {
+  var RelaksRouteManager = /*#__PURE__*/function (_EventEmitter) {
     _inherits$2(RelaksRouteManager, _EventEmitter);
 
     function RelaksRouteManager(options) {
@@ -9338,9 +9256,7 @@
     return s.substr(0, 23) + c + 'Z';
   }
 
-  var RelaksRouteManagerProxy =
-  /*#__PURE__*/
-  function () {
+  var RelaksRouteManagerProxy = /*#__PURE__*/function () {
     function RelaksRouteManagerProxy(routeManager) {
       _classCallCheck$3(this, RelaksRouteManagerProxy);
 
