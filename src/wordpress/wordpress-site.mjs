@@ -14,6 +14,15 @@ class WordpressSite extends WordpressObject {
       this.timezone = json.timezone_string;
     }
   }
+
+  static getObjectURL(identifiers) {
+    const [ siteId ] = identifiers;
+    let url = `rest/`;
+    if (siteId) {
+      url += `${siteId}/`;
+    }
+    return url;
+  }
 }
 
 export {

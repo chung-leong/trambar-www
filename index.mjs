@@ -7373,6 +7373,22 @@ var WordpressSite = /*#__PURE__*/function (_WordpressObject) {
     return _this;
   }
 
+  _createClass(WordpressSite, null, [{
+    key: "getObjectURL",
+    value: function getObjectURL(identifiers) {
+      var _identifiers = _slicedToArray(identifiers, 1),
+          siteId = _identifiers[0];
+
+      var url = "rest/";
+
+      if (siteId) {
+        url += "".concat(siteId, "/");
+      }
+
+      return url;
+    }
+  }]);
+
   return WordpressSite;
 }(WordpressObject);
 
