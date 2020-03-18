@@ -102,7 +102,7 @@ class Resource {
       let cropWidth = originalWidth;
       let cropHeight = originalHeight;
       if (cropping) {
-        if (Math.abs(originalAspectRatio - newAspectRatio) > 0.01) {
+        if (Math.abs(originalAspectRatio - newAspectRatio) > 0.05) {
           let left, top, width, height;
           if (originalAspectRatio > newAspectRatio) {
             width = Math.round(originalHeight * newAspectRatio);

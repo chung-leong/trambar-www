@@ -8,7 +8,7 @@ Odwiedź nas w naszym sklepie w Krakowie
 
 Visit our store in New York.
 
-# (en-UK)
+# (en-GB)
 
 Visit our store in London.
 

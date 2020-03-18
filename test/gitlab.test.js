@@ -69,12 +69,12 @@ Look at this one too: [external image]
     })
     it('should handle text in multiple languages', async function() {
       const page = await loadTestPage([ 'repo1', 'test-1' ]);
-      const pageUK = page.getLanguageSpecific('en-uk');
-      const textUK = pageUK.content.getPlainText();
-      expect(textUK).to.contain('Donuts');
-      expect(textUK).to.not.contain('New York');
-      expect(textUK).to.contain('London');
-      expect(textUK).to.not.contain('Sydney');
+      const pageGB = page.getLanguageSpecific('en-gb');
+      const textGB = pageGB.content.getPlainText();
+      expect(textGB).to.contain('Donuts');
+      expect(textGB).to.not.contain('New York');
+      expect(textGB).to.contain('London');
+      expect(textGB).to.not.contain('Sydney');
 
       const pageEN = page.getLanguageSpecific('en');
       const textEN = pageEN.content.getPlainText();
@@ -93,7 +93,7 @@ Look at this one too: [external image]
     it('should return a list of available languages', async function() {
       const page = await loadTestPage([ 'repo1', 'test-1' ]);
       const codes = page.getAvailableLanguages();
-      expect(codes).to.eql([ 'pl', 'en-us', 'en-uk', 'en-au' ]);
+      expect(codes).to.eql([ 'pl', 'en-us', 'en-gb', 'en-au' ]);
     });
     it('should yield JSON data embedded in Markdown text', async function() {
       const page = await loadTestPage([ 'repo1', 'test-3' ]);

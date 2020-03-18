@@ -10,7 +10,6 @@ import Relaks, {
   usePlainText,
   useRichText,
   useLanguage,
-  useLanguageSpecific,
   useLocalized,
 
   useProgress,
@@ -22,7 +21,7 @@ import Relaks, {
   Excel,
   LocaleManager,
   LocaleManagerProxy,
-} from '../index.mjs';
+} from '../src/index.mjs';
 
 const serverPort = 8111;
 const serverAddress = `http://localhost:${serverPort}`;
@@ -109,7 +108,7 @@ Look at this one too: [external image]
     it('should return a function that can handle strings as input', async function() {
       const Test = Relaks.memo(async (props) => {
         const { db } = props;
-        const [ show ] = useProgress();
+        const [ show ] = useProgress(0);
         const pt = usePlainText();
 
         show(<div />)
@@ -124,6 +123,36 @@ Look at this one too: [external image]
       wrapper.update();
       const text = wrapper.text();
       expect(text).to.equal('Test 2');
+    })
+    it('should return a function that renders language specific text', async function() {
+      const Test = Relaks.memo(async (props) => {
+        const { db } = props;
+        const [ show ] = useProgress();
+        const pt = usePlainText();
+
+        show(<div />)
+        const page = await db.fetchWikiPage('repo1', 'test-1');
+        show(<div>{pt(page.content)}</div>);
+      });
+      const options = { baseURL: serverAddress };
+      const dataSource = new DataSource([ Gitlab ], options);
+      dataSource.activate();
+      const wrapper = mount(
+        <Env.Provider value={{ locale: { language: 'en-au' }}}>
+          <Test db={dataSource} />
+        </Env.Provider>
+      );
+      await delay(100);
+      wrapper.update();
+      const text = wrapper.text();
+      const expected = `
+My Dear Dingo Donuts
+
+Visit our store in Sydney.
+
+Copyright
+      `.trim();
+      expect(text).to.equal(expected);
     })
   })
   describe('#useRichText()', function() {
@@ -160,6 +189,36 @@ Look at this one too: [external image]
       `.trim().replace(/>\s+</g, '><');
       expect(html).to.equal(expected);
     })
+    it('should return a function that renders language specific text', async function() {
+      const Test = Relaks.memo(async (props) => {
+        const { db } = props;
+        const [ show ] = useProgress();
+        const pt = useRichText();
+
+        show(<div />)
+        const page = await db.fetchWikiPage('repo1', 'test-1');
+        show(<div>{pt(page.content)}</div>);
+      });
+      const options = { baseURL: serverAddress };
+      const dataSource = new DataSource([ Gitlab ], options);
+      dataSource.activate();
+      const wrapper = mount(
+        <Env.Provider value={{ locale: { language: 'en-gb' }}}>
+          <Test db={dataSource} />
+        </Env.Provider>
+      );
+      await delay(100);
+      wrapper.update();
+      const html = wrapper.html();
+      const expected = `
+<div>
+  <h1 id="my-dear-dingo-donuts">My Dear Dingo Donuts</h1>
+  <p>Visit our store in London.</p>
+  <p>Copyright</p>
+</div>
+      `.trim().replace(/>\s+</g, '><');
+      expect(html).to.equal(expected);
+    })
     it('should return a function that can handle strings as input', async function() {
       const Test = Relaks.memo(async (props) => {
         const { db } = props;
@@ -178,6 +237,142 @@ Look at this one too: [external image]
       wrapper.update();
       const html = wrapper.html();
       expect(html).to.equal('<div>Test 2</div>');
+    })
+    it('should make use of imageHeight', async function() {
+      const Test = Relaks.memo(async (props) => {
+        const { db } = props;
+        const [ show ] = useProgress();
+        const rt = useRichText({ imageHeight: 50 });
+
+        show(<div />)
+        const page = await db.fetchWikiPage('repo2', 'test-2');
+        show(<div>{rt(page.content)}</div>);
+      });
+      const options = { baseURL: serverAddress };
+      const dataSource = new DataSource([ Gitlab ], options);
+      dataSource.activate();
+      const wrapper = mount(<Test db={dataSource} />);
+      await delay(100);
+      wrapper.update();
+      const html = wrapper.html();
+      const expected = `
+<div>
+  <h1 id="hello">Hello</h1>
+  <h2 id="world">World</h2>
+  <p>This is a test and this is only a test.</p>
+  <p>Look at this picture: <img src="/srv/media/images/7762c77f10818cc748253f0aeeb883a5/re51_50" alt="internal image" width="51" height="50">.</p>
+  <p>Look at this one too: <img src="/srv/media/images/4245748bde70ff10dc497d1ef59f0a25/re49_50" alt="external image" width="49" height="50"></p>
+  <ul>
+    <li><a href="home">Internal link</a></li>
+    <li>Another <a href="elsewhere">internal link</a></li>
+    <li><a href="http://www.bbc.co.uk">External link</a></li>
+  </ul>
+</div>
+      `.trim().replace(/>\s+</g, '><');
+      expect(html).to.equal(expected);
+    })
+    it('should make use of imageWidth', async function() {
+      const Test = Relaks.memo(async (props) => {
+        const { db } = props;
+        const [ show ] = useProgress();
+        const rt = useRichText({ imageWidth: 50 });
+
+        show(<div />)
+        const page = await db.fetchWikiPage('repo2', 'test-2');
+        show(<div>{rt(page.content)}</div>);
+      });
+      const options = { baseURL: serverAddress };
+      const dataSource = new DataSource([ Gitlab ], options);
+      dataSource.activate();
+      const wrapper = mount(<Test db={dataSource} />);
+      await delay(100);
+      wrapper.update();
+      const html = wrapper.html();
+      const expected = `
+<div>
+  <h1 id="hello">Hello</h1>
+  <h2 id="world">World</h2>
+  <p>This is a test and this is only a test.</p>
+  <p>Look at this picture: <img src="/srv/media/images/7762c77f10818cc748253f0aeeb883a5/re50_50" alt="internal image" width="50" height="50">.</p>
+  <p>Look at this one too: <img src="/srv/media/images/4245748bde70ff10dc497d1ef59f0a25/re50_52" alt="external image" width="50" height="52"></p>
+  <ul>
+    <li><a href="home">Internal link</a></li>
+    <li>Another <a href="elsewhere">internal link</a></li>
+    <li><a href="http://www.bbc.co.uk">External link</a></li>
+  </ul>
+</div>
+      `.trim().replace(/>\s+</g, '><');
+      expect(html).to.equal(expected);
+    })
+    it('should crop images when both imageWidth and imageHeight are given', async function() {
+      const Test = Relaks.memo(async (props) => {
+        const { db } = props;
+        const [ show ] = useProgress();
+        const rt = useRichText({ imageWidth: 50, imageHeight: 20 });
+
+        show(<div />)
+        const page = await db.fetchWikiPage('repo2', 'test-2');
+        show(<div>{rt(page.content)}</div>);
+      });
+      const options = { baseURL: serverAddress };
+      const dataSource = new DataSource([ Gitlab ], options);
+      dataSource.activate();
+      const wrapper = mount(<Test db={dataSource} />);
+      await delay(100);
+      wrapper.update();
+      const html = wrapper.html();
+      const expected = `
+<div>
+  <h1 id="hello">Hello</h1>
+  <h2 id="world">World</h2>
+  <p>This is a test and this is only a test.</p>
+  <p>Look at this picture: <img src="/srv/media/images/7762c77f10818cc748253f0aeeb883a5/cr0_160_550_220-re50_20" alt="internal image" width="50" height="20">.</p>
+  <p>Look at this one too: <img src="/srv/media/images/4245748bde70ff10dc497d1ef59f0a25/cr0_160_500_200-re50_20" alt="external image" width="50" height="20"></p>
+  <ul>
+    <li><a href="home">Internal link</a></li>
+    <li>Another <a href="elsewhere">internal link</a></li>
+    <li><a href="http://www.bbc.co.uk">External link</a></li>
+  </ul>
+</div>
+      `.trim().replace(/>\s+</g, '><');
+      expect(html).to.equal(expected);
+    })
+    it('should use devicePixelRatio from environment', async function() {
+      const Test = Relaks.memo(async (props) => {
+        const { db } = props;
+        const [ show ] = useProgress();
+        const rt = useRichText({ imageWidth: 50, imageHeight: 20 });
+
+        show(<div />)
+        const page = await db.fetchWikiPage('repo2', 'test-2');
+        show(<div>{rt(page.content)}</div>);
+      });
+      const options = { baseURL: serverAddress };
+      const dataSource = new DataSource([ Gitlab ], options);
+      dataSource.activate();
+      const wrapper = mount(
+        <Env.Provider value={{ devicePixelRatio: 2 }}>
+          <Test db={dataSource} />
+        </Env.Provider>
+      );
+      await delay(100);
+      wrapper.update();
+      const html = wrapper.html();
+      const expected = `
+<div>
+  <h1 id="hello">Hello</h1>
+  <h2 id="world">World</h2>
+  <p>This is a test and this is only a test.</p>
+  <p>Look at this picture: <img src="/srv/media/images/7762c77f10818cc748253f0aeeb883a5/cr0_160_550_220-re100_40" alt="internal image" width="50" height="20">.</p>
+  <p>Look at this one too: <img src="/srv/media/images/4245748bde70ff10dc497d1ef59f0a25/cr0_160_500_200-re100_40" alt="external image" width="50" height="20"></p>
+  <ul>
+    <li><a href="home">Internal link</a></li>
+    <li>Another <a href="elsewhere">internal link</a></li>
+    <li><a href="http://www.bbc.co.uk">External link</a></li>
+  </ul>
+</div>
+      `.trim().replace(/>\s+</g, '><');
+      expect(html).to.equal(expected);
     })
     it('should make use of renderFunc', async function() {
       const Test = Relaks.memo(async (props) => {
@@ -276,39 +471,6 @@ Look at this one too: [external image]
       );
       const text = wrapper.text();
       expect(text).to.equal('en-us');
-    })
-  })
-  describe('#useLanguageSpecific()', function() {
-    it('should return a function that yields language specific text', async function() {
-      const Test = Relaks.memo(async (props) => {
-        const { db } = props;
-        const [ show ] = useProgress();
-        const ls = useLanguageSpecific();
-        const pt = usePlainText();
-
-        show(<div />)
-        const page = ls(await db.fetchWikiPage('repo1', 'test-1'));
-        show(<div>{pt(page.content)}</div>);
-      });
-      const options = { baseURL: serverAddress };
-      const dataSource = new DataSource([ Gitlab ], options);
-      dataSource.activate();
-      const wrapper = mount(
-        <Env.Provider value={{ locale: { language: 'en-au' }}}>
-          <Test db={dataSource} />
-        </Env.Provider>
-      );
-      await delay(100);
-      wrapper.update();
-      const text = wrapper.text();
-      const expected = `
-My Dear Dingo Donuts
-
-Visit our store in Sydney.
-
-Copyright
-      `.trim();
-      expect(text).to.equal(expected);
     })
   })
   describe('#useLocalized()', function() {

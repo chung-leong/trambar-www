@@ -121,9 +121,13 @@ function useEnvMonitor(vars) {
 
 function usePlainText(hookOpts) {
   const env = useEnv();
-  const options = { ...env, ...hookOpts };
+  const options = hookOpts;
   useDebugValue(hookOpts);
   return useListener((object) => {
+    if (object && object.getLanguageSpecific instanceof Function) {
+      const language = getLanguage(env);
+      object = object.getLanguageSpecific(language);
+    }
     if (object && object.getPlainText instanceof Function) {
       return object.getPlainText(options);
     } else if (object == null) {
@@ -136,9 +140,14 @@ function usePlainText(hookOpts) {
 
 function useRichText(hookOpts) {
   const env = useEnv();
-  const options = { ...env, ...hookOpts };
+  const { devicePixelRatio } = env;
+  const options = { devicePixelRatio, ...hookOpts };
   useDebugValue(hookOpts);
   return useListener((object) => {
+    if (object && object.getLanguageSpecific instanceof Function) {
+      const language = getLanguage(env);
+      object = object.getLanguageSpecific(language);
+    }
     if (object && object.getRichText instanceof Function) {
       return object.getRichText(options);
     } else if (object == null) {
@@ -151,28 +160,9 @@ function useRichText(hookOpts) {
 
 function useLanguage() {
   const env = useEnv();
-  const { locale } = env;
-  let language;
-  if (locale && locale.language) {
-    language = locale.language;
-  }
-  if (!language) {
-    language = 'en';
-  }
+  const language = getLanguage(env);
   useDebugValue(language);
   return language;
-}
-
-function useLanguageSpecific() {
-  const language = useLanguage();
-  useDebugValue(language);
-  return useListener((object) => {
-    if (object && object.getLanguageSpecific instanceof Function) {
-      return object.getLanguageSpecific(language);
-    } else {
-      return object;
-    }
-  });
 }
 
 function useLocalized() {
@@ -188,11 +178,29 @@ function useLocalized() {
   });
 }
 
+let defaultLanguage;
+
+function getLanguage(env) {
+  const { locale } = env;
+  if (locale && locale.language) {
+    return locale.language;
+  }
+  if (!defaultLanguage) {
+    defaultLanguage = 'en-us';
+    if (typeof(process) === 'object' && process.env && process.env.LANG) {
+      const m = /^([a-z]{2})[-_]([a-z]{2})/.exec(process.env.LANG);
+      if (m) {
+        defaultLanguage = `${m[1].toLowerCase()}-${m[2].toLowerCase()}`;
+      }
+    }
+  }
+  return defaultLanguage;
+}
+
 export {
   useEnv,
   useEnvMonitor,
   useLanguage,
-  useLanguageSpecific,
   usePlainText,
   useRichText,
   useLocalized,
