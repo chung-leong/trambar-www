@@ -2928,11 +2928,14 @@ function useEnvMonitor(vars) {
 
 function usePlainText(hookOpts) {
   var env = useEnv();
-
-  var options = _objectSpread2({}, env, {}, hookOpts);
-
+  var options = hookOpts;
   useDebugValue$3(hookOpts);
   return useListener(function (object) {
+    if (object && object.getLanguageSpecific instanceof Function) {
+      var language = getLanguage(env);
+      object = object.getLanguageSpecific(language);
+    }
+
     if (object && object.getPlainText instanceof Function) {
       return object.getPlainText(options);
     } else if (object == null) {
@@ -2945,11 +2948,19 @@ function usePlainText(hookOpts) {
 
 function useRichText(hookOpts) {
   var env = useEnv();
+  var devicePixelRatio = env.devicePixelRatio;
 
-  var options = _objectSpread2({}, env, {}, hookOpts);
+  var options = _objectSpread2({
+    devicePixelRatio: devicePixelRatio
+  }, hookOpts);
 
   useDebugValue$3(hookOpts);
   return useListener(function (object) {
+    if (object && object.getLanguageSpecific instanceof Function) {
+      var language = getLanguage(env);
+      object = object.getLanguageSpecific(language);
+    }
+
     if (object && object.getRichText instanceof Function) {
       return object.getRichText(options);
     } else if (object == null) {
@@ -2962,31 +2973,9 @@ function useRichText(hookOpts) {
 
 function useLanguage() {
   var env = useEnv();
-  var locale = env.locale;
-  var language;
-
-  if (locale && locale.language) {
-    language = locale.language;
-  }
-
-  if (!language) {
-    language = 'en';
-  }
-
+  var language = getLanguage(env);
   useDebugValue$3(language);
   return language;
-}
-
-function useLanguageSpecific() {
-  var language = useLanguage();
-  useDebugValue$3(language);
-  return useListener(function (object) {
-    if (object && object.getLanguageSpecific instanceof Function) {
-      return object.getLanguageSpecific(language);
-    } else {
-      return object;
-    }
-  });
 }
 
 function useLocalized() {
@@ -3001,6 +2990,30 @@ function useLocalized() {
       return phrase;
     }
   });
+}
+
+var defaultLanguage;
+
+function getLanguage(env) {
+  var locale = env.locale;
+
+  if (locale && locale.language) {
+    return locale.language;
+  }
+
+  if (!defaultLanguage) {
+    defaultLanguage = 'en-us';
+
+    if ((typeof process === "undefined" ? "undefined" : _typeof(process)) === 'object' && process.env && process.env.LANG) {
+      var m = /^([a-z]{2})[-_]([a-z]{2})/.exec(process.env.LANG);
+
+      if (m) {
+        defaultLanguage = "".concat(m[1].toLowerCase(), "-").concat(m[2].toLowerCase());
+      }
+    }
+  }
+
+  return defaultLanguage;
 }
 
 function _typeof$1(obj) {
@@ -3569,7 +3582,7 @@ var Resource = /*#__PURE__*/function () {
         var cropHeight = originalHeight;
 
         if (cropping) {
-          if (Math.abs(originalAspectRatio - newAspectRatio) > 0.01) {
+          if (Math.abs(originalAspectRatio - newAspectRatio) > 0.05) {
             var left, top, width, height;
 
             if (originalAspectRatio > newAspectRatio) {
@@ -9302,4 +9315,4 @@ var RelaksRouteManagerProxy = /*#__PURE__*/function () {
 }();
 
 export default functions;
-export { AsyncComponent, AsyncEventProxy, AsyncRenderingCycle, AsyncRenderingInterrupted, AsyncSaveBuffer, DataSource, DataSourceError, DataSourceEvent, DataSourceObject, DataSourceProxy, Env, Excel, ExcelCell, ExcelColumn, ExcelFile, ExcelObject, ExcelRow, ExcelSheet, Gitlab, GitlabObject, GitlabWiki, LocaleManager, LocaleManagerEvent, LocaleManagerProxy, ProjectMetadata, RelaksRouteManager, RelaksRouteManagerError, RelaksRouteManagerEvent, RelaksRouteManagerProxy, Resource, RelaksRouteManager as RouteManager, RelaksRouteManagerError as RouteManagerError, RelaksRouteManagerEvent as RouteManagerEvent, RelaksRouteManagerProxy as RouteManagerProxy, Text, VisitorGeolocation, Wordpress, WordpressCategory, WordpressMedia, WordpressObject, WordpressPage, WordpressPost, WordpressSite, WordpressTag, WordpressUser, chooseLanguageVersion, findLanguageCodes, forwardRef, get, getLanguageMatch, harvest, harvesting, isLanguageCode, memo, plant, set, use, useAsyncEffect, useAutoSave, useComputed, useEnv, useEnvMonitor, useErrorCatcher, useEventProxy, useEventTime, useLanguage, useLanguageSpecific, useLastAcceptable, useListener, useLocalized, usePlainText, useProgress, useProgressTransition, useRenderEvent, useRichText, useSaveBuffer, useStickySelection };
+export { AsyncComponent, AsyncEventProxy, AsyncRenderingCycle, AsyncRenderingInterrupted, AsyncSaveBuffer, DataSource, DataSourceError, DataSourceEvent, DataSourceObject, DataSourceProxy, Env, Excel, ExcelCell, ExcelColumn, ExcelFile, ExcelObject, ExcelRow, ExcelSheet, Gitlab, GitlabObject, GitlabWiki, LocaleManager, LocaleManagerEvent, LocaleManagerProxy, ProjectMetadata, RelaksRouteManager, RelaksRouteManagerError, RelaksRouteManagerEvent, RelaksRouteManagerProxy, Resource, RelaksRouteManager as RouteManager, RelaksRouteManagerError as RouteManagerError, RelaksRouteManagerEvent as RouteManagerEvent, RelaksRouteManagerProxy as RouteManagerProxy, Text, VisitorGeolocation, Wordpress, WordpressCategory, WordpressMedia, WordpressObject, WordpressPage, WordpressPost, WordpressSite, WordpressTag, WordpressUser, chooseLanguageVersion, findLanguageCodes, forwardRef, get, getLanguageMatch, harvest, harvesting, isLanguageCode, memo, plant, set, use, useAsyncEffect, useAutoSave, useComputed, useEnv, useEnvMonitor, useErrorCatcher, useEventProxy, useEventTime, useLanguage, useLastAcceptable, useListener, useLocalized, usePlainText, useProgress, useProgressTransition, useRenderEvent, useRichText, useSaveBuffer, useStickySelection };

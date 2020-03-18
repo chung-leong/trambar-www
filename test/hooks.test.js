@@ -21,7 +21,7 @@ import Relaks, {
   Excel,
   LocaleManager,
   LocaleManagerProxy,
-} from '../src/index.mjs';
+} from '../index.mjs';
 
 const serverPort = 8111;
 const serverAddress = `http://localhost:${serverPort}`;

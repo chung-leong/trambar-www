@@ -2934,11 +2934,14 @@
 
   function usePlainText(hookOpts) {
     var env = useEnv();
-
-    var options = _objectSpread2({}, env, {}, hookOpts);
-
+    var options = hookOpts;
     useDebugValue$3(hookOpts);
     return useListener(function (object) {
+      if (object && object.getLanguageSpecific instanceof Function) {
+        var language = getLanguage(env);
+        object = object.getLanguageSpecific(language);
+      }
+
       if (object && object.getPlainText instanceof Function) {
         return object.getPlainText(options);
       } else if (object == null) {
@@ -2951,11 +2954,19 @@
 
   function useRichText(hookOpts) {
     var env = useEnv();
+    var devicePixelRatio = env.devicePixelRatio;
 
-    var options = _objectSpread2({}, env, {}, hookOpts);
+    var options = _objectSpread2({
+      devicePixelRatio: devicePixelRatio
+    }, hookOpts);
 
     useDebugValue$3(hookOpts);
     return useListener(function (object) {
+      if (object && object.getLanguageSpecific instanceof Function) {
+        var language = getLanguage(env);
+        object = object.getLanguageSpecific(language);
+      }
+
       if (object && object.getRichText instanceof Function) {
         return object.getRichText(options);
       } else if (object == null) {
@@ -2968,31 +2979,9 @@
 
   function useLanguage() {
     var env = useEnv();
-    var locale = env.locale;
-    var language;
-
-    if (locale && locale.language) {
-      language = locale.language;
-    }
-
-    if (!language) {
-      language = 'en';
-    }
-
+    var language = getLanguage(env);
     useDebugValue$3(language);
     return language;
-  }
-
-  function useLanguageSpecific() {
-    var language = useLanguage();
-    useDebugValue$3(language);
-    return useListener(function (object) {
-      if (object && object.getLanguageSpecific instanceof Function) {
-        return object.getLanguageSpecific(language);
-      } else {
-        return object;
-      }
-    });
   }
 
   function useLocalized() {
@@ -3007,6 +2996,30 @@
         return phrase;
       }
     });
+  }
+
+  var defaultLanguage;
+
+  function getLanguage(env) {
+    var locale = env.locale;
+
+    if (locale && locale.language) {
+      return locale.language;
+    }
+
+    if (!defaultLanguage) {
+      defaultLanguage = 'en-us';
+
+      if ((typeof process === "undefined" ? "undefined" : _typeof(process)) === 'object' && process.env && process.env.LANG) {
+        var m = /^([a-z]{2})[-_]([a-z]{2})/.exec(process.env.LANG);
+
+        if (m) {
+          defaultLanguage = "".concat(m[1].toLowerCase(), "-").concat(m[2].toLowerCase());
+        }
+      }
+    }
+
+    return defaultLanguage;
   }
 
   function _typeof$1(obj) {
@@ -3575,7 +3588,7 @@
           var cropHeight = originalHeight;
 
           if (cropping) {
-            if (Math.abs(originalAspectRatio - newAspectRatio) > 0.01) {
+            if (Math.abs(originalAspectRatio - newAspectRatio) > 0.05) {
               var left, top, width, height;
 
               if (originalAspectRatio > newAspectRatio) {
@@ -9374,7 +9387,6 @@
   exports.useEventProxy = useEventProxy;
   exports.useEventTime = useEventTime;
   exports.useLanguage = useLanguage;
-  exports.useLanguageSpecific = useLanguageSpecific;
   exports.useLastAcceptable = useLastAcceptable;
   exports.useListener = useListener;
   exports.useLocalized = useLocalized;
