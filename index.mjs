@@ -4539,22 +4539,35 @@ var Text = /*#__PURE__*/function () {
           var image = this.getImage(props.src);
 
           if (image) {
-            var imageWidth = options.imageWidth,
-                imageHeight = options.imageHeight;
-            var imageFormat = options.imageFormat,
-                imageFilters = options.imageFilters;
-            var devicePixelRatio = options.devicePixelRatio;
-            var resized = image.transform(_objectSpread2({
-              width: imageWidth,
-              height: imageHeight,
-              format: imageFormat,
-              ratio: devicePixelRatio
-            }, imageFilters));
-            props = _objectSpread2({}, props, {
-              src: resized.url,
-              width: resized.width,
-              height: resized.height
-            });
+            if (image.error) {
+              props = _objectSpread2({}, props, {
+                title: image.error
+              });
+            } else {
+              var imageWidth = options.imageWidth,
+                  imageHeight = options.imageHeight,
+                  imageFormat = options.imageFormat,
+                  imageFilters = options.imageFilters,
+                  imageServer = options.imageServer;
+              var devicePixelRatio = options.devicePixelRatio;
+              var resized = image.transform(_objectSpread2({
+                width: imageWidth,
+                height: imageHeight,
+                format: imageFormat,
+                ratio: devicePixelRatio
+              }, imageFilters));
+              var url = resized.url;
+
+              if (imageServer) {
+                url = new URL(url, imageServer).toString();
+              }
+
+              props = _objectSpread2({}, props, {
+                src: url,
+                width: resized.width,
+                height: resized.height
+              });
+            }
           }
         }
 

@@ -265,22 +265,35 @@ class Text {
       } else if (type === 'img') {
         const image = this.getImage(props.src);
         if (image) {
-          const { imageWidth, imageHeight } = options;
-          const { imageFormat, imageFilters } = options;
-          const { devicePixelRatio } = options;
-          const resized = image.transform({
-            width: imageWidth,
-            height: imageHeight,
-            format: imageFormat,
-            ratio: devicePixelRatio,
-            ...imageFilters,
-          });
-          props = {
-            ...props,
-            src: resized.url,
-            width: resized.width,
-            height: resized.height,
-          };
+          if (image.error) {
+            props = {
+              ...props,
+              title: image.error
+            };
+          } else {
+            const {
+              imageWidth, imageHeight,
+              imageFormat, imageFilters, imageServer
+            } = options;
+            const { devicePixelRatio } = options;
+            const resized = image.transform({
+              width: imageWidth,
+              height: imageHeight,
+              format: imageFormat,
+              ratio: devicePixelRatio,
+              ...imageFilters,
+            });
+            let url = resized.url;
+            if (imageServer) {
+              url = (new URL(url, imageServer)).toString();
+            }
+            props = {
+              ...props,
+              src: url,
+              width: resized.width,
+              height: resized.height,
+            };
+          }
         }
       }
       if (children instanceof Array) {
