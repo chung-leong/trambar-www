@@ -2,7 +2,7 @@
   "name": "trambar-www",
   "description": "Client library for Trambar websites",
   "author": "Chung Leong",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "main": "./index",
   "preferGlobal": false,
   "sideEffects": false,
