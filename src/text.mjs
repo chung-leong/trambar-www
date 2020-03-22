@@ -40,13 +40,15 @@ class Text {
     const choices = this.separateNodesByLanguages(this.json);
     const chosen = chooseLanguageVersion(choices, lang);
     const json = [];
-    const resources = this.resources;
     for (let choice of chosen) {
       for (let node of choice.nodes) {
         json.push(node);
       }
     }
-    return new Text({ json, resources });
+    const text = new this.constructor;
+    text.json = json;
+    text.resources = this.resources;
+    return text;
   }
 
   getLanguageSpecificSections(lang) {
@@ -56,7 +58,9 @@ class Text {
     for (let choice of choices) {
       const { languages, nodes } = choice;
       const match = (chosen.indexOf(choice) !== -1);
-      const content = new Text({ json: nodes, resources: this.resources });
+      const content = new this.constructor;
+      content.json = nodes;
+      content.resources = this.resources;
       sections.push({ languages, content, match });
     }
     return sections;

@@ -4148,7 +4148,6 @@
         var choices = this.separateNodesByLanguages(this.json);
         var chosen = chooseLanguageVersion(choices, lang);
         var json = [];
-        var resources = this.resources;
         var _iteratorNormalCompletion3 = true;
         var _didIteratorError3 = false;
         var _iteratorError3 = undefined;
@@ -4195,10 +4194,10 @@
           }
         }
 
-        return new Text({
-          json: json,
-          resources: resources
-        });
+        var text = new this.constructor();
+        text.json = json;
+        text.resources = this.resources;
+        return text;
       }
     }, {
       key: "getLanguageSpecificSections",
@@ -4216,10 +4215,9 @@
             var languages = choice.languages,
                 nodes = choice.nodes;
             var match = chosen.indexOf(choice) !== -1;
-            var content = new Text({
-              json: nodes,
-              resources: this.resources
-            });
+            var content = new this.constructor();
+            content.json = nodes;
+            content.resources = this.resources;
             sections.push({
               languages: languages,
               content: content,
