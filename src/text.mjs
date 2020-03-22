@@ -13,14 +13,12 @@ class Text {
   }
 
   getPlainText(options) {
-    const node = { children: this.json };
-    const text = this.getPlainTextFromNode(node, options || {});
+    const text = this.getPlainTextFromNodes(this.json, options || {});
     return text.trim();
   }
 
-  getRichText(options) {
-    const node = { children: this.json };
-    return this.getRichTextFromNode(node, options || {});
+  getRichText(options, key) {
+    return this.getRichTextFromNodes(this.json, options || {}, key);
   }
 
   getAvailableLanguages() {
@@ -88,16 +86,15 @@ class Text {
     const dict = {};
     for (let [ phrase, section ] of Object.entries(sections)) {
       const children = trimNodes(section);
-      const node = { children };
       let text;
       if (richText) {
-        text = this.getRichTextFromNode(node, options || {});
+        text = this.getRichTextFromNodes(children, options || {}, []);
         if (typeof(text) === 'object' && text.type === 'p') {
           // pull the text out of the <p> element
           text = React.createElement(React.Fragment, text.props);
         }
       } else {
-        text = this.getPlainTextFromNode(node, options || {});
+        text = this.getPlainTextFromNodes(children, options || {});
         text = text.trim();
       }
       dict[phrase] = text;
@@ -232,81 +229,102 @@ class Text {
     }
   }
 
-  getRichTextFromNode(node, options, key) {
+  getPlainTextFromNodes(nodes, options) {
+    const node = { children: nodes };
+    return this.getPlainTextFromNode(node, options);
+  }
+
+  getRichTextFromNode(node, options, context, key) {
     const { renderFunc, adjustFunc } = options;
+    if (!node) {
+      return null;
+    }
     if (renderFunc) {
-      const result = renderFunc.call(this, node, key);
+      // return result from custom render function, if it returns something
+      const result = renderFunc.call(this, node, context, key);
       if (result !== undefined) {
         return result;
       }
     }
     if (adjustFunc) {
-      const result = adjustFunc.call(this, node, key);
+      // replace the node with the adjust function returns something
+      const result = adjustFunc.call(this, node, context, key);
       if (result !== undefined) {
         node = result;
       }
     }
-
     if (typeof(node) === 'object') {
       let { type, props, children } = node;
-      if (children !== undefined) {
-        if (!(children instanceof Array)) {
-          children = [ children ];
+      if (type === 'img') {
+        let { imageTransform } = options;
+        if (typeof(imageTransform) === 'function') {
+          imageTransform = imageTransform.call(this, node, context, key);
         }
-      }
-      if (type === undefined) {
-        if (children && children.length === 1) {
-          // there's only one child so we just return that
-          return this.getRichTextFromNode(children[0], options, key);
-        } else {
-          // need to place them in a fragment
-          type = React.Fragment;
+        const { className, ...imageOptions } = imageTransform || {};
+        let imageClassName = props.className;
+        if (className) {
+          imageClassName = (imageClassName) ? `${imageClassName} ${className}` : className;
         }
-      } else if (type === 'img') {
         const image = this.getImage(props.src);
         if (image) {
           if (image.error) {
             props = {
               ...props,
+              className: imageClassName,
               title: image.error
             };
           } else {
-            const {
-              imageWidth, imageHeight,
-              imageFormat, imageFilters, imageServer
-            } = options;
-            const { devicePixelRatio } = options;
-            const resized = image.transform({
-              width: imageWidth,
-              height: imageHeight,
-              format: imageFormat,
-              ratio: devicePixelRatio,
-              ...imageFilters,
-            });
-            let url = resized.url;
-            if (imageServer) {
-              url = (new URL(url, imageServer)).toString();
-            }
+            const resized = image.transform(imageOptions);
             props = {
               ...props,
-              src: url,
+              className: imageClassName,
+              src: resized.url,
               width: resized.width,
               height: resized.height,
             };
           }
+        } else {
+          props = {
+            ...props,
+            className: imageClassName,
+          };
+        }
+      }
+      if (children !== undefined) {
+        if (!(children instanceof Array)) {
+          children = [ children ];
         }
       }
       if (children instanceof Array) {
+        context.push(node);
         children = children.map((child, index) => {
-          return this.getRichTextFromNode(child, options, index);
+          return this.getRichTextFromNode(child, options, context, index);
         });
+        context.pop();
       }
       props = { key, ...props };
+      if (!type) {
+        throw new Error('!')
+        console.log(node, type)
+      }
       return React.createElement(type, props, children);
     } else if (typeof(node) === 'string') {
       return node;
+    }
+  }
+
+  getRichTextFromNodes(nodes, options, key) {
+    const context = new NodeContext;
+    if (nodes.length === 0) {
+      return null;
+    } else if (nodes.length === 1) {
+      // if there only one we just return that
+      return this.getRichTextFromNode(nodes[0], options, context, key);
     } else {
-      return node + '';
+      const children = nodes.map((child, index) => {
+        return this.getRichTextFromNode(child, options, context, index);
+      });
+      return React.createElement(React.Fragment, { key }, children);
     }
   }
 
@@ -455,6 +473,81 @@ function trimNodes(nodes) {
     last--;
   }
   return nodes.slice(start, last + 1);
+}
+
+function countText(node) {
+  let count = 0;
+  if (node.children instanceof Array) {
+    for (let child of node.children) {
+      if (typeof(child) === 'object') {
+        count += countText(child);
+      } else if (typeof(child) === 'string') {
+        count += child.trim().length;
+      }
+    }
+  }
+  return count;
+}
+
+function countImages(node) {
+  let count = 0;
+  if (node.children instanceof Array) {
+    for (let child of node.children) {
+      if (typeof(child) === 'object') {
+        if (child.type === 'img') {
+          count += 1;
+        } else {
+          count += countImages(child);
+        }
+      }
+    }
+  }
+  return count;
+}
+
+class NodeContext {
+  constructor() {
+    this.parents = [];
+  }
+
+  getTagNames() {
+    return this.parents.map(p => p.type);
+  }
+
+  getBlockLevelParent() {
+    for (let i = this.parents.length - 1; i >= 0; i--) {
+      const parent = this.parents[i];
+      if (isBlockLevel(parent)) {
+        return parent;
+      }
+    }
+  }
+
+  hasText() {
+    const parent = this.getBlockLevelParent();
+    if (parent) {
+      return (countText(parent) > 0);
+    } else {
+      return false;
+    }
+  }
+
+  countImages() {
+    const parent = this.getBlockLevelParent();
+    if (parent) {
+      return countImages(parent);
+    } else {
+      return 0;
+    }
+  }
+
+  push(node) {
+    this.parents.push(node);
+  }
+
+  pop(node) {
+    this.parents.pop();
+  }
 }
 
 export {

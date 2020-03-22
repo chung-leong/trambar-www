@@ -203,7 +203,7 @@ The first line of the program contains a preprocessing directive, indicated by #
       const result = renderToStaticMarkup(element);
       expect(result).to.equal(html);
     })
-    it('should apply image settings', function() {
+    it('should apply image transform', function() {
       const html = `
 <h1>Image</h1><p><img src="hello.png" alt="Hello"></p>
       `.trim();
@@ -219,11 +219,13 @@ The first line of the program contains a preprocessing directive, indicated by #
       ];
       const object = new Text({ json, resources });
       const options = {
-        imageWidth: 50,
-        imageHeight: 50,
-        imageFormat: 'jpeg',
-        imageFilters: { sharpen: true },
-        devicePixelRatio: 2,
+        imageTransform: {
+          width: 50,
+          height: 50,
+          format: 'jpeg',
+          sharpen: true,
+          ratio: 2,
+        }
       };
       const element = object.getRichText(options);
       const result = renderToStaticMarkup(element);
@@ -258,6 +260,34 @@ The first line of the program contains a preprocessing directive, indicated by \
       `.trim().replace(/>\s+</g, '><');
       expect(result).to.equal(expected);
     })
+    it('should get image transform options from callback', function() {
+      const html = `
+<div>
+  <p>Hello, <a href="somewhere"><img src="inline.png"></a>!</p>
+  <p><img src="block1.png"> <img src="block2.png"></p>
+</div>
+      `.trim();
+      const json = parseHTML(html);
+      const object = new Text({ json });
+      const imageTransform = (node, context) => {
+        if (context.hasText()) {
+          return { className: `inline` };
+        } else {
+          const count = context.countImages();
+          return { className: `block${count}` }
+        }
+      };
+      const element = object.getRichText({ imageTransform });
+      const result = renderToStaticMarkup(element);
+      const expected = `
+<div>
+  <p>Hello, <a href="somewhere"><img src="inline.png" class="inline"/></a>!</p>
+  <p><img src="block1.png" class="block2"/> <img src="block2.png" class="block2"/></p>
+</div>
+      `.trim();
+      expect(result).to.equal(expected);
+    })
+
   })
   describe('#getDictionary()', function() {
     it('should return dictionary containing plain text by default', function() {

@@ -238,11 +238,11 @@ Copyright
       const html = wrapper.html();
       expect(html).to.equal('<div>Test 2</div>');
     })
-    it('should make use of imageHeight', async function() {
+    it('should make use of image height', async function() {
       const Test = Relaks.memo(async (props) => {
         const { db } = props;
         const [ show ] = useProgress();
-        const rt = useRichText({ imageHeight: 50 });
+        const rt = useRichText({ imageTransform: { height: 50 } });
 
         show(<div />)
         const page = await db.fetchWikiPage('repo2', 'test-2');
@@ -271,11 +271,11 @@ Copyright
       `.trim().replace(/>\s+</g, '><');
       expect(html).to.equal(expected);
     })
-    it('should make use of imageWidth', async function() {
+    it('should make use of image width', async function() {
       const Test = Relaks.memo(async (props) => {
         const { db } = props;
         const [ show ] = useProgress();
-        const rt = useRichText({ imageWidth: 50 });
+        const rt = useRichText({ imageTransform: { width: 50 } });
 
         show(<div />)
         const page = await db.fetchWikiPage('repo2', 'test-2');
@@ -304,11 +304,11 @@ Copyright
       `.trim().replace(/>\s+</g, '><');
       expect(html).to.equal(expected);
     })
-    it('should crop images when both imageWidth and imageHeight are given', async function() {
+    it('should crop images when both width and height are given', async function() {
       const Test = Relaks.memo(async (props) => {
         const { db } = props;
         const [ show ] = useProgress();
-        const rt = useRichText({ imageWidth: 50, imageHeight: 20 });
+        const rt = useRichText({ imageTransform: { width: 50, height: 20 } });
 
         show(<div />)
         const page = await db.fetchWikiPage('repo2', 'test-2');
@@ -341,7 +341,7 @@ Copyright
       const Test = Relaks.memo(async (props) => {
         const { db } = props;
         const [ show ] = useProgress();
-        const rt = useRichText({ imageWidth: 50, imageHeight: 20 });
+        const rt = useRichText({ imageTransform: { width: 50, height: 20 } });
 
         show(<div />)
         const page = await db.fetchWikiPage('repo2', 'test-2');
@@ -414,10 +414,11 @@ Copyright
       expect(html).to.equal(expected);
     })
     it('should make use of adjustFunc', async function() {
+      const contexts = [];
       const Test = Relaks.memo(async (props) => {
         const { db } = props;
         const [ show ] = useProgress();
-        const adjustFunc = (node) => {
+        const adjustFunc = (node, context) => {
           let { type, props, children } = node;
           if (type === 'a' && props.href) {
             if (props.href === 'home') {
@@ -425,6 +426,7 @@ Copyright
             } else if (props.href.startsWith('http:')) {
               props = { ...props, target: '_blank' };
             }
+            contexts.push(context.getTagNames());
             return { type, props, children };
           }
         };
@@ -456,6 +458,7 @@ Copyright
 </div>
       `.trim().replace(/>\s+</g, '><');
       expect(html).to.equal(expected);
+      expect(contexts[0]).to.eql([ 'ul', 'li' ]);
     })
   })
   describe('#useLanguage()', function() {

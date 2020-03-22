@@ -9,6 +9,7 @@ class Resource {
       this.naturalWidth = this.width;
       this.naturalHeight = this.height;
       this.derived = false;
+      this.derivedURLs = [];
     }
   }
 
@@ -20,10 +21,8 @@ class Resource {
       if (this.url === url) {
         return true;
       }
-      if (url && url.startsWith(this.url)) {
-        if (this.url.endsWith('/') || url.charAt(this.url.length) === '/') {
-          return true;
-        }
+      if (this.derivedURLs.indexOf(url) !== -1) {
+        return true;
       }
     }
     return false;
@@ -36,6 +35,7 @@ class Resource {
 
     const filters = [];
     const remaining = {};
+    let server = undefined;
     let cropping = true;
     let enlarging = false;
     let pixelRatio = 1;
@@ -51,6 +51,7 @@ class Resource {
           case 'rotate': rotation = value; break;
           case 'ratio': pixelRatio = value; break;
           case 'format': format = value; break;
+          case 'server': server = value; break;
           default: remaining[name] = value;
         }
       }
@@ -140,7 +141,7 @@ class Resource {
       }
     }
 
-    if (filters.length === 0 && !format) {
+    if (filters.length === 0 && !format && !server) {
       if (originalWidth === newWidth && originalHeight === newHeight) {
         // no change
         return this;
@@ -160,6 +161,12 @@ class Resource {
       url += '/';
     }
     url += filename;
+    if (server) {
+      url = (new URL(url, server)).toString();
+    }
+    if (this.derivedURLs.indexOf(url) === -1) {
+      this.derivedURLs.push(url);
+    }
 
     const resource = new this.constructor;
     resource.type = this.type;

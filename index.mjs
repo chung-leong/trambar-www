@@ -186,6 +186,42 @@ function _wrapNativeSuper(Class) {
   return _wrapNativeSuper(Class);
 }
 
+function _objectWithoutPropertiesLoose(source, excluded) {
+  if (source == null) return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i;
+
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    if (excluded.indexOf(key) >= 0) continue;
+    target[key] = source[key];
+  }
+
+  return target;
+}
+
+function _objectWithoutProperties(source, excluded) {
+  if (source == null) return {};
+
+  var target = _objectWithoutPropertiesLoose(source, excluded);
+
+  var key, i;
+
+  if (Object.getOwnPropertySymbols) {
+    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+
+    for (i = 0; i < sourceSymbolKeys.length; i++) {
+      key = sourceSymbolKeys[i];
+      if (excluded.indexOf(key) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+      target[key] = source[key];
+    }
+  }
+
+  return target;
+}
+
 function _assertThisInitialized(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
@@ -2948,21 +2984,33 @@ function usePlainText(hookOpts) {
 
 function useRichText(hookOpts) {
   var env = useEnv();
-  var devicePixelRatio = env.devicePixelRatio;
+  var ratio = env.devicePixelRatio;
 
-  var options = _objectSpread2({
-    devicePixelRatio: devicePixelRatio
-  }, hookOpts);
+  var options = _objectSpread2({}, hookOpts);
+
+  if (ratio !== undefined) {
+    if (options.imageTransform) {
+      if (options.imageTransform.ratio === undefined) {
+        options.imageTransform = _objectSpread2({}, options.imageTransform, {
+          ratio: ratio
+        });
+      }
+    } else {
+      option.imageTransform = {
+        ratio: ratio
+      };
+    }
+  }
 
   useDebugValue$3(hookOpts);
-  return useListener(function (object) {
+  return useListener(function (object, key) {
     if (object && object.getLanguageSpecific instanceof Function) {
       var language = getLanguage(env);
       object = object.getLanguageSpecific(language);
     }
 
     if (object && object.getRichText instanceof Function) {
-      return object.getRichText(options);
+      return object.getRichText(options, key);
     } else if (object == null) {
       return '';
     } else {
@@ -3444,6 +3492,7 @@ var Resource = /*#__PURE__*/function () {
       this.naturalWidth = this.width;
       this.naturalHeight = this.height;
       this.derived = false;
+      this.derivedURLs = [];
     }
   }
 
@@ -3459,10 +3508,8 @@ var Resource = /*#__PURE__*/function () {
           return true;
         }
 
-        if (url && url.startsWith(this.url)) {
-          if (this.url.endsWith('/') || url.charAt(this.url.length) === '/') {
-            return true;
-          }
+        if (this.derivedURLs.indexOf(url) !== -1) {
+          return true;
         }
       }
 
@@ -3477,6 +3524,7 @@ var Resource = /*#__PURE__*/function () {
 
       var filters = [];
       var remaining = {};
+      var server = undefined;
       var cropping = true;
       var enlarging = false;
       var pixelRatio = 1;
@@ -3516,6 +3564,10 @@ var Resource = /*#__PURE__*/function () {
 
             case 'format':
               format = value;
+              break;
+
+            case 'server':
+              server = value;
               break;
 
             default:
@@ -3637,7 +3689,7 @@ var Resource = /*#__PURE__*/function () {
         }
       }
 
-      if (filters.length === 0 && !format) {
+      if (filters.length === 0 && !format && !server) {
         if (originalWidth === newWidth && originalHeight === newHeight) {
           // no change
           return this;
@@ -3661,6 +3713,15 @@ var Resource = /*#__PURE__*/function () {
       }
 
       url += filename;
+
+      if (server) {
+        url = new URL(url, server).toString();
+      }
+
+      if (this.derivedURLs.indexOf(url) === -1) {
+        this.derivedURLs.push(url);
+      }
+
       var resource = new this.constructor();
       resource.type = this.type;
       resource.src = this.src;
@@ -4008,19 +4069,13 @@ var Text = /*#__PURE__*/function () {
   _createClass(Text, [{
     key: "getPlainText",
     value: function getPlainText(options) {
-      var node = {
-        children: this.json
-      };
-      var text = this.getPlainTextFromNode(node, options || {});
+      var text = this.getPlainTextFromNodes(this.json, options || {});
       return text.trim();
     }
   }, {
     key: "getRichText",
-    value: function getRichText(options) {
-      var node = {
-        children: this.json
-      };
-      return this.getRichTextFromNode(node, options || {});
+    value: function getRichText(options, key) {
+      return this.getRichTextFromNodes(this.json, options || {}, key);
     }
   }, {
     key: "getAvailableLanguages",
@@ -4237,20 +4292,17 @@ var Text = /*#__PURE__*/function () {
             _section = _Object$entries$_i[1];
 
         var children = trimNodes(_section);
-        var _node = {
-          children: children
-        };
         var text = void 0;
 
         if (richText) {
-          text = this.getRichTextFromNode(_node, options || {});
+          text = this.getRichTextFromNodes(children, options || {}, []);
 
           if (_typeof(text) === 'object' && text.type === 'p') {
             // pull the text out of the <p> element
             text = React.createElement(React.Fragment, text.props);
           }
         } else {
-          text = this.getPlainTextFromNode(_node, options || {});
+          text = this.getPlainTextFromNodes(children, options || {});
           text = text.trim();
         }
 
@@ -4492,15 +4544,28 @@ var Text = /*#__PURE__*/function () {
       }
     }
   }, {
+    key: "getPlainTextFromNodes",
+    value: function getPlainTextFromNodes(nodes, options) {
+      var node = {
+        children: nodes
+      };
+      return this.getPlainTextFromNode(node, options);
+    }
+  }, {
     key: "getRichTextFromNode",
-    value: function getRichTextFromNode(node, options, key) {
+    value: function getRichTextFromNode(node, options, context, key) {
       var _this = this;
 
       var renderFunc = options.renderFunc,
           adjustFunc = options.adjustFunc;
 
+      if (!node) {
+        return null;
+      }
+
       if (renderFunc) {
-        var result = renderFunc.call(this, node, key);
+        // return result from custom render function, if it returns something
+        var result = renderFunc.call(this, node, context, key);
 
         if (result !== undefined) {
           return result;
@@ -4508,7 +4573,8 @@ var Text = /*#__PURE__*/function () {
       }
 
       if (adjustFunc) {
-        var _result = adjustFunc.call(this, node, key);
+        // replace the node with the adjust function returns something
+        var _result = adjustFunc.call(this, node, context, key);
 
         if (_result !== undefined) {
           node = _result;
@@ -4516,10 +4582,51 @@ var Text = /*#__PURE__*/function () {
       }
 
       if (_typeof(node) === 'object') {
-        var _node2 = node,
-            type = _node2.type,
-            props = _node2.props,
-            children = _node2.children;
+        var _node = node,
+            type = _node.type,
+            props = _node.props,
+            children = _node.children;
+
+        if (type === 'img') {
+          var imageTransform = options.imageTransform;
+
+          if (typeof imageTransform === 'function') {
+            imageTransform = imageTransform.call(this, node, context, key);
+          }
+
+          var _ref = imageTransform || {},
+              className = _ref.className,
+              imageOptions = _objectWithoutProperties(_ref, ["className"]);
+
+          var imageClassName = props.className;
+
+          if (className) {
+            imageClassName = imageClassName ? "".concat(imageClassName, " ").concat(className) : className;
+          }
+
+          var image = this.getImage(props.src);
+
+          if (image) {
+            if (image.error) {
+              props = _objectSpread2({}, props, {
+                className: imageClassName,
+                title: image.error
+              });
+            } else {
+              var resized = image.transform(imageOptions);
+              props = _objectSpread2({}, props, {
+                className: imageClassName,
+                src: resized.url,
+                width: resized.width,
+                height: resized.height
+              });
+            }
+          } else {
+            props = _objectSpread2({}, props, {
+              className: imageClassName
+            });
+          }
+        }
 
         if (children !== undefined) {
           if (!(children instanceof Array)) {
@@ -4527,64 +4634,46 @@ var Text = /*#__PURE__*/function () {
           }
         }
 
-        if (type === undefined) {
-          if (children && children.length === 1) {
-            // there's only one child so we just return that
-            return this.getRichTextFromNode(children[0], options, key);
-          } else {
-            // need to place them in a fragment
-            type = React.Fragment;
-          }
-        } else if (type === 'img') {
-          var image = this.getImage(props.src);
-
-          if (image) {
-            if (image.error) {
-              props = _objectSpread2({}, props, {
-                title: image.error
-              });
-            } else {
-              var imageWidth = options.imageWidth,
-                  imageHeight = options.imageHeight,
-                  imageFormat = options.imageFormat,
-                  imageFilters = options.imageFilters,
-                  imageServer = options.imageServer;
-              var devicePixelRatio = options.devicePixelRatio;
-              var resized = image.transform(_objectSpread2({
-                width: imageWidth,
-                height: imageHeight,
-                format: imageFormat,
-                ratio: devicePixelRatio
-              }, imageFilters));
-              var url = resized.url;
-
-              if (imageServer) {
-                url = new URL(url, imageServer).toString();
-              }
-
-              props = _objectSpread2({}, props, {
-                src: url,
-                width: resized.width,
-                height: resized.height
-              });
-            }
-          }
-        }
-
         if (children instanceof Array) {
+          context.push(node);
           children = children.map(function (child, index) {
-            return _this.getRichTextFromNode(child, options, index);
+            return _this.getRichTextFromNode(child, options, context, index);
           });
+          context.pop();
         }
 
         props = _objectSpread2({
           key: key
         }, props);
+
+        if (!type) {
+          throw new Error('!');
+        }
+
         return React.createElement(type, props, children);
       } else if (typeof node === 'string') {
         return node;
+      }
+    }
+  }, {
+    key: "getRichTextFromNodes",
+    value: function getRichTextFromNodes(nodes, options, key) {
+      var _this2 = this;
+
+      var context = new NodeContext();
+
+      if (nodes.length === 0) {
+        return null;
+      } else if (nodes.length === 1) {
+        // if there only one we just return that
+        return this.getRichTextFromNode(nodes[0], options, context, key);
       } else {
-        return node + '';
+        var children = nodes.map(function (child, index) {
+          return _this2.getRichTextFromNode(child, options, context, index);
+        });
+        return React.createElement(React.Fragment, {
+          key: key
+        }, children);
       }
     }
   }, {
@@ -4879,6 +4968,144 @@ function trimNodes(nodes) {
 
   return nodes.slice(start, last + 1);
 }
+
+function countText(node) {
+  var count = 0;
+
+  if (node.children instanceof Array) {
+    var _iteratorNormalCompletion16 = true;
+    var _didIteratorError16 = false;
+    var _iteratorError16 = undefined;
+
+    try {
+      for (var _iterator16 = node.children[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
+        var child = _step16.value;
+
+        if (_typeof(child) === 'object') {
+          count += countText(child);
+        } else if (typeof child === 'string') {
+          count += child.trim().length;
+        }
+      }
+    } catch (err) {
+      _didIteratorError16 = true;
+      _iteratorError16 = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion16 && _iterator16["return"] != null) {
+          _iterator16["return"]();
+        }
+      } finally {
+        if (_didIteratorError16) {
+          throw _iteratorError16;
+        }
+      }
+    }
+  }
+
+  return count;
+}
+
+function _countImages(node) {
+  var count = 0;
+
+  if (node.children instanceof Array) {
+    var _iteratorNormalCompletion17 = true;
+    var _didIteratorError17 = false;
+    var _iteratorError17 = undefined;
+
+    try {
+      for (var _iterator17 = node.children[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
+        var child = _step17.value;
+
+        if (_typeof(child) === 'object') {
+          if (child.type === 'img') {
+            count += 1;
+          } else {
+            count += _countImages(child);
+          }
+        }
+      }
+    } catch (err) {
+      _didIteratorError17 = true;
+      _iteratorError17 = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion17 && _iterator17["return"] != null) {
+          _iterator17["return"]();
+        }
+      } finally {
+        if (_didIteratorError17) {
+          throw _iteratorError17;
+        }
+      }
+    }
+  }
+
+  return count;
+}
+
+var NodeContext = /*#__PURE__*/function () {
+  function NodeContext() {
+    _classCallCheck(this, NodeContext);
+
+    this.parents = [];
+  }
+
+  _createClass(NodeContext, [{
+    key: "getTagNames",
+    value: function getTagNames() {
+      return this.parents.map(function (p) {
+        return p.type;
+      });
+    }
+  }, {
+    key: "getBlockLevelParent",
+    value: function getBlockLevelParent() {
+      for (var i = this.parents.length - 1; i >= 0; i--) {
+        var parent = this.parents[i];
+
+        if (isBlockLevel(parent)) {
+          return parent;
+        }
+      }
+    }
+  }, {
+    key: "hasText",
+    value: function hasText() {
+      var parent = this.getBlockLevelParent();
+
+      if (parent) {
+        return countText(parent) > 0;
+      } else {
+        return false;
+      }
+    }
+  }, {
+    key: "countImages",
+    value: function countImages() {
+      var parent = this.getBlockLevelParent();
+
+      if (parent) {
+        return _countImages(parent);
+      } else {
+        return 0;
+      }
+    }
+  }, {
+    key: "push",
+    value: function push(node) {
+      this.parents.push(node);
+    }
+  }, {
+    key: "pop",
+    value: function pop(node) {
+      this.parents.pop();
+    }
+  }]);
+
+  return NodeContext;
+}();
 
 var DataSourceObject = /*#__PURE__*/function () {
   function DataSourceObject(identifiers, json) {

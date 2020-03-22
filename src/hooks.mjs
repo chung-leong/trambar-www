@@ -140,16 +140,25 @@ function usePlainText(hookOpts) {
 
 function useRichText(hookOpts) {
   const env = useEnv();
-  const { devicePixelRatio } = env;
-  const options = { devicePixelRatio, ...hookOpts };
+  const ratio = env.devicePixelRatio;
+  const options = { ...hookOpts };
+  if (ratio !== undefined) {
+    if (options.imageTransform) {
+      if (options.imageTransform.ratio === undefined) {
+        options.imageTransform = { ...options.imageTransform, ratio };
+      }
+    } else {
+      option.imageTransform = { ratio };
+    }
+  }
   useDebugValue(hookOpts);
-  return useListener((object) => {
+  return useListener((object, key) => {
     if (object && object.getLanguageSpecific instanceof Function) {
       const language = getLanguage(env);
       object = object.getLanguageSpecific(language);
     }
     if (object && object.getRichText instanceof Function) {
-      return object.getRichText(options);
+      return object.getRichText(options, key);
     } else if (object == null) {
       return '';
     } else {

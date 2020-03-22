@@ -36,7 +36,12 @@ describe('Resource', function() {
         width: 200,
         height: 100,
       });
-      const result = image.matchURL('/media/images/6ba6046c0e2a904d4f50dc841110b38b/re50_50');
+      const derived = image.transform({
+        width: 50,
+        height: 50,
+        server: 'http://somewhere',
+      });
+      const result = image.matchURL(derived.url);
       expect(result).to.be.true;
     })
     it('should return false when specified URL does not match either', function() {
@@ -244,6 +249,17 @@ describe('Resource', function() {
       });
       const newImage = image.transform({ blur: true, quality: 50 });
       expect(newImage.url).to.equal('/media/images/6ba6046c0e2a904d4f50dc841110b38b/bl3-q50');
+    })
+    it('should attach server to URL', function() {
+      const image = new Resource({
+        type: 'image',
+        src: 'http://localhost/something.jpg',
+        url: '/media/images/6ba6046c0e2a904d4f50dc841110b38b/',
+        width: 200,
+        height: 100,
+      });
+      const newImage = image.transform({ server: 'http://hello.no' });
+      expect(newImage.url).to.equal('http://hello.no/media/images/6ba6046c0e2a904d4f50dc841110b38b/');
     })
   })
 })
