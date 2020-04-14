@@ -3,8 +3,7 @@ import { Text } from '../text.mjs';
 
 class WordpressPost extends WordpressObject {
   constructor(identifiers, json) {
-    super(identifiers, json);
-
+    super(identifiers);
     if (json) {
       this.id = json.id;
       this.date = new Date(json.date_gmt + 'Z');

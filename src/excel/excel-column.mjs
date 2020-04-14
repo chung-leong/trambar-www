@@ -3,7 +3,7 @@ import { findLanguageCodes } from '../text.mjs';
 
 class ExcelColumn extends ExcelObject {
   constructor(identifiers, data, defaultLanguages) {
-    super(identifiers, data);
+    super(identifiers);
     this.cells = [];
 
     if (data) {

@@ -3,8 +3,7 @@ import { Text } from './text.mjs';
 
 class ProjectMetadata extends DataSourceObject {
   constructor(identifiers, json) {
-    super(identifiers, json);
-
+    super(identifiers);
     if (json) {
       this.identifier = json.identifier || '';
       this.title = new Text(json.title);

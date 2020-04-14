@@ -3002,7 +3002,7 @@
           });
         }
       } else {
-        option.imageTransform = {
+        options.imageTransform = {
           ratio: ratio
         };
       }
@@ -3493,6 +3493,7 @@
         this.type = data.type;
         this.src = data.src;
         this.url = data.url;
+        this.error = data.error;
         this.width = data.width;
         this.height = data.height;
         this.naturalWidth = this.width;
@@ -4075,19 +4076,19 @@
     _createClass(Text, [{
       key: "getPlainText",
       value: function getPlainText(options) {
-        var text = this.getPlainTextFromNodes(this.json, options || {});
+        var text = this.getPlainTextFromNodes(this.json || [], options || {});
         return text.trim();
       }
     }, {
       key: "getRichText",
       value: function getRichText(options, key) {
-        return this.getRichTextFromNodes(this.json, options || {}, key);
+        return this.getRichTextFromNodes(this.json || [], options || {}, key);
       }
     }, {
       key: "getAvailableLanguages",
       value: function getAvailableLanguages() {
         var codes = [];
-        var choices = this.separateNodesByLanguages(this.json);
+        var choices = this.separateNodesByLanguages(this.json || []);
         var _iteratorNormalCompletion = true;
         var _didIteratorError = false;
         var _iteratorError = undefined;
@@ -4145,7 +4146,7 @@
     }, {
       key: "getLanguageSpecific",
       value: function getLanguageSpecific(lang) {
-        var choices = this.separateNodesByLanguages(this.json);
+        var choices = this.separateNodesByLanguages(this.json || []);
         var chosen = chooseLanguageVersion(choices, lang);
         var json = [];
         var _iteratorNormalCompletion3 = true;
@@ -4202,7 +4203,7 @@
     }, {
       key: "getLanguageSpecificSections",
       value: function getLanguageSpecificSections(lang) {
-        var choices = this.separateNodesByLanguages(this.json);
+        var choices = this.separateNodesByLanguages(this.json || []);
         var chosen = chooseLanguageVersion(choices, lang);
         var sections = [];
         var _iteratorNormalCompletion5 = true;
@@ -4649,11 +4650,6 @@
           props = _objectSpread2({
             key: key
           }, props);
-
-          if (!type) {
-            throw new Error('!');
-          }
-
           return React.createElement(type, props, children);
         } else if (typeof node === 'string') {
           return node;
@@ -4682,7 +4678,7 @@
       }
     }, {
       key: "separateNodesByLanguages",
-      value: function separateNodesByLanguages() {
+      value: function separateNodesByLanguages(nodes) {
         var choices = [];
         var topic = 0;
         var languages;
@@ -4692,7 +4688,7 @@
         var _iteratorError11 = undefined;
 
         try {
-          for (var _iterator11 = this.json[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
+          for (var _iterator11 = nodes[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
             var node = _step11.value;
             var newLanguages = this.getLanguageCodesFromNode(node);
 
@@ -5112,11 +5108,10 @@
   }();
 
   var DataSourceObject = /*#__PURE__*/function () {
-    function DataSourceObject(identifiers, json) {
+    function DataSourceObject(identifiers) {
       _classCallCheck(this, DataSourceObject);
 
       this.identifiers = identifiers;
-      this.json = json;
     }
 
     _createClass(DataSourceObject, [{
@@ -5163,7 +5158,7 @@
     }, {
       key: "getLanguageSpecific",
       value: function getLanguageSpecific(lang) {
-        var object = new this.constructor(this.identifiers);
+        var object = new this.constructor();
 
         for (var _i2 = 0, _Object$entries = Object.entries(this); _i2 < _Object$entries.length; _i2++) {
           var _Object$entries$_i = _slicedToArray(_Object$entries[_i2], 2),
@@ -5219,7 +5214,7 @@
 
       _classCallCheck(this, ProjectMetadata);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(ProjectMetadata).call(this, identifiers, json));
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(ProjectMetadata).call(this, identifiers));
 
       if (json) {
         _this.identifier = json.identifier || '';
@@ -5249,7 +5244,7 @@
 
       _classCallCheck(this, VisitorGeolocation);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(VisitorGeolocation).call(this, identifiers, json));
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(VisitorGeolocation).call(this, identifiers));
       _this.countryCode = json.country;
       return _this;
     }
@@ -6255,7 +6250,7 @@
 
       _classCallCheck(this, ExcelColumn);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(ExcelColumn).call(this, identifiers, data));
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(ExcelColumn).call(this, identifiers));
       _this.cells = [];
 
       if (data) {
@@ -6311,12 +6306,12 @@
   var ExcelRow = /*#__PURE__*/function (_ExcelObject) {
     _inherits(ExcelRow, _ExcelObject);
 
-    function ExcelRow(identifiers, data, names, sheetLanguageCodes) {
+    function ExcelRow(identifiers, names, sheetLanguageCodes) {
       var _this;
 
       _classCallCheck(this, ExcelRow);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(ExcelRow).call(this, identifiers, data));
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(ExcelRow).call(this, identifiers));
       _this.cells = [];
       _this.languages = sheetLanguageCodes;
       _this.names = names;
@@ -6431,7 +6426,7 @@
 
       _classCallCheck(this, ExcelCell);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(ExcelCell).call(this, identifiers, data));
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(ExcelCell).call(this, identifiers));
       var json, resources, type;
 
       if (data == null) {
@@ -6517,7 +6512,7 @@
 
       _classCallCheck(this, ExcelSheet);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(ExcelSheet).call(this, identifiers, data));
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(ExcelSheet).call(this, identifiers));
       _this.columns = [];
       _this.rows = [];
 
@@ -6588,7 +6583,7 @@
         try {
           for (var _iterator2 = (data.rows || [])[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
             var rowData = _step2.value;
-            var row = new ExcelRow(identifiers, rowData, columnNames, _this.languages);
+            var row = new ExcelRow(identifiers, columnNames, _this.languages);
 
             _this.rows.push(row);
 
@@ -7011,7 +7006,7 @@
 
       _classCallCheck(this, ExcelFile);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(ExcelFile).call(this, identifiers, json));
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(ExcelFile).call(this, identifiers));
       _this.fileId = identifiers[0];
 
       if (json) {
@@ -7323,10 +7318,10 @@
 
       _classCallCheck(this, GitlabWiki);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(GitlabWiki).call(this, identifiers, json));
-      _this.repoId = identifiers[0];
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(GitlabWiki).call(this, identifiers));
 
       if (json) {
+        _this.repoId = identifiers[0];
         _this.slug = json.slug;
         _this.title = new Text(json.title);
         _this.content = new Text(json.content);
@@ -7386,12 +7381,12 @@
   var WordpressObject = /*#__PURE__*/function (_DataSourceObject) {
     _inherits(WordpressObject, _DataSourceObject);
 
-    function WordpressObject(identifiers, json) {
+    function WordpressObject(identifiers) {
       var _this;
 
       _classCallCheck(this, WordpressObject);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(WordpressObject).call(this, identifiers, json));
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(WordpressObject).call(this, identifiers));
       _this.siteId = identifiers[0];
       return _this;
     }
@@ -7439,7 +7434,7 @@
 
       _classCallCheck(this, WordpressCategory);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(WordpressCategory).call(this, identifiers, json));
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(WordpressCategory).call(this, identifiers));
 
       if (json) {
         _this.id = json.id;
@@ -7474,7 +7469,7 @@
 
       _classCallCheck(this, WordpressMedia);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(WordpressMedia).call(this, identifiers, json));
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(WordpressMedia).call(this, identifiers));
 
       if (json) {
         _this.id = json.id;
@@ -7518,7 +7513,7 @@
 
       _classCallCheck(this, WordpressPage);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(WordpressPage).call(this, identifiers, json));
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(WordpressPage).call(this, identifiers));
 
       if (json) {
         _this.id = json.id;
@@ -7560,7 +7555,7 @@
 
       _classCallCheck(this, WordpressPost);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(WordpressPost).call(this, identifiers, json));
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(WordpressPost).call(this, identifiers));
 
       if (json) {
         _this.id = json.id;
@@ -7603,7 +7598,7 @@
 
       _classCallCheck(this, WordpressSite);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(WordpressSite).call(this, identifiers, json));
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(WordpressSite).call(this, identifiers));
 
       if (json) {
         _this.url = json.url;
@@ -7644,7 +7639,7 @@
 
       _classCallCheck(this, WordpressTag);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(WordpressTag).call(this, identifiers, json));
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(WordpressTag).call(this, identifiers));
 
       if (json) {
         _this.id = json.id;
@@ -7678,7 +7673,7 @@
 
       _classCallCheck(this, WordpressUser);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(WordpressUser).call(this, identifiers, json));
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(WordpressUser).call(this, identifiers));
 
       if (json) {
         _this.id = json.id;

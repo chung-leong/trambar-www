@@ -3,7 +3,7 @@ import { Text } from '../text.mjs';
 
 class WordpressMedia extends WordpressObject {
   constructor(identifiers, json) {
-    super(identifiers, json);
+    super(identifiers);
 
     if (json) {
       this.id = json.id;

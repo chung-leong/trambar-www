@@ -4,6 +4,7 @@ class Resource {
       this.type = data.type;
       this.src = data.src;
       this.url = data.url;
+      this.error = data.error;
       this.width = data.width;
       this.height = data.height;
       this.naturalWidth = this.width;

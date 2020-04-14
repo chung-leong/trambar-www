@@ -3,8 +3,7 @@ import { Text } from '../text.mjs';
 
 class WordpressSite extends WordpressObject {
   constructor(identifiers, json) {
-    super(identifiers, json);
-
+    super(identifiers);
     if (json) {
       this.url = json.url;
       this.home = json.home;

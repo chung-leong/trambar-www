@@ -3,7 +3,7 @@ import { Text } from '../text.mjs';
 
 class ExcelCell extends ExcelObject {
   constructor(identifiers, data, columnLanguages) {
-    super(identifiers, data);
+    super(identifiers);
 
     let json, resources, type;
     if (data == null) {

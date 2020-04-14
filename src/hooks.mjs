@@ -148,7 +148,7 @@ function useRichText(hookOpts) {
         options.imageTransform = { ...options.imageTransform, ratio };
       }
     } else {
-      option.imageTransform = { ratio };
+      options.imageTransform = { ratio };
     }
   }
   useDebugValue(hookOpts);

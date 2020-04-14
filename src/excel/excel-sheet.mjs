@@ -6,10 +6,9 @@ import { findLanguageCodes, chooseLanguageVersion } from '../text.mjs';
 
 class ExcelSheet extends ExcelObject {
   constructor(identifiers, data) {
-    super(identifiers, data);
+    super(identifiers);
     this.columns = [];
     this.rows = [];
-
     if (data) {
       this.name = data.name || '';
       this.flags = data.flags || [];
@@ -27,7 +26,7 @@ class ExcelSheet extends ExcelObject {
         }
       }
       for (let rowData of data.rows || []) {
-        const row = new ExcelRow(identifiers, rowData, columnNames, this.languages);
+        const row = new ExcelRow(identifiers, columnNames, this.languages);
         this.rows.push(row);
         for (let [ index, cellData ] of rowData.entries()) {
           const column = this.columns[index];

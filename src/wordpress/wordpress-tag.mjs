@@ -3,8 +3,7 @@ import { Text } from '../text.mjs';
 
 class WordpressTag extends WordpressObject {
   constructor(identifiers, json) {
-    super(identifiers, json);
-
+    super(identifiers);
     if (json) {
       this.id = json.id;
       this.count = json.count;

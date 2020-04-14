@@ -1,9 +1,8 @@
 import { DataSourceObject } from '../data-source-object.mjs';
 
 class WordpressObject extends DataSourceObject {
-  constructor(identifiers, json) {
-    super(identifiers, json);
-
+  constructor(identifiers) {
+    super(identifiers);
     this.siteId = identifiers[0];
   }
 

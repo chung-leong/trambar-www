@@ -2,8 +2,8 @@ import { ExcelObject } from './excel-object.mjs';
 import { chooseLanguageVersion } from '../text.mjs';
 
 class ExcelRow extends ExcelObject {
-  constructor(identifiers, data, names, sheetLanguageCodes) {
-    super(identifiers, data);
+  constructor(identifiers, names, sheetLanguageCodes) {
+    super(identifiers);
     this.cells = [];
     this.languages = sheetLanguageCodes;
     this.names = names;

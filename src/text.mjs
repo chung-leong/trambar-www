@@ -13,17 +13,17 @@ class Text {
   }
 
   getPlainText(options) {
-    const text = this.getPlainTextFromNodes(this.json, options || {});
+    const text = this.getPlainTextFromNodes(this.json || [], options || {});
     return text.trim();
   }
 
   getRichText(options, key) {
-    return this.getRichTextFromNodes(this.json, options || {}, key);
+    return this.getRichTextFromNodes(this.json || [], options || {}, key);
   }
 
   getAvailableLanguages() {
     const codes = [];
-    const choices = this.separateNodesByLanguages(this.json);
+    const choices = this.separateNodesByLanguages(this.json || []);
     for (let choice of choices) {
       if (choice.languages) {
         for (let code of choice.languages) {
@@ -37,7 +37,7 @@ class Text {
   }
 
   getLanguageSpecific(lang) {
-    const choices = this.separateNodesByLanguages(this.json);
+    const choices = this.separateNodesByLanguages(this.json || []);
     const chosen = chooseLanguageVersion(choices, lang);
     const json = [];
     for (let choice of chosen) {
@@ -52,7 +52,7 @@ class Text {
   }
 
   getLanguageSpecificSections(lang) {
-    const choices = this.separateNodesByLanguages(this.json);
+    const choices = this.separateNodesByLanguages(this.json || []);
     const chosen = chooseLanguageVersion(choices, lang);
     const sections = [];
     for (let choice of choices) {
@@ -307,10 +307,6 @@ class Text {
         context.pop();
       }
       props = { key, ...props };
-      if (!type) {
-        throw new Error('!')
-        console.log(node, type)
-      }
       return React.createElement(type, props, children);
     } else if (typeof(node) === 'string') {
       return node;
@@ -332,12 +328,12 @@ class Text {
     }
   }
 
-  separateNodesByLanguages() {
+  separateNodesByLanguages(nodes) {
     const choices = [];
     let topic = 0;
     let languages;
     let choice;
-    for (let node of this.json) {
+    for (let node of nodes) {
       const newLanguages = this.getLanguageCodesFromNode(node);
       if (newLanguages) {
         if (newLanguages.length > 0) {

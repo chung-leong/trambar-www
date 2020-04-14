@@ -3,10 +3,9 @@ import { Text } from '../text.mjs';
 
 class GitlabWiki extends GitlabObject {
   constructor(identifiers, json) {
-    super(identifiers, json);
-
-    this.repoId = identifiers[0];
+    super(identifiers);
     if (json) {
+      this.repoId = identifiers[0];
       this.slug = json.slug;
       this.title = new Text(json.title);
       this.content = new Text(json.content);

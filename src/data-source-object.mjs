@@ -1,9 +1,8 @@
 import { Text } from './text.mjs';
 
 class DataSourceObject {
-  constructor(identifiers, json) {
+  constructor(identifiers) {
     this.identifiers = identifiers;
-    this.json = json;
   }
 
   getAvailableLanguages() {
@@ -22,7 +21,7 @@ class DataSourceObject {
   }
 
   getLanguageSpecific(lang) {
-    const object = new this.constructor(this.identifiers);
+    const object = new this.constructor;
     for (let [ name, value ] of Object.entries(this)) {
       if (value instanceof Text) {
         value = value.getLanguageSpecific(lang);
