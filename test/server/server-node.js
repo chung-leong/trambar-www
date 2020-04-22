@@ -22,13 +22,14 @@ async function start(port) {
   };
   app.use(CORS(corsOptions));
   app.set('json spaces', 2);
-  app.get('/data/excel/:identifier/', handleExcelRequest);
+  app.get('/data/excel/:fileId/', handleExcelRequest);
   app.get('/data/excel/', handleExcelListRequest);
-  app.get('/data/wiki/:identifier/:slug/', handleWikiRequest);
-  app.get('/data/wiki/:identifier/', handleWikiListRequest);
-  app.get('/data/wiki/', handleWikiListRequest);
-  app.get('/data/rest/:identifier/*', handleRestRequest);
-  app.get('/data/rest/:identifier/', handleRestRequest);
+  app.get('/data/repo/:repoId/wiki/:slug/', handleWikiRequest);
+  app.get('/data/repo/:repoId/wiki/', handleWikiListRequest);
+  app.get('/data/repo/:repoId/', handleRepoRequest);
+  app.get('/data/repo/', handleRepoListRequest);
+  app.get('/data/rest/:restId/*', handleRestRequest);
+  app.get('/data/rest/:restId/', handleRestRequest);
   app.get('/data/rest/', handleRestListRequest);
   app.get('/data/meta/', handleMetaRequest);
   app.use(handleError);
@@ -71,8 +72,8 @@ async function stop() {
 
 async function handleExcelRequest(req, res, next) {
   try {
-    const { identifier } = req.params;
-    const data = await loadExcel(identifier);
+    const { fileId } = req.params;
+    const data = await loadExcel(fileId);
     res.json(data);
   } catch (err) {
     next(err);
@@ -81,8 +82,8 @@ async function handleExcelRequest(req, res, next) {
 
 async function handleExcelListRequest(req, res, next) {
   try {
-    const identifiers = await findExcel();
-    res.json(identifiers);
+    const fileIds = await findExcel();
+    res.json(fileIds);
   } catch (err) {
     next(err);
   }
@@ -90,8 +91,8 @@ async function handleExcelListRequest(req, res, next) {
 
 async function handleWikiRequest(req, res, next) {
   try {
-    const { identifier, slug } = req.params;
-    const data = await loadWiki(identifier, slug);
+    const { repoId, slug } = req.params;
+    const data = await loadWiki(repoId, slug);
     res.json(data);
   } catch (err) {
     next(err);
@@ -100,21 +101,28 @@ async function handleWikiRequest(req, res, next) {
 
 async function handleWikiListRequest(req, res, next) {
   try {
-    const { identifier } = req.params;
-    if (identifier !== undefined) {
-      const slugs = await findWiki(identifier);
-      res.json(slugs);
-    } else {
-      const urls = [];
-      const identifiers = await findRepos();
-      for (let identifier of identifiers) {
-        const slugs = await findWiki(identifier);
-        for (let slug of slugs) {
-          urls.push(`${identifier}/${slug}`);
-        }
-      }
-      res.json(urls);
-    }
+    const { repoId } = req.params;
+    const slugs = await findWiki(repoId);
+    res.json(slugs);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function handleRepoRequest(req, res, next) {
+  try {
+    const { repoId } = req.params;
+    const repo = await loadRepo(repoId);
+    res.json(repo);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function handleRepoListRequest(req, res, next) {
+  try {
+    const repoIds = await findRepos();
+    res.json(repoIds);
   } catch (err) {
     next(err);
   }
@@ -122,9 +130,9 @@ async function handleWikiListRequest(req, res, next) {
 
 async function handleRestRequest(req, res, next) {
   try {
-    const { identifier } = req.params;
+    const { restId } = req.params;
     const path = req.params[0];
-    const data = await findRestObjects(identifier, path);
+    const data = await findRestObjects(restId, path);
     res.json(data);
   } catch (err) {
     next(err);
@@ -142,34 +150,7 @@ async function handleRestListRequest(req, res, next) {
 
 async function handleMetaRequest(req, res, next) {
   try {
-    const project = {
-      id: 2,
-      gn: 8,
-      deleted: false,
-      ctime: '2020-02-20T10:41:46.398Z',
-      mtime: '2020-02-21T10:41:46.398Z',
-      name: 'test',
-      details: {
-        title: {
-          en: 'Test',
-        },
-        description: {
-          en: 'This is a test',
-          pl: 'To jest test',
-        }
-      },
-      repo_ids: [ 3 ],
-      user_ids: [ 1, 2, 3, 4 ],
-      template_repo_id: 8,
-      archived: false,
-      settings: {},
-    };
-    const data = {
-      identifier: project.name,
-      title: convertMultilingualText(project.details.title),
-      description: convertMultilingualText(project.details.description),
-      archived: project.archived,
-    };
+    const data = await loadProjectMeta();
     res.json(data);
   } catch (err) {
     next(err);
@@ -181,8 +162,21 @@ function handleError(err, req, res, next) {
   res.sendStatus(400);
 }
 
-async function loadExcel(identifier) {
-  const path = `${__dirname}/../assets/excel/${identifier}.xlsx`;
+async function loadProjectMeta() {
+  const jsonPath = `${__dirname}/../assets/project.json`;
+  const jsonText = await readFile(jsonPath, 'utf8');
+  const project = JSON.parse(jsonText);
+  const data = {
+    id: project.name,
+    title: convertMultilingualText(project.details.title),
+    description: convertMultilingualText(project.details.description),
+    archived: project.archived,
+  };
+  return data;
+}
+
+async function loadExcel(fileId) {
+  const path = `${__dirname}/../assets/excel/${fileId}.xlsx`;
   const buffer = await readFile(path);
   const workbook = await parseSpreadsheet(buffer);
   const mediaImports = findMediaImports(workbook.sheets);
@@ -213,8 +207,8 @@ async function findExcel() {
   return _.sortBy(names);
 }
 
-async function loadWiki(repoName, slug) {
-  const path = `${__dirname}/../assets/gitlab/${repoName}/${slug}.md`;
+async function loadWiki(repoId, slug) {
+  const path = `${__dirname}/../assets/gitlab/${repoId}/${slug}.md`;
   const text = await readFile(path, 'utf8');
   const json = await parseMarkdown(text);
   const resources = await importImages(json);
@@ -229,19 +223,31 @@ async function loadWiki(repoName, slug) {
 
 async function findRepos() {
   const path = `${__dirname}/../assets/gitlab`;
-  const folders = await readdir(path);
-  const names = [];
-  for (let folder of folders) {
-    const info = await stat(`${path}/${folder}`);
+  const names = await readdir(path);
+  const folders = [];
+  for (let name of names) {
+    const info = await stat(`${path}/${name}`);
     if (info.isDirectory()) {
-      names.push(folder);
+      folders.push(name);
     }
   }
-  return _.sortBy(names);
+  return _.sortBy(folders);
 }
 
-async function findWiki(repoName) {
-  const path = `${__dirname}/../assets/gitlab/${repoName}`;
+async function loadRepo(repoId) {
+  const jsonPath = `${__dirname}/../assets/gitlab/${repoId}.json`;
+  const jsonText = await readFile(jsonPath, 'utf8');
+  const repo = JSON.parse(jsonText);
+  const data = {
+    id: repo.name,
+    title: convertMultilingualText(repo.details.title),
+    description: convertMultilingualText(repo.details.description),
+  };
+  return data;
+}
+
+async function findWiki(repoId) {
+  const path = `${__dirname}/../assets/gitlab/${repoId}`;
   const filenames = await readdir(path);
   const slugs = [];
   for (let filename of filenames) {
@@ -253,8 +259,21 @@ async function findWiki(repoName) {
   return _.sortBy(slugs);
 }
 
-async function findRestObjects(identifier, path) {
-  const name = identifier + ((path) ? `/${_.trimEnd(path, '/')}` : ``);
+async function findRestSources() {
+  const path = `${__dirname}/../assets/rest`;
+  const names = await readdir(path);
+  const folders = [];
+  for (let name of names) {
+    const info = await stat(`${path}/${name}`);
+    if (info.isDirectory()) {
+      folders.push(name);
+    }
+  }
+  return _.sortBy(folders);
+}
+
+async function findRestObjects(restId, path) {
+  const name = restId + ((path) ? `/${_.trimEnd(path, '/')}` : ``);
   try {
     const jsonPath = `${__dirname}/../assets/rest/${name}.json`;
     const jsonText = await readFile(jsonPath, 'utf8');
@@ -327,12 +346,6 @@ async function transformWPData(data, url) {
     }
     return res;
   }
-}
-
-async function findRestSources() {
-  const path = `${__dirname}/../assets/rest`;
-  const folders = await readdir(path);
-  return folders;
 }
 
 async function parseSpreadsheet(buffer) {

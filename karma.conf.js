@@ -27,6 +27,15 @@ module.exports = function(config) {
       'karma-spec-reporter',
     ],
     reporters: [ 'spec' ],
+    specReporter: {
+      maxLogLines: 5,
+      suppressErrorSummary: true,
+      suppressFailed: false,
+      suppressPassed: false,
+      suppressSkipped: true,
+      showSpecTiming: false,
+      failFast: false,
+    },
 
     webpack: {
       mode: 'development',

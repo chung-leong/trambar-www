@@ -27,6 +27,7 @@ export * from './excel/excel-sheet.mjs';
 export * from './gitlab/gitlab.mjs';
 export * from './gitlab/gitlab-object.mjs';
 export * from './gitlab/gitlab-wiki.mjs';
+export * from './gitlab/gitlab-repo.mjs';
 
 export * from './wordpress/wordpress.mjs';
 export * from './wordpress/wordpress-category.mjs';

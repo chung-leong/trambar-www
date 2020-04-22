@@ -1,0 +1,23 @@
+{
+  "id": 2,
+  "gn": 8,
+  "deleted": false,
+  "ctime": "2020-02-20T10:41:46.398Z",
+  "mtime": "2020-02-21T10:41:46.398Z",
+  "name": "repo2",
+  "details": {
+    "title": {
+      "en": "Repo 2"
+    },
+    "description": {
+      "en": "This is a test 2",
+      "pl": "To jest test 2"
+    }
+  },
+  "user_ids": [
+    1,
+    2,
+    3
+  ],
+  "template": false
+}

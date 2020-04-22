@@ -4,10 +4,9 @@ import { chooseLanguageVersion } from '../text.mjs';
 
 class ExcelFile extends ExcelObject {
   constructor(identifiers, json) {
-    super(identifiers);
-
-    this.fileId = identifiers[0];
+    super();
     if (json) {
+      this.id = identifiers[0];
       this.title = json.title || '';
       this.type = json.type || '';
       this.filename = json.filename || '';

@@ -1,10 +1,6 @@
 import { Text } from './text.mjs';
 
 class DataSourceObject {
-  constructor(identifiers) {
-    this.identifiers = identifiers;
-  }
-
   getAvailableLanguages() {
     const codes = [];
     for (let value of Object.values(this)) {

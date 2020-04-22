@@ -4,7 +4,7 @@ import Server, { fetchTestData } from './server/server.js';
 
 import {
   GitlabWiki,
-} from '../index.mjs';
+} from '../src/index.mjs';
 
 const serverPort = 7111;
 const serverAddress = `http://localhost:${serverPort}`;
@@ -112,8 +112,6 @@ Look at this one too: [external image]
     })
   })
 })
-
-let testData = {};
 
 async function loadTestPage(identifiers) {
   const data = await loadTestData(identifiers);

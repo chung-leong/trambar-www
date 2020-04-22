@@ -2,8 +2,10 @@ import { DataSourceObject } from '../data-source-object.mjs';
 
 class WordpressObject extends DataSourceObject {
   constructor(identifiers) {
-    super(identifiers);
-    this.siteId = identifiers[0];
+    super();
+    if (identifiers) {
+      this.siteId = identifiers[0];
+    }
   }
 
   static getObjectURL(identifiers) {

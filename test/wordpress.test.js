@@ -10,7 +10,7 @@ import {
   WordpressSite,
   WordpressTag,
   WordpressUser,
-} from '../index.mjs';
+} from '../src/index.mjs';
 
 const serverPort = 8711;
 const serverAddress = `http://localhost:${serverPort}`;
@@ -258,8 +258,6 @@ Sal Cangeloso is the Managing Editor at ExtremeTech.com and Geek.com, and the au
     })
   })
 });
-
-let testData = {};
 
 async function loadTestObject(identifiers, constructor) {
   const data = await loadTestData(identifiers, constructor);

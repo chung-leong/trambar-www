@@ -15,68 +15,68 @@ class DataSourceProxy {
     return this.dataSource.findExcelFiles(criteria);
   }
 
-  fetchWikiPage(repoId, slug) {
+  fetchWikiPage(slug, repoId) {
     return this.dataSource.fetchWikiPage(repoId, slug);
   }
 
-  findWikiPages(repoId, criteria) {
+  findWikiPages(criteria, repoId) {
     return this.dataSource.findWikiPages(repoId, criteria);
   }
 
-  fetchWPCategory(siteId, categoryId) {
-    return this.dataSource.fetchWPCategory(siteId, categoryId);
+  fetchWPCategory(categoryId, siteId) {
+    return this.dataSource.fetchWPCategory(categoryId, siteId);
   }
 
-  fetchWPCategories(siteId, categoryIds) {
-    return this.dataSource.fetchWPCategories(siteId, categoryIds);
+  fetchWPCategories(categoryIds, siteId) {
+    return this.dataSource.fetchWPCategories(categoryIds, siteId);
   }
 
-  fetchWPMedia(siteId, mediaId) {
-    return this.dataSource.fetchWPMedia(siteId, mediaId);
+  fetchWPMedia(mediaId, siteId) {
+    return this.dataSource.fetchWPMedia(mediaId, siteId);
   }
 
-  fetchWPMedias(siteId, mediaIds) {
-    return this.dataSource.fetchWPMedias(siteId, mediaIds);
+  fetchWPMedias(mediaIds, siteId) {
+    return this.dataSource.fetchWPMedias(mediaIds, siteId);
   }
 
-  fetchWPPage(siteId, pageId) {
-    return this.dataSource.fetchWPPage(siteId, pageId);
+  fetchWPPage(pageId, siteId) {
+    return this.dataSource.fetchWPPage(pageId, siteId);
   }
 
-  fetchWPPages(siteId, pageIds) {
-    return this.dataSource.fetchWPPages(siteId, pageIds);
+  fetchWPPages(pageIds, siteId) {
+    return this.dataSource.fetchWPPages(pageIds, siteId);
   }
 
-  fetchWPPost(siteId, postId) {
-    return this.dataSource.fetchWPPost(siteId, postId);
+  fetchWPPost(postId, siteId) {
+    return this.dataSource.fetchWPPost(postId, siteId);
   }
 
-  fetchWPPosts(siteId, postIds) {
-    return this.dataSource.fetchWPPosts(siteId, postIds);
+  fetchWPPosts(postIds, siteId) {
+    return this.dataSource.fetchWPPosts(postIds, siteId);
   }
 
-  findWPPosts(siteId, criteria) {
-    return this.dataSource.findWPPosts(siteId, criteria);
+  findWPPosts(criteria, siteId) {
+    return this.dataSource.findWPPosts(criteria, siteId);
   }
 
-  fetchWPTag(siteId, tagId) {
-    return this.dataSource.fetchWPTag(siteId, tagId);
+  fetchWPTag(tagId, siteId) {
+    return this.dataSource.fetchWPTag(tagId, siteId);
   }
 
-  fetchWPTags(siteId, tagIds) {
-    return this.dataSource.fetchWPTags(siteId, tagIds);
+  fetchWPTags(tagIds, siteId) {
+    return this.dataSource.fetchWPTags(tagIds, siteId);
   }
 
-  fetchWPUser(siteId, userId) {
-    return this.dataSource.fetchWPUser(siteId, userId);
+  fetchWPUser(userId, siteId) {
+    return this.dataSource.fetchWPUser(userId, siteId);
   }
 
-  fetchWPUsers(siteId, userIds) {
-    return this.dataSource.fetchWPUsers(siteId, userIds);
+  fetchWPUsers(userIds, siteId) {
+    return this.dataSource.fetchWPUsers(userIds, siteId);
   }
 
-  findWPUsers(siteId, criteria) {
-    return this.dataSource.findWPUsers(siteId, criteria);
+  findWPUsers(criteria, siteId) {
+    return this.dataSource.findWPUsers(criteria, siteId);
   }
 
   fetchWPSite(siteId) {

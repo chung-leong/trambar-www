@@ -1,27 +1,26 @@
 import { GitlabObject } from './gitlab-object.mjs';
 import { Text } from '../text.mjs';
 
-class GitlabWiki extends GitlabObject {
+class GitlabRepo extends GitlabObject {
   constructor(identifiers, json) {
     super(identifiers);
     if (json) {
-      this.repoId = identifiers[0];
-      this.slug = json.slug;
-      this.title = new Text(json.title);
-      this.content = new Text(json.content);
+      this.id = identifiers[0];
+      this.name = new Text(json.name);
+      this.description = new Text(json.description);
     }
   }
 
   static getObjectURL(identifiers) {
     const [ repoId, slug ] = identifiers;
-    let url = `repo/${repoId}/wiki/`;
-    if (slug) {
-      url += `${slug}/`;
+    let url = `repo/`;
+    if (repoId) {
+      url += `${repoId}/`;
     }
     return url;
   }
 }
 
 export {
-  GitlabWiki,
+  GitlabRepo,
 };

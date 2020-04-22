@@ -21,7 +21,7 @@ import Relaks, {
   Excel,
   LocaleManager,
   LocaleManagerProxy,
-} from '../index.mjs';
+} from '../src/index.mjs';
 
 const serverPort = 8111;
 const serverAddress = `http://localhost:${serverPort}`;
@@ -78,7 +78,7 @@ describe('Hooks', function() {
         const pt = usePlainText();
 
         show(<div />)
-        const page = await db.fetchWikiPage('repo2', 'test-2');
+        const page = await db.fetchWikiPage('test-2', 'repo2');
         show(<div>{pt(page.content)}</div>);
       });
       const options = { baseURL: serverAddress };
@@ -112,7 +112,7 @@ Look at this one too: [external image]
         const pt = usePlainText();
 
         show(<div />)
-        const page = await db.fetchWikiPage('repo2', 'test-2');
+        const page = await db.fetchWikiPage('test-2', 'repo2');
         show(<div>{pt(page.title)}</div>);
       });
       const options = { baseURL: serverAddress };
@@ -131,7 +131,7 @@ Look at this one too: [external image]
         const pt = usePlainText();
 
         show(<div />)
-        const page = await db.fetchWikiPage('repo1', 'test-1');
+        const page = await db.fetchWikiPage('test-1', 'repo1');
         show(<div>{pt(page.content)}</div>);
       });
       const options = { baseURL: serverAddress };
@@ -163,7 +163,7 @@ Copyright
         const rt = useRichText();
 
         show(<div />)
-        const page = await db.fetchWikiPage('repo2', 'test-2');
+        const page = await db.fetchWikiPage('test-2', 'repo2');
         show(<div>{rt(page.content)}</div>);
       });
       const options = { baseURL: serverAddress };
@@ -196,7 +196,7 @@ Copyright
         const pt = useRichText();
 
         show(<div />)
-        const page = await db.fetchWikiPage('repo1', 'test-1');
+        const page = await db.fetchWikiPage('test-1', 'repo1');
         show(<div>{pt(page.content)}</div>);
       });
       const options = { baseURL: serverAddress };
@@ -226,7 +226,7 @@ Copyright
         const rt = useRichText();
 
         show(<div />)
-        const page = await db.fetchWikiPage('repo2', 'test-2');
+        const page = await db.fetchWikiPage('test-2', 'repo2');
         show(<div>{rt(page.title)}</div>);
       });
       const options = { baseURL: serverAddress };
@@ -245,7 +245,7 @@ Copyright
         const rt = useRichText({ imageTransform: { height: 50 } });
 
         show(<div />)
-        const page = await db.fetchWikiPage('repo2', 'test-2');
+        const page = await db.fetchWikiPage('test-2', 'repo2');
         show(<div>{rt(page.content)}</div>);
       });
       const options = { baseURL: serverAddress };
@@ -278,7 +278,7 @@ Copyright
         const rt = useRichText({ imageTransform: { width: 50 } });
 
         show(<div />)
-        const page = await db.fetchWikiPage('repo2', 'test-2');
+        const page = await db.fetchWikiPage('test-2', 'repo2');
         show(<div>{rt(page.content)}</div>);
       });
       const options = { baseURL: serverAddress };
@@ -311,7 +311,7 @@ Copyright
         const rt = useRichText({ imageTransform: { width: 50, height: 20 } });
 
         show(<div />)
-        const page = await db.fetchWikiPage('repo2', 'test-2');
+        const page = await db.fetchWikiPage('test-2', 'repo2');
         show(<div>{rt(page.content)}</div>);
       });
       const options = { baseURL: serverAddress };
@@ -344,7 +344,7 @@ Copyright
         const rt = useRichText({ imageTransform: { width: 50, height: 20 } });
 
         show(<div />)
-        const page = await db.fetchWikiPage('repo2', 'test-2');
+        const page = await db.fetchWikiPage('test-2', 'repo2');
         show(<div>{rt(page.content)}</div>);
       });
       const options = { baseURL: serverAddress };
@@ -388,7 +388,7 @@ Copyright
         const rt = useRichText({ renderFunc });
 
         show(<div />)
-        const page = await db.fetchWikiPage('repo2', 'test-2');
+        const page = await db.fetchWikiPage('test-2', 'repo2');
         show(<div>{rt(page.content)}</div>);
       });
       const options = { baseURL: serverAddress };
@@ -433,7 +433,7 @@ Copyright
         const rt = useRichText({ adjustFunc });
 
         show(<div />)
-        const page = await db.fetchWikiPage('repo2', 'test-2');
+        const page = await db.fetchWikiPage('test-2', 'repo2');
         show(<div>{rt(page.content)}</div>);
       });
       const options = { baseURL: serverAddress };

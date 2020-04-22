@@ -3,9 +3,9 @@ import { Text } from './text.mjs';
 
 class ProjectMetadata extends DataSourceObject {
   constructor(identifiers, json) {
-    super(identifiers);
+    super();
     if (json) {
-      this.identifier = json.identifier || '';
+      this.id = json.id || '';
       this.title = new Text(json.title);
       this.description = new Text(json.description);
       this.archived = json.archived || false;

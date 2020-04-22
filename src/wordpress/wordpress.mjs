@@ -8,77 +8,192 @@ import { WordpressTag } from './wordpress-tag.mjs';
 import { WordpressUser } from './wordpress-user.mjs';
 
 class Wordpress extends DataSource {
-  fetchWPCategory(siteId, categoryId) {
-    return this.fetchWPObject(WordpressCategory, siteId, categoryId);
+  /**
+   * Fetch a category
+   *
+   * @param  {number|string} categoryId
+   * @param  {string} [siteId]
+   *
+   * @return {Promise<WordpressCategory>}
+   */
+  fetchWPCategory(categoryId, siteId) {
+    return this.fetchWPObject(WordpressCategory, categoryId, siteId);
   }
 
-  fetchWPCategories(siteId, categoryIds) {
-    return this.fetchWPObjects(WordpressCategory, siteId, categoryIds);
+  /**
+   * Fetch multiple categories
+   *
+   * @param  {number[]|string[]} categoryIds
+   * @param  {string} [siteId]
+   *
+   * @return {Promise<WordpressCategory[]>}
+   */
+  fetchWPCategories(categoryIds, siteId) {
+    return this.fetchWPObjects(WordpressCategory, categoryIds, siteId);
   }
 
-  fetchWPMedia(siteId, mediaId) {
-    return this.fetchWPObject(WordpressMedia, siteId, mediaId);
+  /**
+   * Fetch metadata of an image
+   *
+   * @param  {number} mediaId
+   * @param  {string} [siteId]
+   *
+   * @return {Promise<WordpressMedia>}
+   */
+  fetchWPMedia(mediaId, siteId) {
+    return this.fetchWPObject(WordpressMedia, mediaId, siteId);
   }
 
-  fetchWPMedias(siteId, mediaIds) {
-    return this.fetchWPObjects(WordpressMedia, siteId, mediaIds);
+  /**
+   * Fetch metadata of multiple images
+   *
+   * @param  {number[]|string[]} mediaIds
+   * @param  {string} siteId
+   *
+   * @return {Promise<WordpressMedia[]>}
+   */
+  fetchWPMedias(mediaIds, siteId) {
+    return this.fetchWPObjects(WordpressMedia, mediaIds, siteId);
   }
 
-  fetchWPPage(siteId, pageId) {
-    return this.fetchWPObject(WordpressPage, siteId, pageId);
+  /**
+   * Fetch a page
+   *
+   * @param  {number|string} pageId
+   * @param  {string} [siteId]
+   *
+   * @return {Promise<WordpressPage>}
+   */
+  fetchWPPage(pageId, siteId) {
+    return this.fetchWPObject(WordpressPage, pageId, siteId);
   }
 
-  fetchWPPages(siteId, pageIds) {
+  /**
+   * Fetch multiple pages
+   *
+   * @param  {number[]|string[]} pageIds
+   * @param  {string} [siteId]
+   *
+   * @return {Promise<WordpressPage[]>}
+   */
+  fetchWPPages(pageIds, siteId) {
     return this.fetchWPObjects(WordpressPage, siteId, pageIds);
   }
 
-  fetchWPPost(siteId, postId) {
-    return this.fetchWPObject(WordpressPost, siteId, postId);
+  /**
+   * Fetch a a post
+   *
+   * @param  {number|string} postId
+   * @param  {string} [siteId]
+   *
+   * @return {Promise<WordpressPost>}
+   */
+  fetchWPPost(postId, siteId) {
+    return this.fetchWPObject(WordpressPost, postId, siteId);
   }
 
-  fetchWPPosts(siteId, postIds) {
-    return this.fetchWPObjects(WordpressPost, siteId, postIds);
+  /**
+   * Fetch multiple posts
+   *
+   * @param  {number[]|string[]} postIds
+   * @param  {string} [siteId]
+   *
+   * @return {Promise<WordpressPost[]>}
+   */
+  fetchWPPosts(postIds, siteId) {
+    return this.fetchWPObjects(WordpressPost, postIds, siteId);
   }
 
-  findWPPosts(siteId, criteria) {
-    return this.findObjects(WordpressPost, [ siteId ], criteria);
+  /**
+   * Find posts matching criteria
+   *
+   * @param  {Object} criteria
+   * @param  {string} [siteId]
+   *
+   * @return {Promise<WordpressPost[]>}
+   */
+  findWPPosts(criteria, siteId) {
+    return this.findWPObjects(WordpressPost, criteria, siteId);
   }
 
-  fetchWPTag(siteId, tagId) {
-    return this.fetchWPObject(WordpressTag, siteId, tagId);
+  /**
+   * Fetch a tag
+   *
+   * @param  {number|string} tagId
+   * @param  {string} [siteId]
+   *
+   * @return {Promise<WordpressTag>}
+   */
+  fetchWPTag(tagId, siteId) {
+    return this.fetchWPObject(WordpressTag, tagId, siteId);
   }
 
-  fetchWPTags(siteId, tagIds) {
-    return this.fetchWPObjects(WordpressTag, siteId, tagIds);
+  /**
+   * Fetch multiple tags
+   *
+   * @param  {number[]|string[]} tagIds
+   * @param  {string} siteId
+   *
+   * @return {Promise<WordpressTag[]>}
+   */
+  fetchWPTags(tagIds, siteId) {
+    return this.fetchWPObjects(WordpressTag, tagIds, siteId);
   }
 
-  fetchWPUser(siteId, userId) {
+  /**
+   * Fetch a user record
+   *
+   * @param  {number|string} userId
+   * @param  {string} [siteId]
+   *
+   * @return {Promise<WordpressUser>}
+   */
+  fetchWPUser(userId, siteId) {
     return this.fetchWPObject(WordpressUser, siteId, userId);
   }
 
-  fetchWPUsers(siteId, userIds) {
-    return this.fetchWPObjects(WordpressUser, siteId, userIds);
+  /**
+   * Fetch multiple user records
+   *
+   * @param  {number[]|string[]} userIds
+   * @param  {string} [siteId]
+   *
+   * @return {Promise<WordpressUser[]>}
+   */
+  fetchWPUsers(userIds, siteId) {
+    return this.fetchWPObjects(WordpressUser, userIds, siteId);
   }
 
-  findWPUsers(siteId, criteria) {
-    return this.findObjects(WordpressUser, [ siteId ], criteria);
+  /**
+   * Find user record matching criteria
+   *
+   * @param  {Object} criteria
+   * @param  {string} [siteId]
+   *
+   * @return {Promise<WordpressUser[]>}
+   */
+  findWPUsers(criteria, siteId) {
+    return this.findWPObjects(WordpressUser, criteria, siteId);
   }
 
+  /**
+   * Fetch information about a Wordpress site
+   *
+   * @param  {string} siteId
+   *
+   * @return {Promise<WordpressSite>}
+   */
   fetchWPSite(siteId) {
     return this.fetchObject(WordpressSite, [ siteId ]);
   }
 
-  findWPSites() {
-    return this.findObjects(WordpressSite, [], {});
-  }
-
-  fetchWPObject(constructor, siteId, objectId) {
+  fetchWPObject(constructor, objectId, siteId) {
     if (typeof(objectId) === 'string') {
       const number = parseInt(objectId);
       if (!isNaN(number)) {
         objectId = number;
       } else {
-        return this.fetchWPObjectBySlug(constructor, siteId, objectId);
+        return this.fetchWPObjectBySlug(constructor, objectId, siteId);
       }
     }
     return this.fetchObject(constructor, [ siteId, objectId ]);
@@ -86,14 +201,19 @@ class Wordpress extends DataSource {
 
   fetchWPObjects(constructor, siteId, objectIds) {
     const promises = objectIds.map((objectId) => {
-      return this.fetchWPObject(constructor, siteId, objectId);
+      return this.fetchWPObject(constructor, objectId, siteId);
     });
     return Promise.all(promises).then((objects) => {
       return objects;
     });
   }
 
-  fetchWPObjectBySlug(constructor, siteId, slug) {
+  findWPObjects(constructor, criteria, siteId) {
+    const identifiers = (siteId) ? [ siteId ] : [];
+    return this.findObjects(WordpressPost, identifiers, criteria);
+  }
+
+  fetchWPObjectBySlug(constructor, slug, siteId) {
     // look for it among cached queries
     for (let query of this.queries) {
       if (query.constructor === constructor) {
